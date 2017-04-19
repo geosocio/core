@@ -3,57 +3,57 @@
 #parameters:
 
 services:
-    church.authenticated_user_resolver:
-        class: Church\ArgumentResolver\AuthenticatedUserResolver
+    geosocio.authenticated_user_resolver:
+        class: GeoSocio\Core\ArgumentResolver\AuthenticatedUserResolver
         arguments:
             - '@security.token_storage'
         tags:
             - { name: controller.argument_value_resolver }
 
-    church.input_resolver:
-        class: Church\ArgumentResolver\InputResolver
+    geosocio.input_resolver:
+        class: GeoSocio\Core\ArgumentResolver\InputResolver
         arguments:
             - '@serializer'
         tags:
             - { name: controller.argument_value_resolver }
 
-    church.controller:
+    geosocio.controller:
         abstract:  true
         arguments:
-            - '@church.denormalizer'
+            - '@geosocio.denormalizer'
             - '@doctrine'
 
-    church.controller_default:
-        parent: church.controller
-        class: Church\Controller\DefaultController
+    geosocio.controller_default:
+        parent: geosocio.controller
+        class: GeoSocio\Controller\DefaultController
 
-    church.controller_auth:
-        parent: church.controller
-        class: Church\Controller\AuthController
+    geosocio.controller_auth:
+        parent: geosocio.controller
+        class: GeoSocio\Core\Controller\AuthController
         arguments:
-            - "@church.verification_manager"
+            - "@geosocio.verification_manager"
             - '@lexik_jwt_authentication.jwt_manager'
 
-    church.controller_user:
-        parent: church.controller
-        class: Church\Controller\UserController
+    geosocio.controller_user:
+        parent: geosocio.controller
+        class: GeoSocio\Core\Controller\UserController
         arguments:
-            - "@church.verification_manager"
-            - '@church.place_finder'
+            - "@geosocio.verification_manager"
+            - '@geosocio.place_finder'
 
-    church.controller_place:
-        parent: church.controller
-        class: Church\Controller\PlaceController
+    geosocio.controller_place:
+        parent: geosocio.controller
+        class: GeoSocio\Controller\PlaceController
 
-    church.denormalizer:
-        class: Church\Serializer\Denormalizer
+    geosocio.denormalizer:
+        class: GeoSocio\Core\Serializer\Denormalizer
         arguments:
             - '@serializer'
             - '@validator'
             - '@security.token_storage'
 
-    church.return_listener:
-        class: Church\EventListener\ReturnListener
+    geosocio.return_listener:
+        class: GeoSocio\Core\EventListener\ReturnListener
         arguments:
             - '@serializer'
             - '@security.token_storage'
@@ -61,45 +61,45 @@ services:
             - { name: kernel.event_listener, event: kernel.view }
             - { name: kernel.event_listener, event: kernel.exception }
 
-    church.tree_maker:
-        class: Church\EventListener\TreeMaker
+    geosocio.tree_maker:
+        class: GeoSocio\Core\EventListener\TreeMaker
         public: false
         tags:
             - { name: doctrine.event_listener, event: postPersist }
             - { name: doctrine.event_listener, event: preUpdate }
             - { name: doctrine.event_listener, event: preRemove }
 
-    church.code_authenticator:
-        class: Church\Security\CodeAuthenticator
+    geosocio.code_authenticator:
+        class: GeoSocio\Core\Security\CodeAuthenticator
         arguments:
-            - '@church.denormalizer'
+            - '@geosocio.denormalizer'
             - '@doctrine'
             - '@security.http_utils'
 
-    church.verification_manager:
-         class: Church\Utils\User\VerificationManager
+    geosocio.verification_manager:
+         class: GeoSocio\Core\Utils\User\VerificationManager
 
-    church.verification_email:
-        class: Church\Utils\User\EmailVerification
+    geosocio.verification_email:
+        class: GeoSocio\Core\Utils\User\EmailVerification
         public: false
         arguments:
             - '@doctrine'
             - '@ircmaxell.random'
-            - '@church.dispatcher_email'
+            - '@geosocio.dispatcher_email'
         tags:
-            - { name: church.verification, type: email }
+            - { name: geosocio.verification, type: email }
 
-    church.dispatcher_email:
-        class: Church\Utils\Dispatcher\EmailDispatcher
+    geosocio.dispatcher_email:
+        class: GeoSocio\Core\Utils\Dispatcher\EmailDispatcher
         arguments:
             - '@sendgrid'
 
-    church.place_finder:
-        class: Church\Utils\PlaceFinder
+    geosocio.place_finder:
+        class: GeoSocio\Core\Utils\PlaceFinder
         arguments:
             - '@doctrine'
-            - '@church.client_mapzen_search'
-            - '@church.client_mapzen_whos_on_first'
+            - '@geosocio.client_mapzen_search'
+            - '@geosocio.client_mapzen_whos_on_first'
 
     sendgrid:
         class: SendGrid
@@ -119,26 +119,26 @@ services:
     #         - '%nexmo_api_key%'
     #         - '%nexmo_api_secret%'
 
-    church.client_mapzen_search:
-        class: Church\Client\Mapzen\Search
+    geosocio.client_mapzen_search:
+        class: GeoSocio\Core\Client\Mapzen\Search
         arguments:
             - '@guzzlehttp.client_mapzen_search'
             - '@serializer'
 
-    church.client_mapzen_whos_on_first:
-        class: Church\Client\Mapzen\WhosOnFirst
+    geosocio.client_mapzen_whos_on_first:
+        class: GeoSocio\Core\Client\Mapzen\WhosOnFirst
         arguments:
             - '@guzzlehttp.client_mapzen_whos_on_first'
             - '@serializer'
 
-    church.serializer_mapzen_search:
-        class: Church\Serializer\Mapzen\SearchDenormalizer
+    geosocio.serializer_mapzen_search:
+        class: GeoSocio\Core\Serializer\Mapzen\SearchDenormalizer
         public: false
         tags:
             - { name: serializer.normalizer }
 
-    church.serializer_mapzen_whos_on_first:
-        class: Church\Serializer\Mapzen\WhosOnFirstDenormalizer
+    geosocio.serializer_mapzen_whos_on_first:
+        class: GeoSocio\Core\Serializer\Mapzen\WhosOnFirstDenormalizer
         public: false
         tags:
             - { name: serializer.normalizer }

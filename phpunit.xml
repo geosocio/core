@@ -15,8 +15,8 @@
     </php>
 
     <testsuites>
-      <testsuite name="Church">
-          <directory>./src</directory>
+      <testsuite name="GeoSoc.io">
+          <directory>./tests</directory>
       </testsuite>
     </testsuites>
 

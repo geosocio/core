@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="The Church">
-  <description>The coding standard for The Church.</description>
+<ruleset name="GeoSoc.io Core">
+  <description>The coding standard for GeoSoc.io</description>
 
   <rule ref="PSR2"/>
 

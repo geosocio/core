@@ -17,7 +17,7 @@ class Kernel extends BaseKernel
             new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new \Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
-            new \Church\Church(),
+            new \GeoSocio\Core\Core(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

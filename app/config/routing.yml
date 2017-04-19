@@ -1,15 +1,15 @@
 default:
-    resource: '@Church/Controller/DefaultController.php'
+    resource: '@GeoSocio/Core/Controller/DefaultController.php'
     type:     annotation
 
 auth:
-    resource: '@Church/Controller/AuthController.php'
+    resource: '@GeoSocio/Core/Controller/AuthController.php'
     type:     annotation
 
 user:
-    resource: '@Church/Controller/UserController.php'
+    resource: '@GeoSocio/Core/Controller/UserController.php'
     type:     annotation
 
 place:
-    resource: '@Church/Controller/PlaceController.php'
+    resource: '@GeoSocio/Core/Controller/PlaceController.php'
     type:     annotation

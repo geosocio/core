@@ -1,17 +1,17 @@
 {
-    "name": "church/thechurch",
-    "description": "The Church",
+    "name": "geosocio/core",
+    "description": "GeoSoc.io Core",
     "license": "AGPL-3.0",
     "type": "project",
     "autoload": {
         "psr-4": {
           "App\\": "app/",
-          "Church\\": "src/Church"
+          "GeoSocio\\Core\\": "src/"
         }
     },
     "autoload-dev": {
       "psr-4": {
-        "Tests\\": "tests/"
+        "GeoSocio\\Core\\Tests\\": "tests/"
       }
     },
     "require": {
