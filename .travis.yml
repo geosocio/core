@@ -19,4 +19,4 @@ branches:
         - master
         - develop
 notifications:
-  irc: "chat.freenode.net#thechurch"
+  irc: "chat.freenode.net#geosocio"
