@@ -25,7 +25,7 @@ services:
 
     geosocio.controller_default:
         parent: geosocio.controller
-        class: GeoSocio\Controller\DefaultController
+        class: GeoSocio\Core\Controller\DefaultController
 
     geosocio.controller_auth:
         parent: geosocio.controller

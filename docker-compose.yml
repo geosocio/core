@@ -2,8 +2,9 @@ version: '3'
 services:
     api:
         ports:
-            - '8000:80'
+            - '80:80'
         build: ./
+        image: 192.168.99.101:5000/geosocio
         volumes:
             - './:/var/www'
         deploy:
