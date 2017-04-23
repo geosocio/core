@@ -82,7 +82,6 @@ class UserTest extends EntityTest
                 'email' => 'test@example.com',
                 'verified' => new \DateTime()
             ],
-            'orthodox' => true,
             'username' => 'test',
             'location' => [
                 'id' => 1234,
@@ -113,7 +112,6 @@ class UserTest extends EntityTest
                 'email' => 'test@example.com',
                 'verified' => new \DateTime()
             ],
-            'orthodox' => true,
             'username' => 'test',
             'location' => [
                 'id' => '123',
@@ -132,7 +130,6 @@ class UserTest extends EntityTest
                 'email' => 'other@example.com',
                 'verified' => new \DateTime()
             ],
-            'orthodox' => true,
             'username' => 'test',
             'location' => [
                 'id' => '456',
@@ -237,15 +234,6 @@ class UserTest extends EntityTest
         $user->setLocation($location);
 
         $this->assertSame($location, $user->getLocation());
-    }
-
-    public function testSetOrthodox()
-    {
-        $user = new User();
-
-        $user->setOrthodox(true);
-
-        $this->assertTrue($user->isOrthodox());
     }
 
     public function testSetEnabled()
