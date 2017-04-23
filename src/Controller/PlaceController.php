@@ -3,9 +3,10 @@
 namespace GeoSocio\Core\Controller;
 
 use GeoSocio\Core\Entity\Place\Place;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -49,6 +50,7 @@ class PlaceController extends Controller
     /**
      * @Route("/place/{place}.{_format}")
      * @Method("GET")
+     * @ParamConverter("place", converter="doctrine.orm", class="GeoSocio\Core\Entity\Place\Place")
      *
      * @param Place $place
      * @param Request $request

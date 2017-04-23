@@ -85,6 +85,7 @@ class UserController extends Controller
   /**
    * @Route("/user/{user}.{_format}")
    * @Method("GET")
+   * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
    *
    * @param User $user
    * @param Request $request
@@ -103,6 +104,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}")
      * @Method("PATCH")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -126,6 +128,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/name.{_format}")
      * @Method("GET")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -170,6 +173,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/sites.{_format}")
      * @Method("GET")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -188,6 +192,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/sites.{_format}")
      * @Method("POST")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -213,6 +218,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/emails.{_format}")
      * @Method("GET")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -231,6 +237,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/emails")
      * @Method("POST")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -262,6 +269,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/primary-email.{_format}")
      * @Method("GET")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -284,6 +292,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/primary-email")
      * @Method("POST")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -320,6 +329,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/location.{_format}")
      * @Method("GET")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -342,6 +352,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/location")
      * @Method("POST")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -368,6 +379,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/emails/{email}")
      * @Method("DELETE")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Email $email
@@ -392,6 +404,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/emails/verify")
      * @Method("POST")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
