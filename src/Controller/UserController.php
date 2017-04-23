@@ -6,6 +6,7 @@ use GeoSocio\Core\Entity\Location;
 use GeoSocio\Core\Entity\User\Name;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\Email;
+use GeoSocio\Core\Entity\User\Site;
 use GeoSocio\Core\Entity\User\Verify\EmailVerify;
 use GeoSocio\Core\Utils\ArrayUtils;
 use GeoSocio\Core\Utils\PlaceFinderInterface;
@@ -159,6 +160,49 @@ class UserController extends Controller
         $em->flush();
 
         return $this->showNameAction($user);
+    }
+
+    /**
+     * Show the ueer's sites.
+     *
+     * @Route("/user/{user}/sites.{_format}")
+     * @Method("GET")
+     * @Security("has_role('authenticated')")
+     *
+     * @param Request $request
+     */
+    public function showSitesAction(User $user) : Collection
+    {
+        if (!$user->isEnabled()) {
+            throw new NotFoundHttpException("User account is disabled");
+        }
+
+        return $user->getSites();
+    }
+
+    /**
+     * Add sites to the user.
+     *
+     * @Route("/user/{user}/sites.{_format}")
+     * @Method("POST")
+     * @Security("has_role('authenticated')")
+     *
+     * @param Request $request
+     */
+    public function createSiteAction(User $authenticated, User $user, array $input) : Site
+    {
+        if (!$authenticated->isEqualTo($user)) {
+            throw new AccessDeniedHttpException("You may only modify your own user");
+        }
+
+        $em = $this->doctrine->getEntityManager();
+        $site = $this->denormalizer->denormalize($input, UserSite::class);
+
+        $site->setUser($user);
+        $user->addSite($site);
+        $em->flush();
+
+        return $site;
     }
 
     /**

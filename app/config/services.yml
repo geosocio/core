@@ -8,7 +8,7 @@ services:
         arguments:
             - '@security.token_storage'
         tags:
-            - { name: controller.argument_value_resolver }
+            - { name: controller.argument_value_resolver, priority: 100 }
 
     geosocio.input_resolver:
         class: GeoSocio\Core\ArgumentResolver\InputResolver

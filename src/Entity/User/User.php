@@ -107,6 +107,15 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     private $emails;
 
     /**
+     * @var Sites
+     *
+     * @ORM\OneToMany(targetEntity="Site", mappedBy="user",  cascade={"all"})
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @Groups({"me_read"})
+     */
+    private $sites;
+
+    /**
      * @var Email
      *
      * @ORM\OneToOne(targetEntity="Email", mappedBy="email", cascade={"all"})
@@ -123,14 +132,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      * @Groups({"me_read", "neighbor_read"})
      */
     private $location;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" = 0})
-     * @Groups({"me_read", "me_write"})
-     */
-    private $orthodox;
 
     /**
      * @var bool
@@ -170,9 +171,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
         $primaryEmail = $data['primaryEmail'] ?? null;
         $this->primaryEmail = $this->getSingle($primaryEmail, Email::class);
-
-        $orthodox = $data['orthodox'] ?? false;
-        $this->orthodox = is_bool($orthodox) ? $orthodox : false;
 
         $enabled = $data['enabled'] ?? true;
         $this->enabled = is_bool($enabled) ? $enabled : true;
@@ -260,11 +258,12 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
             self::ROLE_AUTHENTICATED,
         ];
 
+        // @TODO Add something to indicate the user is a member of the
+        //       current site.
         if ($this->getPrimaryEmail()
             && $this->getPrimaryEmail()->getVerified()
             && $this->getName()->getFirst()
             && $this->getName()->getLast()
-            && $this->isOrthodox()
             && $this->getUsername()
             && $this->getLocation()
         ) {
@@ -420,6 +419,36 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
         return $this->emails;
     }
 
+    /**
+     * Add sites
+     */
+    public function addSite(Site $site) : self
+    {
+        $this->sites[] = $site;
+
+        return $this;
+    }
+
+    /**
+     * Remove sites
+     */
+    public function removeSite(Site $site) : self
+    {
+        $this->sites->removeElement($site);
+
+        return $this;
+    }
+
+    /**
+     * Get sites
+     *
+     * @return Collection
+     */
+    public function getSites() :? Collection
+    {
+        return $this->sites;
+    }
+
 
     /**
      * Set Primary Email.
@@ -462,28 +491,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     public function getLocation() :? Location
     {
         return $this->location;
-    }
-
-    /**
-     * Set Orthodox
-     *
-     * @param bool $orthodox
-     */
-    public function setOrthodox(bool $orthodox) : self
-    {
-        $this->orthodox = $orthodox;
-
-        return $this;
-    }
-
-    /**
-     * Get Orthodox
-     *
-     * @return bool
-     */
-    public function isOrthodox() : bool
-    {
-        return $this->orthodox;
     }
 
     /**
