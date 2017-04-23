@@ -16,6 +16,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -142,6 +143,7 @@ class UserController extends Controller
      * Update the user's real name.
      *
      * @Route("/user/{user}/name")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Method("PATCH")
      * @Security("has_role('authenticated')")
      *
@@ -155,6 +157,7 @@ class UserController extends Controller
 
         $em = $this->doctrine->getEntityManager();
         $name = $this->denormalizer->denormalize($input, $user->getName());
+
         $user->setName($name);
 
         $em->flush();
@@ -196,7 +199,7 @@ class UserController extends Controller
         }
 
         $em = $this->doctrine->getEntityManager();
-        $site = $this->denormalizer->denormalize($input, UserSite::class);
+        $site = $this->denormalizer->denormalize($input, Site::class);
 
         $site->setUser($user);
         $user->addSite($site);

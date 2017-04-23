@@ -3,6 +3,7 @@
 namespace GeoSocio\Core\Serializer;
 
 use GeoSocio\Core\Entity\User\User;
+use GeoSocio\Core\Entity\User\UserAwareInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -80,23 +81,27 @@ class Denormalizer implements DenormalizerInterface
             $class = get_class($object);
         }
 
-        $roles = $this->getUser() ? $this->getUser()->getRoles() : [];
+        if ($object instanceof UserAwareInterface) {
+            $user = $object->getUser();
+        }
+
+        $roles = $this->getUser() ? $this->getUser()->getRoles($user) : [];
 
         $context = array_merge([
             'object_to_populate' => $object,
             'groups' => User::getGroups(User::OPERATION_WRITE, $roles),
         ], $context);
 
-        $object = $this->denormalizer->denormalize(
+        $result = $this->denormalizer->denormalize(
             $data,
             $class,
             $format,
             $context
         );
 
-        $this->validate($object);
+        $this->validate($result);
 
-        return $object;
+        return $result;
     }
 
     /**
