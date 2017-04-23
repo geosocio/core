@@ -249,6 +249,8 @@ class UserController extends Controller
         }
 
         $em = $this->doctrine->getEntityManager();
+        // @TODO this wont work because the denormalizer is not aware of the
+        //       the user, so the proper access will not be applied.
         $email = $this->denormalizer->denormalize($input, Email::class);
 
         $email->setUser($user);

@@ -73,8 +73,6 @@ class Denormalizer implements DenormalizerInterface
             throw new \InvalidArgumentException('type must be a string or an object');
         }
 
-        $roles = $context['roles'] ?? [];
-
         $object = null;
         if (is_object($class)) {
             $object = $class;
@@ -86,6 +84,7 @@ class Denormalizer implements DenormalizerInterface
         }
 
         $roles = $this->getUser() ? $this->getUser()->getRoles($user) : [];
+        $roles = array_merge($roles, $context['roles'] ?? []);
 
         $context = array_merge([
             'object_to_populate' => $object,
