@@ -13,3 +13,7 @@ user:
 place:
     resource: '@Core/Controller/PlaceController.php'
     type:     annotation
+
+site:
+    resource: '@Core/Controller/SiteController.php'
+    type:     annotation

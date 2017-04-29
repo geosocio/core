@@ -4,6 +4,7 @@ namespace GeoSocio\Core\Entity\User;
 
 use GeoSocio\Core\Entity\Location;
 use GeoSocio\Core\Entity\Entity;
+use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\User\Email;
 use GeoSocio\Core\Entity\User\Name;
 use Doctrine\ORM\Mapping as ORM;
@@ -54,6 +55,33 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     const ROLE_STANDARD = 'standard';
 
     /**
+     * User Role.
+     *
+     * Granted to users who are members of the current site.
+     *
+     * @var string.
+     */
+    const ROLE_MEMBER = 'member';
+
+    /**
+     * User Role.
+     *
+     * Granted to users who are members of the current site.
+     *
+     * @var string.
+     */
+    const ROLE_NEIGHBOR = 'neighbor';
+
+    /**
+     * User Role.
+     *
+     * Granted to one's self.
+     *
+     * @var string.
+     */
+    const ROLE_ME = 'me';
+
+    /**
      * @var string
      */
     const OPERATION_READ = 'read';
@@ -68,6 +96,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *
      * @ORM\Column(name="user_id", type="guid")
      * @ORM\Id
+     * @Assert\Uuid
      * @Groups({"anonymous_read"})
      */
     private $id;
@@ -76,6 +105,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      * @var Name
      *
      * @ORM\Embedded(class = "Name", columnPrefix = "name_")
+     * @Assert\Uuid
      * @Groups({"me_read", "neighbor_read"})
      */
     private $name;
@@ -107,13 +137,13 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     private $emails;
 
     /**
-     * @var Sites
+     * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Site", mappedBy="user",  cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Membership", mappedBy="user",  cascade={"all"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
-     * @Groups({"me_read"})
+     * @Groups({"me_read", "standard_read"})
      */
-    private $sites;
+    private $memberships;
 
     /**
      * @var Email
@@ -251,31 +281,33 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *
      * @Groups({"me_read"})
      */
-    public function getRoles(User $user = null) : array
+    public function getRoles(User $user = null, Site $site = null) : array
     {
         $roles = [
             self::ROLE_ANONYMOUS,
             self::ROLE_AUTHENTICATED,
         ];
 
-        // @TODO Add something to indicate the user is a member of the
-        //       current site.
-        if ($this->getPrimaryEmail()
-            && $this->getPrimaryEmail()->getVerified()
-            && $this->getName()->getFirst()
-            && $this->getName()->getLast()
-            && $this->getUsername()
-            && $this->getLocation()
+        if ($this->primaryEmail
+            && $this->primaryEmail->getVerified()
+            && $this->name->getFirst()
+            && $this->name->getLast()
+            && $this->username
+            && $this->location
         ) {
             $roles[] = self::ROLE_STANDARD;
+
+            if ($site && $this->isMember($site)) {
+                $roles[] = self::ROLE_MEMBER;
+            }
         }
 
         if ($user) {
             if ($this->isEqualTo($user)) {
-                $roles[] = 'me';
+                $roles[] = self::ROLE_ME;
             }
             if ($this->isNeighbor($user)) {
-                $roles[] = 'neighbor';
+                $roles[] = self::ROLE_NEIGHBOR;
             }
         }
 
@@ -420,33 +452,33 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
-     * Add sites
+     * Add Membership
      */
-    public function addSite(Site $site) : self
+    public function addMembership(Membership $membership) : self
     {
-        $this->sites[] = $site;
+        $this->memberships[] = $membership;
 
         return $this;
     }
 
     /**
-     * Remove sites
+     * Remove membership
      */
-    public function removeSite(Site $site) : self
+    public function removeMembership(Membership $membership) : self
     {
-        $this->sites->removeElement($site);
+        $this->memberhsips->removeElement($membership);
 
         return $this;
     }
 
     /**
-     * Get sites
+     * Get memberships
      *
      * @return Collection
      */
-    public function getSites() :? Collection
+    public function getMemberships() :? Collection
     {
-        return $this->sites;
+        return $this->memberships;
     }
 
 
@@ -567,5 +599,17 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
         return array_map(function ($role) use ($operation) {
             return $role . '_' . $operation;
         }, $roles);
+    }
+
+    /**
+     * Determine if User is a member of a given site.
+     */
+    public function isMember(Site $site) : bool
+    {
+        $memberships = $this->memberships->filter(function ($membership) use ($site) {
+            return $membership->getSite() && $membership->getSite()->getId() === $site->getId();
+        });
+
+        return !$memberships->isEmpty();
     }
 }

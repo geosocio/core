@@ -2,9 +2,9 @@
 
 namespace GeoSocio\Core\Entity;
 
-use GeoSocio\Core\Entity\Place\Place;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * GeoSocio\Entity\Location
@@ -13,21 +13,47 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="site")
  */
-class Site extends Entity
+class Site extends Entity implements SiteAwareInterface
 {
     /**
      * @var string
      *
-     * @ORM\Column(name="site_id", type="string", length=255)
+     * @ORM\Column(name="site_id", type="guid")
      * @ORM\Id
-      * @Groups({"anonymous_read"})
+     * @Assert\Uuid
+     * @Groups({"anonymous_read", "me_write"})
      */
     private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=15, unique=true, nullable=true)
+     * @Groups({"anonymous_read"})
+     */
+    private $key;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"anonymous_read"})
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=15, nullable=true)
+     * @Groups({"anonymous_read"})
+     */
+    private $domain;
 
     /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetime")
+     * @Groups({"anonymous_read"})
      */
     private $created;
 
@@ -39,7 +65,16 @@ class Site extends Entity
     public function __construct(array $data = [])
     {
         $id = $data['id'] ?? null;
-        $this->id = is_string($id) ? $id : '';
+        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : strtolower(uuid_create(UUID_TYPE_DEFAULT));
+
+        $key = $data['key'] ?? null;
+        $this->key = is_string($key) ? $key : null;
+
+        $name = $data['name'] ?? null;
+        $this->name = is_string($name) ? $name : null;
+
+        $domain = $data['domain'] ?? null;
+        $this->domain = is_string($domain) ? $domain : null;
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
@@ -70,6 +105,96 @@ class Site extends Entity
     {
         $this->id = $id;
 
+        return $this;
+    }
+
+    /**
+     * Get Key
+     */
+    public function getKey() :? string
+    {
+        return $this->key;
+    }
+
+    /**
+     * Set Key
+     *
+     * @param string $key
+     */
+    public function setKey(string $key) : self
+    {
+        $this->key = $key;
+
+        return $this;
+    }
+
+    /**
+     * Get Name
+     */
+    public function getName() :? string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set Name
+     *
+     * @param string $name
+     */
+    public function setName(string $name) : self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get Domain
+     */
+    public function getDomain() :? string
+    {
+        return $this->domain;
+    }
+
+    /**
+     * Set Domain
+     *
+     * @param string $domain
+     */
+    public function setDomain(string $domain) : self
+    {
+        $this->domain = $domain;
+
+        return $this;
+    }
+
+    /**
+     * Set created
+     *
+     * @param \DateTimeInterface $created
+     */
+    public function setCreated(\DateTimeInterface $created) : self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    /**
+     * Get created
+     *
+     * @return \DateTime
+     */
+    public function getCreated() :? \DateTimeInterface
+    {
+        return $this->created;
+    }
+
+    /**
+     * Get the site.
+     */
+    public function getSite() : Site
+    {
         return $this;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace GeoSocio\Core\Serializer;
 
+use GeoSocio\Core\Entity\SiteAwareInterface;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\UserAwareInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -79,11 +80,21 @@ class Denormalizer implements DenormalizerInterface
             $class = get_class($object);
         }
 
+        $user = null;
         if ($object instanceof UserAwareInterface) {
             $user = $object->getUser();
+        } elseif (isset($context['user'])) {
+            $user = $context['user'];
         }
 
-        $roles = $this->getUser() ? $this->getUser()->getRoles($user) : [];
+        $site = null;
+        if ($object instanceof SiteAwareInterface) {
+            $site = $object->getSite();
+        } elseif (isset($context['site'])) {
+            $site = $context['site'];
+        }
+
+        $roles = $this->getUser() ? $this->getUser()->getRoles($user, $site) : [];
         $roles = array_merge($roles, $context['roles'] ?? []);
 
         $context = array_merge([

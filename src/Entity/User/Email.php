@@ -44,7 +44,6 @@ class Email implements UserAwareInterface
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetime")
-     * @Groups({"me_read"})
      */
     private $created;
 

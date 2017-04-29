@@ -6,8 +6,6 @@ interface UserAwareInterface
 {
     /**
      * Get user
-     *
-     * @return User
      */
     public function getUser() :? User;
 }

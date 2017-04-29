@@ -2,6 +2,8 @@
 
 namespace GeoSocio\Core\EventListener;
 
+use Doctrine\Common\Collections\Collection;
+use GeoSocio\Core\Entity\SiteAwareInterface;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\UserAwareInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,6 +12,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * Listen for Exceptions.
@@ -23,6 +26,11 @@ class ReturnListener
     protected $serializer;
 
     /**
+     * @var NormalizerInterface
+     */
+    protected $normalizer;
+
+    /**
      * @var TokenStorageInterface
      */
     protected $tokenStorage;
@@ -32,9 +40,11 @@ class ReturnListener
      */
     public function __construct(
         SerializerInterface $serializer,
+        NormalizerInterface $normalizer,
         TokenStorageInterface $tokenStorage
     ) {
         $this->serializer = $serializer;
+        $this->normalizer = $normalizer;
         $this->tokenStorage = $tokenStorage;
     }
 
@@ -88,11 +98,6 @@ class ReturnListener
         $request = $event->getRequest();
         $result = $event->getControllerResult();
 
-        $user = null;
-        if ($result instanceof UserAwareInterface) {
-            $user = $result->getUser();
-        }
-
         $status = 200;
         switch ($request->getMethod()) {
             case 'POST':
@@ -106,12 +111,47 @@ class ReturnListener
                 break;
         }
 
-        $roles = $this->getUser() ? $this->getUser()->getRoles($user) : [];
+        if (is_iterable($result)) {
+            if ($result instanceof Collection) {
+                $result = $result->toArray();
+            }
 
-        $response = $this->getResponse($result, $request->getRequestFormat('json'), $roles, $status);
+            $result = array_map(function ($item) {
+                return $this->normalize($item);
+            }, $result);
+        } else {
+            $result = $this->normalize($result);
+        }
+
+        $response = $this->getResponse($result, $request->getRequestFormat('json'), [], $status);
         $event->setResponse($response);
 
         return $response;
+    }
+
+    /**
+     * Normalize an object.
+     */
+    protected function normalize($result) : array
+    {
+        $user = null;
+        if ($result instanceof UserAwareInterface) {
+            $user = $result->getUser();
+        }
+
+        $site = null;
+        if ($result instanceof SiteAwareInterface) {
+            $site = $result->getSite();
+        }
+
+        $roles = $this->getUser() ? $this->getUser()->getRoles($user, $site) : [];
+
+        $context = [
+            'groups' => User::getGroups(User::OPERATION_READ, $roles),
+            'enable_max_depth' => true,
+        ];
+
+        return $this->normalizer->normalize($result, null, $context);
     }
 
     /**

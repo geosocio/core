@@ -3,21 +3,21 @@
 namespace GeoSocio\Core\Entity\User;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-use GeoSocio\Core\Entity\Site as SiteEntity;
+use GeoSocio\Core\Entity\Entity;
+use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Verify\EmailVerify;
+use GeoSocio\Core\Entity\SiteAwareInterface;
 
 /**
- * GeoSocio\Core\Entity\User\Site
+ * GeoSocio\Core\Entity\User\Membership
  *
- * @ORM\Table(name="users_site")
+ * @ORM\Table(name="users_membership")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
-class Site implements UserAwareInterface
+class Membership extends Entity implements UserAwareInterface, SiteAwareInterface
 {
 
     /**
@@ -30,12 +30,11 @@ class Site implements UserAwareInterface
     private $user;
 
     /**
-     * @var string
+     * @var Site
      *
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Site")
      * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
-     * @Groups({"me_read", "me_write"})
      */
     private $site;
 
@@ -43,7 +42,6 @@ class Site implements UserAwareInterface
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetime")
-     * @Groups({"me_read"})
      */
     private $created;
 
@@ -58,7 +56,7 @@ class Site implements UserAwareInterface
         $this->user = $this->getSingle($user, User::class);
 
         $site = $data['site'] ?? null;
-        $this->site = $this->getSingle($site, SiteEntity::class);
+        $this->site = $this->getSingle($site, Site::class);
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
@@ -99,7 +97,7 @@ class Site implements UserAwareInterface
     /**
      * Set site
      */
-    public function setSite(SiteEntity $site) : self
+    public function setSite(Site $site) : self
     {
         $this->site = $site;
 
@@ -109,7 +107,7 @@ class Site implements UserAwareInterface
     /**
      * Get site
      */
-    public function getSite() :? SiteEntity
+    public function getSite() :? Site
     {
         return $this->site;
     }
@@ -137,10 +135,16 @@ class Site implements UserAwareInterface
     }
 
     /**
-     * Convers the email object to a string.
+     * Get the id (site id).
+     *
+     * @Groups({"me_read", "standard_read"})
      */
-    public function __toString() : string
+    public function getId() :? string
     {
-        return $this->email;
+        if (!$this->site) {
+            return null;
+        }
+
+        return $this->site->getId();
     }
 }

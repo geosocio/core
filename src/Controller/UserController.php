@@ -3,10 +3,11 @@
 namespace GeoSocio\Core\Controller;
 
 use GeoSocio\Core\Entity\Location;
+use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\User\Name;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\Site;
+use GeoSocio\Core\Entity\User\Membership;
 use GeoSocio\Core\Entity\User\Verify\EmailVerify;
 use GeoSocio\Core\Utils\ArrayUtils;
 use GeoSocio\Core\Utils\PlaceFinderInterface;
@@ -169,48 +170,98 @@ class UserController extends Controller
     }
 
     /**
-     * Show the ueer's sites.
+     * Show the ueer's memberships.
      *
-     * @Route("/user/{user}/sites.{_format}")
+     * @Route("/user/{user}/memberships.{_format}")
      * @Method("GET")
      * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
      */
-    public function showSitesAction(User $user) : Collection
+    public function showMembershipsAction(User $user) : Collection
     {
         if (!$user->isEnabled()) {
             throw new NotFoundHttpException("User account is disabled");
         }
 
-        return $user->getSites();
+        return $user->getMemberships();
     }
 
     /**
-     * Add sites to the user.
+     * Removes an email.
      *
-     * @Route("/user/{user}/sites.{_format}")
+     * @Route("/user/{user}/memberships/{site}")
+     * @Method("DELETE")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("site", converter="doctrine.orm", class="GeoSocio\Core\Entity\Site")
+     * @Security("has_role('authenticated')")
+     *
+     * @param Email $email
+     * @param Request $request
+     */
+    public function removeMembershipAction(User $authenticated, User $user, Site $site) : string
+    {
+        if (!$authenticated->isEqualTo($user)) {
+            throw new AccessDeniedHttpException("You may only modify your own user");
+        }
+
+        $memberships = $user->getMemberships()->filter(function ($membership) use ($site) {
+            return $membership->getSite()->getId() === $site->getId();
+        });
+
+        $em = $this->doctrine->getEntityManager();
+
+        foreach ($memberships as $membership) {
+            $em->remove($membership);
+        }
+
+        $em->flush();
+
+        return '';
+    }
+
+    /**
+     * Add memberships to the user.
+     *
+     * @Route("/user/{user}/memberships.{_format}")
      * @Method("POST")
      * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
      */
-    public function createSiteAction(User $authenticated, User $user, array $input) : Site
+    public function createMembershipAction(User $authenticated, User $user, array $input) : Collection
     {
         if (!$authenticated->isEqualTo($user)) {
             throw new AccessDeniedHttpException("You may only modify your own user");
         }
 
         $em = $this->doctrine->getEntityManager();
-        $site = $this->denormalizer->denormalize($input, Site::class);
+        $repository = $this->doctrine->getRepository(Site::class);
 
-        $site->setUser($user);
-        $user->addSite($site);
+        $site = $this->denormalizer->denormalize($input, Site::class, null, [
+            'user' => $user,
+        ]);
+
+        $memberships = $user->getMemberships()->filter(function ($membership) use ($site) {
+            return $membership->getSite()->getId() === $site->getId();
+        });
+
+        if (!$memberships->isEmpty()) {
+            throw new BadRequestHttpException("Membership already exists");
+        }
+
+        $site = $repository->find($site->getId());
+
+        $membership = new Membership([
+            'site' => $site,
+            'user' => $user,
+        ]);
+        $user->addMembership($membership);
         $em->flush();
 
-        return $site;
+        return $this->showMembershipsAction($user);
     }
 
     /**

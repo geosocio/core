@@ -43,7 +43,11 @@ services:
 
     geosocio.controller_place:
         parent: geosocio.controller
-        class: GeoSocio\Controller\PlaceController
+        class: GeoSocio\Core\Controller\PlaceController
+
+    geosocio.controller_site:
+        parent: geosocio.controller
+        class: GeoSocio\Core\Controller\SiteController
 
     geosocio.denormalizer:
         class: GeoSocio\Core\Serializer\Denormalizer
@@ -55,6 +59,7 @@ services:
     geosocio.return_listener:
         class: GeoSocio\Core\EventListener\ReturnListener
         arguments:
+            - '@serializer'
             - '@serializer'
             - '@security.token_storage'
         tags:
