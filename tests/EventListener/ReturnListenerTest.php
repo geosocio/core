@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class ReturnListenerTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,6 +19,9 @@ class ReturnListenerTest extends \PHPUnit_Framework_TestCase
     public function testOnKernelView()
     {
         $serializer = $this->createMock(SerializerInterface::class);
+        $normalizer = $this->createMock(NormalizerInterface::class);
+        $normalizer->method('normalize')
+            ->willReturn([]);
 
         $user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
@@ -36,7 +40,7 @@ class ReturnListenerTest extends \PHPUnit_Framework_TestCase
         $tokenStorage->method('getToken')
             ->willReturn($token);
 
-        $listener = new ReturnListener($serializer, $tokenStorage);
+        $listener = new ReturnListener($serializer, $normalizer, $tokenStorage);
 
         $request = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()
@@ -61,9 +65,10 @@ class ReturnListenerTest extends \PHPUnit_Framework_TestCase
     public function testOnKernelException()
     {
         $serializer = $this->createMock(SerializerInterface::class);
+        $normalizer = $this->createMock(NormalizerInterface::class);
         $tokenStorage = $this->createMock(TokenStorageInterface::class);
 
-        $listener = new ReturnListener($serializer, $tokenStorage);
+        $listener = new ReturnListener($serializer, $normalizer, $tokenStorage);
 
         $exception = $this->getMockBuilder(\Exception::class)
             ->disableOriginalConstructor()
