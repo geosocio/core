@@ -114,7 +114,7 @@ class PlaceFinderTest extends \PHPUnit_Framework_TestCase
         $ancestor->method('first')
             ->willReturn($tree);
 
-        $place->method('getAncestor')
+        $place->method('getAncestors')
             ->willReturn($ancestor);
 
         $result = $placeFinder->find($location);
