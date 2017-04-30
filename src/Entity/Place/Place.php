@@ -56,7 +56,7 @@ class Place extends Entity implements TreeAwareInterface
      * @ORM\OneToMany(targetEntity="Tree", mappedBy="descendant")
      * @ORM\JoinColumn(name="place_id", referencedColumnName="descendant")
      */
-    private $ancestor;
+    private $ancestors;
 
     /**
      * @var ArrayCollection
@@ -64,7 +64,7 @@ class Place extends Entity implements TreeAwareInterface
      * @ORM\OneToMany(targetEntity="Tree", mappedBy="ancestor")
      * @ORM\JoinColumn(name="place_id", referencedColumnName="ancestor")
      */
-    private $descendant;
+    private $descendants;
 
     /**
      * @var ArrayCollection
@@ -188,7 +188,7 @@ class Place extends Entity implements TreeAwareInterface
      */
     public function addAncestor(Tree $ancestor) : self
     {
-        $this->ancestor[] = $ancestor;
+        $this->ancestors[] = $ancestor;
 
         return $this;
     }
@@ -200,7 +200,7 @@ class Place extends Entity implements TreeAwareInterface
      */
     public function removeAncestor(Tree $ancestor) : self
     {
-        $this->ancestor->removeElement($ancestor);
+        $this->ancestors->removeElement($ancestor);
 
         return $this;
     }
@@ -208,9 +208,9 @@ class Place extends Entity implements TreeAwareInterface
     /**
      * Get ancestor
      */
-    public function getAncestor() : Collection
+    public function getAncestors() : Collection
     {
-        return $this->ancestor;
+        return $this->ancestors;
     }
 
     /**
@@ -220,7 +220,7 @@ class Place extends Entity implements TreeAwareInterface
      */
     public function addDescendant(Tree $descendant) : self
     {
-        $this->descendant[] = $descendant;
+        $this->descendants[] = $descendant;
 
         return $this;
     }
@@ -232,15 +232,15 @@ class Place extends Entity implements TreeAwareInterface
      */
     public function removeDescendant(Tree $descendant) : self
     {
-        $this->descendant->removeElement($descendant);
+        $this->descendants->removeElement($descendant);
     }
 
     /**
      * Get descendant
      */
-    public function getDescendant() : Collection
+    public function getDescendants() : Collection
     {
-        return $this->descendant;
+        return $this->descendants;
     }
 
     /**

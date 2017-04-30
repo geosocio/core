@@ -6,14 +6,17 @@ use Doctrine\ORM\Mapping as ORM;
 use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\Entity;
 use GeoSocio\Core\Entity\CreatedTrait;
+use GeoSocio\Core\Entity\SiteAwareInterface;
 use GeoSocio\Core\Entity\Place\Place;
 use GeoSocio\Core\Entity\User\User;
+use GeoSocio\Core\Entity\Membership;
+use GeoSocio\Core\Entity\User\UserAwareInterface;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="post_placement")
  */
-class Placement extends Entity
+class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
 {
 
     use CreatedTrait;
@@ -28,21 +31,13 @@ class Placement extends Entity
     private $post;
 
     /**
-     * @var User
+     * @var Membership
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\User\User")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Membership")
+     * @ORM\JoinColumn(name="membership_id", referencedColumnName="membership_id")
      */
-    private $user;
-
-    /**
-     * @var Site
-     *
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Site")
-     * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
-     */
-    private $site;
+    private $membership;
 
     /**
      * @var Place
@@ -60,11 +55,8 @@ class Placement extends Entity
         $post = $data['post'] ?? null;
         $this->post = $this->getSingle($post, Post::class);
 
-        $user = $data['user'] ?? null;
-        $this->user = $this->getSingle($user, User::class);
-
-        $site = $data['site'] ?? null;
-        $this->site = $this->getSingle($site, Site::class);
+        $membership = $data['membership'] ?? null;
+        $this->user = $this->getSingle($user, Membership::class);
 
         $place = $data['place'] ?? null;
         $this->place = $this->getSingle($place, Place::class);
@@ -92,39 +84,37 @@ class Placement extends Entity
     }
 
     /**
-     * Set user.
+     * Set membership.
      */
-    public function setUser(User $user) : self
+    public function setMembership(Membership $membership) : self
     {
-        $this->user = $user;
+        $this->membership = $membership;
 
         return $this;
     }
 
     /**
-     * Get user.
+     * Get membership.
      */
-    public function getUser() : User
+    public function getMembership() : Membership
     {
-        return $this->user;
+        return $this->membership;
     }
 
     /**
-     * Set site.
+     * {@inheritdoc}
      */
-    public function setSite(Site $site) : self
+    public function getUser() :? User
     {
-        $this->site = $site;
-
-        return $this;
+        return $this->membership ? $this->membership->getUser() : null;
     }
 
     /**
-     * Get site.
+     * {@inheritdoc}
      */
     public function getSite() :? Site
     {
-        return $this->site;
+        return $this->membership ? $this->membership->getSite() : null;
     }
 
     /**

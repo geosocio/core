@@ -4,6 +4,7 @@ namespace GeoSocio\Core\Entity\User;
 
 use GeoSocio\Core\Entity\Location;
 use GeoSocio\Core\Entity\Entity;
+use GeoSocio\Core\Entity\Membership;
 use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\CreatedTrait;
 use GeoSocio\Core\Entity\User\Email;
@@ -95,7 +96,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     const OPERATION_WRITE = 'write';
 
     /**
-     * @var int
+     * @var string
      *
      * @ORM\Column(name="user_id", type="guid")
      * @ORM\Id
@@ -108,7 +109,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      * @var Name
      *
      * @ORM\Embedded(class = "Name", columnPrefix = "name_")
-     * @Assert\Uuid
      * @Groups({"me_read", "neighbor_read"})
      */
     private $name;
@@ -142,7 +142,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Membership", mappedBy="user",  cascade={"all"})
+     * @ORM\OneToMany(targetEntity="\GeoSocio\Core\Entity\Membership", mappedBy="user",  cascade={"all"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Groups({"me_read", "standard_read"})
      */

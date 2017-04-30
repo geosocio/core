@@ -4,11 +4,11 @@ namespace GeoSocio\Core\Entity\Post;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\Entity;
+use GeoSocio\Core\Entity\Permission;
 use GeoSocio\Core\Entity\CreatedTrait;
 use GeoSocio\Core\Entity\TreeAwareInterface;
-use GeoSocio\Core\Entity\SiteAwareInterface;
+use GeoSocio\Core\Entity\Place\Place;
 use GeoSocio\Core\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
 use GeoSocio\Core\Entity\User\UserAwareInterface;
@@ -21,8 +21,21 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="post")
+ * @Assert\Expression(
+ *     "(
+ *       this.getPermission()
+ *       and this.getPermission().getId() != 'place'
+ *      )
+ *      or
+ *      (
+ *       this.getPermission()
+ *       and this.getPermission().getId() == 'place'
+ *       and this.getPermissionPlace()
+ *      )",
+ *     message="Post with permission of 'place' must include a 'permissionPlace'"
+ * )
  */
-class Post extends Entity implements SiteAwareInterface, UserAwareInterface, TreeAwareInterface
+class Post extends Entity implements UserAwareInterface, TreeAwareInterface
 {
 
     use CreatedTrait;
@@ -59,7 +72,7 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
      * @ORM\OneToMany(targetEntity="Tree", mappedBy="descendant")
      * @ORM\JoinColumn(name="post_id", referencedColumnName="descendant")
      */
-    private $ancestor;
+    private $ancestors;
 
     /**
      * @var ArrayCollection
@@ -67,7 +80,7 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
      * @ORM\OneToMany(targetEntity="Tree", mappedBy="ancestor")
      * @ORM\JoinColumn(name="post_id", referencedColumnName="ancestor")
      */
-    private $descendant;
+    private $descendants;
 
     /**
      * @var string
@@ -87,13 +100,20 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
     private $user;
 
     /**
-     * @var Site
+     * @var Permission
      *
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Site")
-     * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Permission")
+     * @ORM\JoinColumn(name="permission_id", referencedColumnName="permission_id")
      */
-    private $site;
+    private $permission;
+
+    /**
+     * @var Place
+     *
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Place\Place")
+     * @ORM\JoinColumn(name="permission_place_id", referencedColumnName="place_id")
+     */
+    private $permissionPlace;
 
     /**
      * Create new Location.
@@ -111,8 +131,11 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
         $user = $data['user'] ?? null;
         $this->user = $this->getSingle($user, User::class);
 
-        $site = $data['site'] ?? null;
-        $this->site = $this->getSingle($site, Site::class);
+        $permission = $data['permission'] ?? null;
+        $this->permission = $this->getSingle($permission, Permission::class);
+
+        $permissionPlace = $data['permissionPlace'] ?? null;
+        $this->permissionPlace = $this->getSingle($permissionPlace, Place::class);
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
@@ -120,10 +143,13 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
 
     /**
      * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
-    public function setCreatedValue()
+    public function updatePermissionPlace()
     {
-        $this->created = new \DateTime();
+        if (!$this->permission || $this->permission->getId() !== 'place') {
+            $this->permissionPlace = null;
+        }
     }
 
     /**
@@ -183,31 +209,13 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
     }
 
     /**
-     * Set Site
-     */
-    public function setSite(Site $site) : self
-    {
-        $this->site = $site;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSite() :? Site
-    {
-        return $this->site;
-    }
-
-    /**
      * Add ancestor
      *
      * @param Tree $ancestor
      */
     public function addAncestor(Tree $ancestor) : self
     {
-        $this->ancestor[] = $ancestor;
+        $this->ancestors[] = $ancestor;
 
         return $this;
     }
@@ -219,7 +227,7 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
      */
     public function removeAncestor(Tree $ancestor) : self
     {
-        $this->ancestor->removeElement($ancestor);
+        $this->ancestors->removeElement($ancestor);
 
         return $this;
     }
@@ -227,9 +235,9 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
     /**
      * Get ancestor
      */
-    public function getAncestor() : Collection
+    public function getAncestors() : Collection
     {
-        return $this->ancestor;
+        return $this->ancestors;
     }
 
     /**
@@ -239,7 +247,7 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
      */
     public function addDescendant(Tree $descendant) : self
     {
-        $this->descendant[] = $descendant;
+        $this->descendants[] = $descendant;
 
         return $this;
     }
@@ -251,15 +259,15 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
      */
     public function removeDescendant(Tree $descendant) : self
     {
-        $this->descendant->removeElement($descendant);
+        $this->descendants->removeElement($descendant);
     }
 
     /**
      * Get descendant
      */
-    public function getDescendant() : Collection
+    public function getDescendants() : Collection
     {
-        return $this->descendant;
+        return $this->descendants;
     }
 
     /**
@@ -296,6 +304,42 @@ class Post extends Entity implements SiteAwareInterface, UserAwareInterface, Tre
     public function getForward() :? Post
     {
         return $this->forward;
+    }
+
+    /**
+     * Set Permission.
+     */
+    public function setPermission(Permission $permission) : self
+    {
+        $this->permission = $permission;
+
+        return $this;
+    }
+
+    /**
+     * Get Permission.
+     */
+    public function getPermission() :? Permission
+    {
+        return $this->permission;
+    }
+
+    /**
+     * Set Permission Place.
+     */
+    public function setPermissionPlace(Place $permissionPlace) : self
+    {
+        $this->permissionPlace = $permissionPlace;
+
+        return $this;
+    }
+
+    /**
+     * Get Permission.
+     */
+    public function getPermissionPlace() :? Place
+    {
+        return $this->permissionPlace;
     }
 
     /**
