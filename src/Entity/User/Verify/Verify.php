@@ -5,6 +5,7 @@ namespace GeoSocio\Core\Entity\User\Verify;
 use GeoSocio\Core\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
+use GeoSocio\Core\Entity\CreatedTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -16,6 +17,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 abstract class Verify extends Entity implements VerifyInterface
 {
+
+    use CreatedTrait;
 
     /**
      * @var string
@@ -42,14 +45,6 @@ abstract class Verify extends Entity implements VerifyInterface
     private $hashedCode;
 
     /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="datetime")
-     * @Groups({"anonymous_read"})
-     */
-    private $created;
-
-    /**
      * Create new Email Verify.
      *
      * @param array $data
@@ -64,16 +59,6 @@ abstract class Verify extends Entity implements VerifyInterface
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedValue() : self
-    {
-        $this->created = new \DateTime();
-
-        return $this;
     }
 
     /**
@@ -136,26 +121,6 @@ abstract class Verify extends Entity implements VerifyInterface
     public function getCode() :? string
     {
         return $this->code;
-    }
-
-    /**
-     * Set created
-     *
-     * @param \DateTimeInterface $created
-     */
-    public function setCreated(\DateTimeInterface $created) : self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * Get created.
-     */
-    public function getCreated() :? \DateTimeInterface
-    {
-        return $this->created;
     }
 
     /**

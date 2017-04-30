@@ -15,6 +15,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class Location extends Entity
 {
+
+    use CreatedTrait;
+
     /**
      * @var string
      *
@@ -48,13 +51,6 @@ class Location extends Entity
     private $longitude;
 
     /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="datetime")
-     */
-    private $created;
-
-    /**
      * Create new Location.
      *
      * @param array $data
@@ -75,14 +71,6 @@ class Location extends Entity
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedValue()
-    {
-        $this->created = new \DateTime();
     }
 
     /**
@@ -165,25 +153,5 @@ class Location extends Entity
     public function getLongitude() :? float
     {
         return $this->longitude;
-    }
-
-    /**
-     * Set created
-     *
-     * @param \DateTimeInterface $created
-     */
-    public function setCreated(\DateTimeInterface $created) : self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * Get created.
-     */
-    public function getCreated() :? \DateTimeInterface
-    {
-        return $this->created;
     }
 }

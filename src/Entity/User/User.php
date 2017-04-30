@@ -5,6 +5,7 @@ namespace GeoSocio\Core\Entity\User;
 use GeoSocio\Core\Entity\Location;
 use GeoSocio\Core\Entity\Entity;
 use GeoSocio\Core\Entity\Site;
+use GeoSocio\Core\Entity\CreatedTrait;
 use GeoSocio\Core\Entity\User\Email;
 use GeoSocio\Core\Entity\User\Name;
 use Doctrine\ORM\Mapping as ORM;
@@ -26,6 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class User extends Entity implements UserInterface, \Serializable, EquatableInterface, UserAwareInterface
 {
+
+    use CreatedTrait;
 
     /**
      * User Role.
@@ -172,14 +175,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     private $enabled;
 
     /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="datetime")
-     * @Groups({"anonymous_read"})
-     */
-    private $created;
-
-    /**
      * Create new User.
      *
      * @param array $data
@@ -210,16 +205,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedValue() : self
-    {
-        $this->created = new \DateTime();
-
-        return $this;
     }
 
     /**
@@ -545,28 +530,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     public function isEnabled() : bool
     {
         return $this->enabled;
-    }
-
-    /**
-     * Set created
-     *
-     * @param \DateTimeInterface $created
-     */
-    public function setCreated(\DateTimeInterface $created) : self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * Get created
-     *
-     * @return \DateTime
-     */
-    public function getCreated() :? \DateTimeInterface
-    {
-        return $this->created;
     }
 
     /**

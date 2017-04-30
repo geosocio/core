@@ -3,6 +3,7 @@
 namespace GeoSocio\Core\Entity\User;
 
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\Core\Entity\CreatedTrait;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 use GeoSocio\Core\Entity\Entity;
@@ -19,6 +20,8 @@ use GeoSocio\Core\Entity\SiteAwareInterface;
  */
 class Membership extends Entity implements UserAwareInterface, SiteAwareInterface
 {
+
+    use CreatedTrait;
 
     /**
      * @var User
@@ -39,13 +42,6 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
     private $site;
 
     /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="datetime")
-     */
-    private $created;
-
-    /**
      * Create new Email.
      *
      * @param array $data
@@ -60,17 +56,6 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
-    }
-
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedValue() : self
-    {
-        $this->created = new \DateTime();
-
-        return $this;
     }
 
     /**
@@ -110,28 +95,6 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
     public function getSite() :? Site
     {
         return $this->site;
-    }
-
-    /**
-     * Set created
-     *
-     * @param \DateTimeInterface $created
-     */
-    public function setCreated(\DateTimeInterface $created) : self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * Get created
-     *
-     * @return \DateTime
-     */
-    public function getCreated() :? \DateTimeInterface
-    {
-        return $this->created;
     }
 
     /**

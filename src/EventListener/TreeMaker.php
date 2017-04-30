@@ -2,8 +2,7 @@
 
 namespace GeoSocio\Core\EventListener;
 
-use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Entity\Place\Tree;
+use GeoSocio\Core\Entity\TreeAwareInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
 /**
@@ -21,17 +20,21 @@ class TreeMaker
     {
         $entity = $args->getEntity();
 
-        if (!$entity instanceof Place) {
+        if (!$entity instanceof TreeAwareInterface) {
             return;
         }
 
-        $em = $args->getEntityManager();
-        $repository = $em->getRepository(Tree::class);
+        $class = $entity->getTreeClass();
 
-        $tree = new Tree();
-        $tree->setAncestor($entity);
-        $tree->setDescendant($entity);
-        $tree->setDepth(0);
+        $em = $args->getEntityManager();
+        $repository = $em->getRepository($class);
+
+        $tree = new $class([
+            'ancestor' => $entity,
+            'descendant' => $entity,
+            'depth' => 0,
+        ]);
+
         $em->persist($tree);
 
         if ($parent = $entity->getParent()) {
@@ -59,12 +62,14 @@ class TreeMaker
 
         $entity = $args->getEntity();
 
-        if (!$entity instanceof Place) {
+        if (!$entity instanceof TreeAwareInterface) {
             return;
         }
 
+        $class = $entity->getTreeClass();
+
         $em = $args->getEntityManager();
-        $repository = $em->getRepository(Place::class);
+        $repository = $em->getRepository(get_class($entity));
 
         $original = $repository->find($entity->getId());
 
@@ -79,7 +84,7 @@ class TreeMaker
             return;
         }
 
-        $repository = $em->getRepository(Tree::class);
+        $repository = $em->getRepository($class);
 
         // First Get the comment's tree below itself.
         $descendants = $repository->findByAncestor($entity->getID());
@@ -91,7 +96,7 @@ class TreeMaker
 
         // Then delete the comment tree above the current comment.
         $qb = $em->createQueryBuilder();
-        $qb->delete(Tree::class, 't');
+        $qb->delete($class, 't');
         $qb->where($qb->expr()->in('t.descendant', $descendant_ids));
         $qb->where($qb->expr()->notIn('t.ancestor', $descendant_ids));
         $q = $qb->getQuery();
@@ -121,13 +126,15 @@ class TreeMaker
     {
         $entity = $args->getEntity();
 
-        if (!$entity instanceof Place) {
+        if (!$entity instanceof TreeAwareInterface) {
             return;
         }
 
+        $class = $entity->getTreeClass();
+
         $em = $args->getEntityManager();
         $qb = $em->createQueryBuilder();
-        $qb->delete(Tree::class, 't');
+        $qb->delete($class, 't');
         $qb->where($qb->expr()->orX(
             $qb->expr()->eq('t.ancestor', $entity->getId()),
             $qb->expr()->eq('t.descendant', $entity->getId())

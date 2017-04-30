@@ -2,7 +2,9 @@
 
 namespace GeoSocio\Core\Entity;
 
+use GeoSocio\Core\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\Core\Entity\User\UserAwareInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -11,9 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Table(name="site")
+ * @ORM\Table(name="post")
  */
-class Site extends Entity implements SiteAwareInterface
+class Post extends Entity implements SiteAwareInterface, UserAwareInterface
 {
 
     use CreatedTrait;
@@ -21,7 +23,7 @@ class Site extends Entity implements SiteAwareInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="site_id", type="guid")
+     * @ORM\Column(name="post_id", type="guid")
      * @ORM\Id
      * @Assert\Uuid
      * @Groups({"anonymous_read", "me_write"})
@@ -31,26 +33,28 @@ class Site extends Entity implements SiteAwareInterface
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=15, unique=true, nullable=true)
-     * @Groups({"anonymous_read"})
+     * @ORM\Column(type="string", length=20000, nullable=true)
+     * @Groups({"anonymous_read", "me_write"})
      */
-    private $key;
+    private $text;
 
     /**
-     * @var string
+     * @var User
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"anonymous_read"})
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\User\User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      */
-    private $name;
+    private $user;
 
     /**
-     * @var string
+     * @var Site
      *
-     * @ORM\Column(type="string", length=15, nullable=true)
-     * @Groups({"anonymous_read"})
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Site")
+     * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
      */
-    private $domain;
+    private $site;
 
     /**
      * Create new Location.
@@ -62,14 +66,14 @@ class Site extends Entity implements SiteAwareInterface
         $id = $data['id'] ?? null;
         $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : strtolower(uuid_create(UUID_TYPE_DEFAULT));
 
-        $key = $data['key'] ?? null;
-        $this->key = is_string($key) ? $key : null;
+        $text = $data['text'] ?? null;
+        $this->text = is_string($text) ? $text : null;
 
-        $name = $data['name'] ?? null;
-        $this->name = is_string($name) ? $name : null;
+        $user = $data['user'] ?? null;
+        $this->user = $this->getSingle($user, User::class);
 
-        $domain = $data['domain'] ?? null;
-        $this->domain = is_string($domain) ? $domain : null;
+        $site = $data['site'] ?? null;
+        $this->site = $this->getSingle($site, Site::class);
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
@@ -104,70 +108,56 @@ class Site extends Entity implements SiteAwareInterface
     }
 
     /**
-     * Get Key
+     * Get Text
      */
-    public function getKey() :? string
+    public function getText() :? string
     {
-        return $this->key;
+        return $this->text;
     }
 
     /**
-     * Set Key
-     *
-     * @param string $key
+     * Set Text
      */
-    public function setKey(string $key) : self
+    public function setText(string $text) : self
     {
-        $this->key = $key;
+        $this->text = $text;
 
         return $this;
     }
 
     /**
-     * Get Name
+     * Set user
      */
-    public function getName() :? string
+    public function setUser(User $user) : self
     {
-        return $this->name;
-    }
-
-    /**
-     * Set Name
-     *
-     * @param string $name
-     */
-    public function setName(string $name) : self
-    {
-        $this->name = $name;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * Get Domain
+     * {@inheritdoc}
      */
-    public function getDomain() :? string
+    public function getUser() :? User
     {
-        return $this->domain;
+        return $this->user;
     }
 
     /**
-     * Set Domain
-     *
-     * @param string $domain
+     * Set Site
      */
-    public function setDomain(string $domain) : self
+    public function setSite(Site $site) : self
     {
-        $this->domain = $domain;
+        $this->site = $site;
 
         return $this;
     }
 
     /**
-     * Get the site.
+     * {@inheritdoc}
      */
-    public function getSite() : Site
+    public function getSite() :? Site
     {
-        return $this;
+        return $this->site;
     }
 }

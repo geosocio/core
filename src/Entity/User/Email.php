@@ -3,6 +3,7 @@
 namespace GeoSocio\Core\Entity\User;
 
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\Core\Entity\CreatedTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -18,6 +19,7 @@ use GeoSocio\Core\Entity\User\Verify\EmailVerify;
  */
 class Email implements UserAwareInterface
 {
+    use CreatedTrait;
 
     /**
      * @var string
@@ -39,13 +41,6 @@ class Email implements UserAwareInterface
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      */
     private $user;
-
-    /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="datetime")
-     */
-    private $created;
 
     /**
      * @var EmailVerify
@@ -87,17 +82,6 @@ class Email implements UserAwareInterface
 
         $verified = $data['verified'] ?? null;
         $this->verified = $verified instanceof \DateTimeInterface ? $verified : null;
-    }
-
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedValue() : self
-    {
-        $this->created = new \DateTime();
-
-        return $this;
     }
 
     /**
@@ -143,29 +127,6 @@ class Email implements UserAwareInterface
     {
         return $this->user;
     }
-
-    /**
-     * Set created
-     *
-     * @param \DateTimeInterface $created
-     */
-    public function setCreated(\DateTimeInterface $created) : self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * Get created
-     *
-     * @return \DateTime
-     */
-    public function getCreated() :? \DateTimeInterface
-    {
-        return $this->created;
-    }
-
 
     /**
      * Set verified
