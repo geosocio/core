@@ -142,6 +142,7 @@ class UserController extends Controller
 
         $user->disable();
 
+        $em = $this->doctrine->getEntityManager();
         $em->flush();
 
         return '';

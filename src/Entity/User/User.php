@@ -170,7 +170,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @var \DateTimeInterface
      *
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $disabled;
 
