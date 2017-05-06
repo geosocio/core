@@ -125,6 +125,29 @@ class UserController extends Controller
     }
 
     /**
+     * Delete the current user.
+     *
+     * @Route("/user/{user}")
+     * @Method("DELETE")
+     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @Security("has_role('authenticated')")
+     *
+     * @param Request $request
+     */
+    public function deleteAction(User $authenticated, User $user) : string
+    {
+        if (!$authenticated->isEqualTo($user)) {
+            throw new AccessDeniedHttpException("You may only deactivate your own user");
+        }
+
+        $user->disable();
+
+        $em->flush();
+
+        return '';
+    }
+
+    /**
      * Show the user's real name
      *
      * @Route("/user/{user}/name.{_format}")
@@ -206,9 +229,7 @@ class UserController extends Controller
             throw new AccessDeniedHttpException("You may only modify your own user");
         }
 
-        $memberships = $user->getMemberships()->filter(function ($membership) use ($site) {
-            return $membership->getSite()->getId() === $site->getId();
-        });
+        $memberships = $user->getMembershipsBySite($site);
 
         $em = $this->doctrine->getEntityManager();
 
@@ -244,9 +265,7 @@ class UserController extends Controller
             'user' => $user,
         ]);
 
-        $memberships = $user->getMemberships()->filter(function ($membership) use ($site) {
-            return $membership->getSite()->getId() === $site->getId();
-        });
+        $memberships = $user->getMembershipsBySite($site);
 
         if (!$memberships->isEmpty()) {
             throw new BadRequestHttpException("Membership already exists");

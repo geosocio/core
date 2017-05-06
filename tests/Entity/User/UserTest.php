@@ -236,11 +236,12 @@ class UserTest extends EntityTest
         $this->assertSame($location, $user->getLocation());
     }
 
-    public function testSetEnabled()
+    public function testEnabled()
     {
         $user = new User();
 
-        $user->setEnabled(true);
+        $user->disable();
+        $user->enable();
 
         $this->assertTrue($user->isEnabled());
     }

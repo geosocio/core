@@ -2,13 +2,14 @@
 
 namespace GeoSocio\Core\Entity\User;
 
+use Doctrine\Common\Collections\Criteria;
 use GeoSocio\Core\Entity\Location;
 use GeoSocio\Core\Entity\Entity;
-use GeoSocio\Core\Entity\Membership;
 use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\CreatedTrait;
 use GeoSocio\Core\Entity\User\Email;
 use GeoSocio\Core\Entity\User\Name;
+use GeoSocio\Core\Entity\User\Membership;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -142,7 +143,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="\GeoSocio\Core\Entity\Membership", mappedBy="user",  cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Membership", mappedBy="user",  cascade={"all"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Groups({"me_read", "standard_read"})
      */
@@ -167,12 +168,11 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     private $location;
 
     /**
-     * @var bool
+     * @var \DateTimeInterface
      *
-     * @ORM\Column(type="boolean", options={"default" = 1})
-     * @Groups({"me_read", "me_write"})
+     * @ORM\Column(type="datetime")
      */
-    private $enabled;
+    private $disabled;
 
     /**
      * Create new User.
@@ -197,11 +197,14 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
         $primaryEmail = $data['primaryEmail'] ?? null;
         $this->primaryEmail = $this->getSingle($primaryEmail, Email::class);
 
-        $enabled = $data['enabled'] ?? true;
-        $this->enabled = is_bool($enabled) ? $enabled : true;
-
         $location = $data['location'] ?? null;
         $this->location = $this->getSingle($location, Location::class);
+
+        $memberships = $data['memberships'] ?? null;
+        $this->memberships = $this->getMultiple($memberships, Membership::class);
+
+        $disabled = $data['disabled'] ?? null;
+        $this->disabled = $disabled instanceof \DateTimeInterface ? $disabled : null;
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
@@ -461,9 +464,19 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *
      * @return Collection
      */
-    public function getMemberships() :? Collection
+    public function getMemberships() : Collection
     {
         return $this->memberships;
+    }
+
+    /**
+     * Get Memberships by Site.
+     */
+    public function getMembershipsBySite(Site $site) : Collection
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq("site", $site));
+        return $this->memberships->matching($criteria);
     }
 
 
@@ -511,13 +524,21 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
-     * Set Enabled
-     *
-     * @param bool $enabled
+     * Mark user as disabled.
      */
-    public function setEnabled(bool $enabled) : self
+    public function disable() : self
     {
-        $this->enabled = $enabled;
+        $this->disabled = new \DateTime();
+
+        return $this;
+    }
+
+    /**
+     * Mark user as enabled.
+     */
+    public function enable() : self
+    {
+        $this->disabled = null;
 
         return $this;
     }
@@ -525,11 +546,11 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get Enabled.
      *
-     * @return bool
+     * @Groups({"me_read"})
      */
     public function isEnabled() : bool
     {
-        return $this->enabled;
+        return !$this->disabled;
     }
 
     /**
@@ -569,10 +590,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      */
     public function isMember(Site $site) : bool
     {
-        $memberships = $this->memberships->filter(function ($membership) use ($site) {
-            return $membership->getSite() && $membership->getSite()->getId() === $site->getId();
-        });
-
-        return !$memberships->isEmpty();
+        return !$this->getMemberhipsBySite($site)->isEmpty();
     }
 }

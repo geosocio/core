@@ -34,10 +34,10 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
      * @var Membership
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Membership")
-     * @ORM\JoinColumn(name="membership_id", referencedColumnName="membership_id")
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      */
-    private $membership;
+    private $user;
 
     /**
      * @var Place
@@ -55,8 +55,8 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
         $post = $data['post'] ?? null;
         $this->post = $this->getSingle($post, Post::class);
 
-        $membership = $data['membership'] ?? null;
-        $this->user = $this->getSingle($user, Membership::class);
+        $membership = $data['user'] ?? null;
+        $this->user = $this->getSingle($user, User::class);
 
         $place = $data['place'] ?? null;
         $this->place = $this->getSingle($place, Place::class);
@@ -84,29 +84,21 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
     }
 
     /**
-     * Set membership.
+     * Set user.
      */
-    public function setMembership(Membership $membership) : self
+    public function setUser(User $user) : self
     {
-        $this->membership = $membership;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * Get membership.
+     * Get user.
      */
-    public function getMembership() : Membership
+    public function getUser() : User
     {
-        return $this->membership;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUser() :? User
-    {
-        return $this->membership ? $this->membership->getUser() : null;
+        return $this->user;
     }
 
     /**
@@ -114,7 +106,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
      */
     public function getSite() :? Site
     {
-        return $this->membership ? $this->membership->getSite() : null;
+        return $this->post ? $this->post->getSite() : null;
     }
 
     /**

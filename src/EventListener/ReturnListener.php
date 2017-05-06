@@ -132,7 +132,7 @@ class ReturnListener
     /**
      * Normalize an object.
      */
-    protected function normalize($result) : array
+    protected function normalize($result)
     {
         $user = null;
         if ($result instanceof UserAwareInterface) {

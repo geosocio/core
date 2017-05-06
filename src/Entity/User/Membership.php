@@ -1,21 +1,20 @@
 <?php
 
-namespace GeoSocio\Core\Entity;
+namespace GeoSocio\Core\Entity\User;
 
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\Core\Entity\Site;
+use GeoSocio\Core\Entity\Entity;
 use GeoSocio\Core\Entity\CreatedTrait;
 use GeoSocio\Core\Entity\SiteAwareInterface;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\UserAwareInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * GeoSocio\Core\Entity\User\Membership
  *
- * @ORM\Table(name="membership", uniqueConstraints={
- *   @ORM\UniqueConstraint(columns={"user_id", "site_id"})
- * })
+ * @ORM\Table(name="users_membership")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
@@ -23,16 +22,6 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
 {
 
     use CreatedTrait;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="membership_id", type="guid")
-     * @ORM\Id
-     * @Assert\Uuid
-     * @Groups({"anonymous_read"})
-     */
-    private $id;
 
     /**
      * @var User
@@ -59,9 +48,6 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
      */
     public function __construct(array $data = [])
     {
-        $id = $data['id'] ?? null;
-        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : strtolower(uuid_create(UUID_TYPE_DEFAULT));
-
         $user = $data['user'] ?? null;
         $this->user = $this->getSingle($user, User::class);
 
@@ -73,11 +59,16 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
     }
 
     /**
-     * Get the id.
+     * Get Id.
+     * @Groups({"anonymous_read"})
      */
-    public function getId() : string
+    public function getId()
     {
-        return $this->id;
+        if (!$this->site) {
+            return null;
+        }
+
+        return $this->site->getId();
     }
 
     /**

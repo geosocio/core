@@ -4,9 +4,11 @@ namespace GeoSocio\Core\Entity\Post;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\Entity;
 use GeoSocio\Core\Entity\Permission;
 use GeoSocio\Core\Entity\CreatedTrait;
+use GeoSocio\Core\Entity\SiteAwareInterface;
 use GeoSocio\Core\Entity\TreeAwareInterface;
 use GeoSocio\Core\Entity\Place\Place;
 use GeoSocio\Core\Entity\User\User;
@@ -35,7 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     message="Post with permission of 'place' must include a 'permissionPlace'"
  * )
  */
-class Post extends Entity implements UserAwareInterface, TreeAwareInterface
+class Post extends Entity implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
 {
 
     use CreatedTrait;
@@ -93,11 +95,18 @@ class Post extends Entity implements UserAwareInterface, TreeAwareInterface
     /**
      * @var User
      *
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\User\User")
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      */
     private $user;
+
+    /**
+     * @var Site
+     *
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Site")
+     * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
+     */
+    private $site;
 
     /**
      * @var Permission
@@ -130,6 +139,9 @@ class Post extends Entity implements UserAwareInterface, TreeAwareInterface
 
         $user = $data['user'] ?? null;
         $this->user = $this->getSingle($user, User::class);
+
+        $site = $data['site'] ?? null;
+        $this->site = $this->getSingle($site, Site::class);
 
         $permission = $data['permission'] ?? null;
         $this->permission = $this->getSingle($permission, Permission::class);
@@ -206,6 +218,24 @@ class Post extends Entity implements UserAwareInterface, TreeAwareInterface
     public function getUser() :? User
     {
         return $this->user;
+    }
+
+    /**
+     * Set site
+     */
+    public function setSite(Site $site) : self
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSite() :? Site
+    {
+        return $this->site;
     }
 
     /**
