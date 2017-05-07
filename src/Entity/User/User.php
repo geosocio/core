@@ -221,6 +221,16 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
+     * Set id
+     */
+    public function setId(string $id) : self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id
      */
     public function getId() :? string
@@ -590,6 +600,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      */
     public function isMember(Site $site) : bool
     {
-        return !$this->getMemberhipsBySite($site)->isEmpty();
+        return !$this->getMembershipsBySite($site)->isEmpty();
     }
 }

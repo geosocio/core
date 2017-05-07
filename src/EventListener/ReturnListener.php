@@ -4,8 +4,10 @@ namespace GeoSocio\Core\EventListener;
 
 use Doctrine\Common\Collections\Collection;
 use GeoSocio\Core\Entity\SiteAwareInterface;
+use GeoSocio\Core\Entity\AccessAwareInterface;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\UserAwareInterface;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
@@ -117,9 +119,23 @@ class ReturnListener
             }
 
             $result = array_map(function ($item) {
+                // Check to make sure the user has access to each item in the
+                // collection.
+                if ($item instanceof AccessAwareInterface && !$item->canView($this->getUser())) {
+                    $item = [
+                        // @TODO This needs an interface.
+                        'id' => $item->getId(),
+                        'deleted' => true,
+                    ];
+                }
+
                 return $this->normalize($item);
             }, $result);
         } else {
+            if ($result instanceof AccessAwareInterface && !$result->canView($this->getUser())) {
+                throw new AccessDeniedException();
+            }
+
             $result = $this->normalize($result);
         }
 

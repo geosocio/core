@@ -20,7 +20,7 @@ class Permission extends Entity
      *
      * @ORM\Column(name="permission_id", length=7, type="string")
      * @ORM\Id
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous_read", "me_write"})
      */
     private $id;
 

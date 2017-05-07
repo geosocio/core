@@ -45,6 +45,10 @@ services:
         parent: geosocio.controller
         class: GeoSocio\Core\Controller\PlaceController
 
+    geosocio.controller_post:
+        parent: geosocio.controller
+        class: GeoSocio\Core\Controller\PostController
+
     geosocio.controller_site:
         parent: geosocio.controller
         class: GeoSocio\Core\Controller\SiteController

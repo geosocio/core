@@ -19,6 +19,8 @@ interface TreeAwareInterface
 
     /**
      * Class of the tree entity.
+     *
+     * @TODO Make this an annotation.
      */
     public function getTreeClass() : string;
 }

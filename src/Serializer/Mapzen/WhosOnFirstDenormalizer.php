@@ -17,13 +17,13 @@ class WhosOnFirstDenormalizer implements DenormalizerInterface
     public function denormalize($data, $class, $format = null, array $context = array())
     {
         $parent = null;
-        if (isset($data['record']['wof:parent_id']) && $data['record']['wof:parent_id'] != '-1') {
+        if (isset($data['place']['wof:parent_id']) && $data['place']['wof:parent_id'] != '-1') {
             $parent = [
-                'id' => (int) $data['record']['wof:parent_id'],
+                'id' => (int) $data['place']['wof:parent_id'],
             ];
         }
         return new $class([
-            'id' => $data['record']['wof:id'] ?? null,
+            'id' => $data['place']['wof:id'] ?? null,
             'parent' => $parent,
             'name' => $this->getName($data),
         ]);
@@ -37,18 +37,18 @@ class WhosOnFirstDenormalizer implements DenormalizerInterface
     protected function getName(array $data) : string
     {
         $langs = [];
-        if (!empty($data['record']['wof:lang_x_official'])) {
-            $langs = $data['record']['wof:lang_x_official'];
-        } elseif (!empty($data['record']['wof:lang'])) {
-            $langs = $data['record']['wof:lang'];
+        if (!empty($data['place']['wof:lang_x_official'])) {
+            $langs = $data['place']['wof:lang_x_official'];
+        } elseif (!empty($data['place']['wof:lang'])) {
+            $langs = $data['place']['wof:lang'];
         }
         foreach ($langs as $lang) {
-            if (!empty($data['record']['name:' . $lang . '_x_preferred'])) {
-                return $data['record']['name:' . $lang . '_x_preferred'][0];
+            if (!empty($data['place']['name:' . $lang . '_x_preferred'])) {
+                return $data['place']['name:' . $lang . '_x_preferred'][0];
             }
         }
 
-        return $data['record']['wof:name'] ?? '';
+        return $data['place']['wof:name'] ?? '';
     }
 
     /**
@@ -56,6 +56,6 @@ class WhosOnFirstDenormalizer implements DenormalizerInterface
      */
     public function supportsDenormalization($data, $type, $format = null)
     {
-        return ($type === Place::class || is_subclass_of($type, Place::class)) && array_key_exists('record', $data);
+        return ($type === Place::class || is_subclass_of($type, Place::class)) && array_key_exists('place', $data);
     }
 }

@@ -437,7 +437,9 @@ class UserController extends Controller
         }
 
         $em = $this->doctrine->getEntityManager();
-        $input = $this->denormalizer->denormalize($input, Location::class);
+        $input = $this->denormalizer->denormalize($input, Location::class, null, [
+            'user' => $user,
+        ]);
 
         $location = $this->placeFinder->find($input);
 

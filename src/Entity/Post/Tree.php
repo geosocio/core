@@ -19,7 +19,7 @@ class Tree extends TreeBase
      * @ORM\JoinColumn(name="ancestor", referencedColumnName="post_id")
      * @ORM\ManyToOne(targetEntity="Post")
      */
-    private $ancestor;
+    protected $ancestor;
 
     /**
      * @var Post
@@ -28,7 +28,7 @@ class Tree extends TreeBase
      * @ORM\JoinColumn(name="descendant", referencedColumnName="post_id")
      * @ORM\ManyToOne(targetEntity="Post")
      */
-    private $descendant;
+    protected $descendant;
 
     /**
      * Create new Tree.

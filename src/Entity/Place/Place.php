@@ -2,6 +2,7 @@
 
 namespace GeoSocio\Core\Entity\Place;
 
+use Doctrine\Common\Collections\Criteria;
 use GeoSocio\Core\Entity\Location;
 use GeoSocio\Core\Entity\Entity;
 use Doctrine\Common\Collections\Collection;
@@ -308,6 +309,32 @@ class Place extends Entity implements TreeAwareInterface
     }
 
     /**
+     * Get parents.
+     */
+    public function getParents() : Collection
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->neq("ancestor", $this))
+            ->orderBy(["depth" => "DESC"]);
+
+        return $this->ancestors->matching($criteria)->map(function ($item) {
+            return $item->getAncestor();
+        });
+    }
+
+    /**
+     * Get parent ids.
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function getParentIds() : Collection
+    {
+        return $this->getParents()->map(function ($place) {
+            return $place->getId();
+        });
+    }
+
+    /**
      * Get created.
      */
     public function getCreated() :? \DateTimeInterface
@@ -318,5 +345,18 @@ class Place extends Entity implements TreeAwareInterface
     public function getTreeClass() : string
     {
         return Tree::class;
+    }
+
+    /**
+     * Test if place is equal.
+     */
+    public function isEqualTo(Place $place) : bool
+    {
+
+        if (!$this->id || !$place->getId()) {
+            return false;
+        }
+
+        return true;
     }
 }

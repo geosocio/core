@@ -4,6 +4,7 @@ namespace GeoSocio\Core\Entity\Post;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use GeoSocio\Core\Entity\AccessAwareInterface;
 use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\Entity;
 use GeoSocio\Core\Entity\Permission;
@@ -17,6 +18,7 @@ use GeoSocio\Core\Entity\User\UserAwareInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// @codingStandardsIgnoreStart
 /**
  * GeoSocio\Entity\Location
  *
@@ -24,20 +26,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="post")
  * @Assert\Expression(
- *     "(
- *       this.getPermission()
- *       and this.getPermission().getId() != 'place'
- *      )
- *      or
- *      (
- *       this.getPermission()
- *       and this.getPermission().getId() == 'place'
- *       and this.getPermissionPlace()
- *      )",
+ *     "(this.getPermission() and this.getPermission().getId() != 'place') or (this.getPermission() and this.getPermission().getId() == 'place' and this.getPermissionPlace())",
  *     message="Post with permission of 'place' must include a 'permissionPlace'"
  * )
  */
-class Post extends Entity implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
+// @codingStandardsIgnoreEnd
+class Post extends Entity implements AccessAwareInterface, UserAwareInterface, SiteAwareInterface, TreeAwareInterface
 {
 
     use CreatedTrait;
@@ -48,7 +42,7 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
      * @ORM\Column(name="post_id", type="guid")
      * @ORM\Id
      * @Assert\Uuid
-     * @Groups({"anonymous_read", "me_write"})
+     * @Groups({"anonymous_read"})
      */
     private $id;
 
@@ -89,6 +83,8 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
      *
      * @ORM\Column(type="string", length=20000, nullable=true)
      * @Groups({"anonymous_read", "me_write"})
+     * @Assert\NotBlank()
+     * @Groups({"anonymous_read", "me_write"})
      */
     private $text;
 
@@ -97,6 +93,7 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
      *
      * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @Assert\NotNull()
      */
     private $user;
 
@@ -113,6 +110,7 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
      *
      * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Permission")
      * @ORM\JoinColumn(name="permission_id", referencedColumnName="permission_id")
+     * @Assert\NotNull()
      */
     private $permission;
 
@@ -221,6 +219,74 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
     }
 
     /**
+     * Get User id.
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function getUserId() :? string
+    {
+        if (!$this->user) {
+            return null;
+        }
+
+        return $this->user->getId();
+    }
+
+    /**
+     * Set User id.
+     *
+     * @Groups({"me_write"})
+     */
+    public function setUserId(string $id) : self
+    {
+        if (!$this->user) {
+            $this->user = new User([
+                'id' => $id,
+            ]);
+
+            return $this;
+        }
+
+        $this->user->setId($id);
+
+        return $this;
+    }
+
+    /**
+     * Set site
+     *
+     * @Groups({"me_write"})
+     */
+    public function setSiteId(string $id) : self
+    {
+        if (!$this->site) {
+            $this->site = new Site([
+                'id' => $id,
+            ]);
+
+            return $this;
+        }
+
+        $this->site->setId($id);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function getSiteId() :? string
+    {
+        if (!$this->site) {
+            return null;
+        }
+
+        return $this->site->getId();
+    }
+
+    /**
      * Set site
      */
     public function setSite(Site $site) : self
@@ -301,6 +367,40 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
     }
 
     /**
+     * Set reply id.
+     *
+     * @Groups({"me_write"})
+     */
+    public function setReplyId(string $id) : self
+    {
+        if (!$this->reply) {
+            $this->reply = new Post([
+                'id' => $id,
+            ]);
+
+            return $this;
+        }
+
+        $this->reply->setId($id);
+
+        return $this;
+    }
+
+    /**
+     * Get the reply id.
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function getReplyId() :? string
+    {
+        if (!$this->reply) {
+            return null;
+        }
+
+        return $this->reply->getId();
+    }
+
+    /**
      * Set reply
      */
     public function setReply(Post $reply) : self
@@ -316,6 +416,40 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
     public function getReply() :? Post
     {
         return $this->reply;
+    }
+
+    /**
+     * Set forward id.
+     *
+     * @Groups({"me_write"})
+     */
+    public function setForwardId(string $id) : self
+    {
+        if (!$this->forward) {
+            $this->forward = new Post([
+                'id' => $id,
+            ]);
+
+            return $this;
+        }
+
+        $this->forward->setId($id);
+
+        return $this;
+    }
+
+    /**
+     * Get the forward id.
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function getForwardId() :? string
+    {
+        if (!$this->forward) {
+            return null;
+        }
+
+        return $this->forward->getId();
     }
 
     /**
@@ -337,6 +471,40 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
     }
 
     /**
+     * Set permission id.
+     *
+     * @Groups({"me_write"})
+     */
+    public function setPermissionId(string $id) : self
+    {
+        if (!$this->permission) {
+            $this->permission = new Permission([
+                'id' => $id,
+            ]);
+
+            return $this;
+        }
+
+        $this->permission->setId($id);
+
+        return $this;
+    }
+
+    /**
+     * Get the permission id.
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function getPermissionId() :? string
+    {
+        if (!$this->permission) {
+            return null;
+        }
+
+        return $this->permission->getId();
+    }
+
+    /**
      * Set Permission.
      */
     public function setPermission(Permission $permission) : self
@@ -352,6 +520,40 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
     public function getPermission() :? Permission
     {
         return $this->permission;
+    }
+
+    /**
+     * Set permission place id.
+     *
+     * @Groups({"me_write"})
+     */
+    public function setPermissionPlaceId(string $id) : self
+    {
+        if (!$this->permissionPlace) {
+            $this->permissionPlace = new Place([
+                'id' => $id,
+            ]);
+
+            return $this;
+        }
+
+        $this->permissionPlace->setId($id);
+
+        return $this;
+    }
+
+    /**
+     * Get the permission place id.
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function getPermissionPlaceId() :? string
+    {
+        if (!$this->permissionPlace) {
+            return null;
+        }
+
+        return $this->permissionPlace->getId();
     }
 
     /**
@@ -386,5 +588,82 @@ class Post extends Entity implements UserAwareInterface, SiteAwareInterface, Tre
     public function getTreeClass() : string
     {
         return Tree::class;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canView(User $user = null) : bool
+    {
+        if (!$this->permission) {
+            return false;
+        }
+
+        if ($this->permission->getId() === 'public') {
+            return true;
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        if ($this->permission->getId() === 'me' && !$this->user->isEqualTo($user)) {
+            return false;
+        }
+
+        if ($this->permission->getId() === 'site' && !$user->isMember($this->site)) {
+            return false;
+        }
+
+        if ($this->permission->getId() === 'place') {
+            if (!$this->permissionPlace) {
+                return false;
+            }
+        }
+
+
+        // @TODO need a method to get the user's places.
+
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canCreate(User $user = null) : bool
+    {
+        if (!$this->user || !$user) {
+            return false;
+        }
+
+        if (!$this->user->isEqualTo($user)) {
+            return false;
+        }
+
+        if ($this->site && $user->isMember($site)) {
+            return false;
+        }
+
+        return $this->canView($user);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canEdit(User $user = null) : bool
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canDelete(User $user = null) : bool
+    {
+        if (!$this->user || !$user) {
+            return false;
+        }
+
+        return $this->user->isEqualTo($user);
     }
 }

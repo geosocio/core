@@ -32,7 +32,6 @@ class Location extends Entity
      *
      * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place", inversedBy="locations")
      * @ORM\JoinColumn(name="place_id", referencedColumnName="place_id")
-     * @Groups({"me_read", "neighbor_read"})
      */
     private $place;
 
@@ -91,6 +90,20 @@ class Location extends Entity
         $this->id = $id;
 
         return $this;
+    }
+
+    /**
+     * Get the place id.
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function getPlaceId() :? int
+    {
+        if (!$this->place) {
+            return null;
+        }
+
+        return $this->place->getId();
     }
 
     /**

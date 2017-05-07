@@ -19,7 +19,7 @@ class Tree extends TreeBase
      * @ORM\JoinColumn(name="ancestor", referencedColumnName="place_id")
      * @ORM\ManyToOne(targetEntity="Place")
      */
-    private $ancestor;
+    protected $ancestor;
 
     /**
      * @var Place
@@ -28,7 +28,7 @@ class Tree extends TreeBase
      * @ORM\JoinColumn(name="descendant", referencedColumnName="place_id")
      * @ORM\ManyToOne(targetEntity="Place")
      */
-    private $descendant;
+    protected $descendant;
 
     /**
      * Create new Tree.

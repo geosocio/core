@@ -84,23 +84,21 @@ class Site extends Entity implements SiteAwareInterface
     }
 
     /**
-     * Get id
-     */
-    public function getId() : string
-    {
-        return $this->id;
-    }
-
-    /**
      * Set id
-     *
-     * @param string $id
      */
     public function setId(string $id) : self
     {
         $this->id = $id;
 
         return $this;
+    }
+
+    /**
+     * Get id
+     */
+    public function getId() : string
+    {
+        return $this->id;
     }
 
     /**
