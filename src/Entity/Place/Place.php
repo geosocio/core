@@ -5,6 +5,7 @@ namespace GeoSocio\Core\Entity\Place;
 use Doctrine\Common\Collections\Criteria;
 use GeoSocio\Core\Entity\Location;
 use GeoSocio\Core\Entity\Entity;
+use GeoSocio\Core\Entity\Post\Post;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -55,7 +56,6 @@ class Place extends Entity implements TreeAwareInterface
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="Tree", mappedBy="descendant")
-     * @ORM\JoinColumn(name="place_id", referencedColumnName="descendant")
      */
     private $ancestors;
 
@@ -63,7 +63,6 @@ class Place extends Entity implements TreeAwareInterface
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="Tree", mappedBy="ancestor")
-     * @ORM\JoinColumn(name="place_id", referencedColumnName="ancestor")
      */
     private $descendants;
 
@@ -71,9 +70,22 @@ class Place extends Entity implements TreeAwareInterface
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="GeoSocio\Core\Entity\Location", mappedBy="place",  cascade={"all"})
-     * @ORM\JoinColumn(name="place_id", referencedColumnName="place_id")
      */
     private $locations;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="GeoSocio\Core\Entity\Post\Post", mappedBy="place")
+     */
+    private $posts;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="GeoSocio\Core\Entity\Post\Placement", mappedBy="place")
+     */
+    private $placements;
 
     /**
      * @var \DateTimeInterface
@@ -109,6 +121,9 @@ class Place extends Entity implements TreeAwareInterface
 
         $locations = $data['locations'] ?? null;
         $this->locations = $this->getMultiple($locations, Location::class);
+
+        $posts = $data['posts'] ?? null;
+        $this->posts = $this->getMultiple($posts, Post::class);
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;

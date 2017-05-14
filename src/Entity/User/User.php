@@ -602,4 +602,16 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     {
         return !$this->getMembershipsBySite($site)->isEmpty();
     }
+
+    /**
+     * Get a user's places.
+     */
+    public function getPlaces() : Collection
+    {
+        if (!$this->location) {
+            return new ArrayCollection();
+        }
+
+        return $this->location->getPlaces();
+    }
 }

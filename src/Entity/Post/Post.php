@@ -123,6 +123,13 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     private $permissionPlace;
 
     /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $deleted;
+
+    /**
      * Create new Location.
      *
      * @param array $data
@@ -149,6 +156,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
         $created = $data['created'] ?? null;
         $this->created = $created instanceof \DateTimeInterface ? $created : null;
+
+        $deleted = $data['deleted'] ?? null;
+        $this->deleted = $deleted instanceof \DateTimeInterface ? $deleted : null;
     }
 
     /**
@@ -575,6 +585,26 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     }
 
     /**
+     * Delte the post.
+     */
+    public function delete() : self
+    {
+        $this->deleted = new \DateTime();
+
+        return $this;
+    }
+
+    /**
+     * Un delete the post.
+     */
+    public function undelete() : self
+    {
+        $this->deleted = null;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getParent() :? Post
@@ -591,10 +621,24 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     }
 
     /**
+     * Get Enabled.
+     *
+     * @Groups({"anonymous_read"})
+     */
+    public function isDeleted() : bool
+    {
+        return !$this->deleted;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function canView(User $user = null) : bool
     {
+        if ($this->isDeleted()) {
+            return false;
+        }
+
         if (!$this->permission) {
             return false;
         }
@@ -616,13 +660,10 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
         }
 
         if ($this->permission->getId() === 'place') {
-            if (!$this->permissionPlace) {
+            if (!$this->permissionPlace || !$user->getPlaces()->contains($this->permissionPlace)) {
                 return false;
             }
         }
-
-
-        // @TODO need a method to get the user's places.
 
         return true;
     }
@@ -665,5 +706,15 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
         }
 
         return $this->user->isEqualTo($user);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPlaceholder() : Post
+    {
+        return new Post([
+            "id" => $this->getId(),
+        ]);
     }
 }

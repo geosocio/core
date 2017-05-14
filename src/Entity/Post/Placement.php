@@ -9,7 +9,6 @@ use GeoSocio\Core\Entity\CreatedTrait;
 use GeoSocio\Core\Entity\SiteAwareInterface;
 use GeoSocio\Core\Entity\Place\Place;
 use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\Membership;
 use GeoSocio\Core\Entity\User\UserAwareInterface;
 
 /**
@@ -31,7 +30,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
     private $post;
 
     /**
-     * @var Membership
+     * @var User
      *
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")

@@ -7,11 +7,11 @@ use GeoSocio\Core\Entity\SiteAwareInterface;
 use GeoSocio\Core\Entity\AccessAwareInterface;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\UserAwareInterface;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -120,20 +120,16 @@ class ReturnListener
 
             $result = array_map(function ($item) {
                 // Check to make sure the user has access to each item in the
-                // collection.
+                // collection. If not, replace it with a placeholderr.
                 if ($item instanceof AccessAwareInterface && !$item->canView($this->getUser())) {
-                    $item = [
-                        // @TODO This needs an interface.
-                        'id' => $item->getId(),
-                        'deleted' => true,
-                    ];
+                    $item = $item->getPlaceholder();
                 }
 
                 return $this->normalize($item);
             }, $result);
         } else {
             if ($result instanceof AccessAwareInterface && !$result->canView($this->getUser())) {
-                throw new AccessDeniedException();
+                throw new AccessDeniedHttpException();
             }
 
             $result = $this->normalize($result);

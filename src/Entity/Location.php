@@ -2,6 +2,9 @@
 
 namespace GeoSocio\Core\Entity;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use GeoSocio\Core\Entity\Place\Place;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -126,6 +129,24 @@ class Location extends Entity
     public function getPlace() :? Place
     {
         return $this->place;
+    }
+
+    /**
+     * Get places.
+     */
+    public function getPlaces() : Collection
+    {
+        if (!$$this->place) {
+            return new ArrayCollection();
+        }
+
+
+        $criteria = Criteria::create()
+            ->orderBy(["depth" => "DESC"]);
+
+        return $this->place->getAncestors()->matching($criteria)->map(function ($item) {
+            return $item->getAncestor();
+        });
     }
 
     /**

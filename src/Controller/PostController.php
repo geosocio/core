@@ -7,11 +7,12 @@ use GeoSocio\Core\Entity\Permission;
 use GeoSocio\Core\Entity\Place\Place;
 use GeoSocio\Core\Entity\Post\Post;
 use GeoSocio\Core\Entity\User\User;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
-use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Post actions.
@@ -28,29 +29,23 @@ class PostController extends Controller
 {
 
     /**
-     * @Route("/post.{_format}")
-     * @Method("GET")
-     *
-     * @param Request $request
-     */
-    public function indexAction(Request $request) : Post
-    {
-        // @TODO return posts.
-    }
-
-    /**
      * @Route("/post/{post}.{_format}")
      * @Method("GET")
      * @ParamConverter("post", converter="doctrine.orm", class="GeoSocio\Core\Entity\Post\Post")
      */
-    public function showAction(Post $post) : Post
+    public function showAction(Post $post, User $authenticated = null) : Post
     {
+        if ($post->isDeleted()) {
+            throw new NotFoundHttpException();
+        }
+
         return $post;
     }
 
     /**
      * @Route("/post")
      * @Method("POST")
+     * @Security("has_role('standard')")
      */
     public function createAction(User $authenticated, array $input) : Post
     {
@@ -61,11 +56,6 @@ class PostController extends Controller
         $em = $this->doctrine->getEntityManager();
 
         $post->setUser($em->find(User::class, $post->getUser()->getId()));
-
-        // This should have already happened
-        if (!$authenticated->isEqualTo($post->getUser())) {
-            throw new AccessDeniedException("You may only create posts for yourself.");
-        }
 
         $post->setPermission($em->find(Permission::class, $post->getPermission()->getId()));
 
@@ -82,9 +72,34 @@ class PostController extends Controller
             $post->setSite($em->find(Site::class, $post->getSite()->getId()));
         }
 
+        if (!$this->canCreate($post)) {
+            throw new AccessDeniedHttpException();
+        }
+
         $em->persist($post);
         $em->flush();
 
         return $this->showAction($post);
+    }
+
+    /**
+     * @Route("/post/{post}.{_format}")
+     * @Method("DELETE")
+     * @Security("has_role('standard')")
+     */
+    public function removeAction(User $authenticated, Post $post) : string
+    {
+        if (!$post->canDelete($user)) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $em = $this->doctrine->getEntityManager();
+
+        $post->delete();
+
+        $em->persist($post);
+        $em->flush();
+
+        return '';
     }
 }

@@ -4,7 +4,6 @@ namespace GeoSocio\Core\Repository\User;
 
 use GeoSocio\Core\Entity\User\Email;
 use GeoSocio\Core\Entity\User\User;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -51,21 +50,8 @@ class UserRepository extends EntityRepository implements UserProviderInterface
 
         // Create a new stub user.
         $user = new User();
-
-        // Save the User. Since there is a possability that the id could already
-        // exist, catch the exception and try again.
-        $saved = false;
-
-        while (!$saved) {
-            try {
-                $user = new User();
-                $em->persist($user);
-                $em->flush();
-                $saved = true;
-            } catch (UniqueConstraintViolationException $e) {
-                // Try again.
-            }
-        }
+        $em->persist($user);
+        $em->flush();
 
         return $user;
     }
