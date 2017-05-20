@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * GeoSocio\Entity\Location
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="GeoSocio\Core\Repository\Post\PostRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="post")
  * @Assert\Expression(
@@ -128,6 +128,13 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $deleted;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Placement", mappedBy="post")
+     */
+    private $placements;
 
     /**
      * Create new Location.
@@ -627,7 +634,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function isDeleted() : bool
     {
-        return !$this->deleted;
+        return (bool) $this->deleted;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace GeoSocio\Core\Controller;
 
 use GeoSocio\Core\Entity\Place\Place;
+use GeoSocio\Core\Entity\Post\Post;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -58,5 +59,20 @@ class PlaceController extends Controller
     public function showAction(Place $place) : Place
     {
         return $place;
+    }
+
+    /**
+     * @Route("/place/{place}/posts.{_format}")
+     * @Method("GET")
+     * @ParamConverter("place", converter="doctrine.orm", class="GeoSocio\Core\Entity\Place\Place")
+     *
+     * @param Place $place
+     * @param Request $request
+     */
+    public function showPostsAction(Place $place) : array
+    {
+        $repository = $this->doctrine->getRepository(Post::class);
+
+        return $repository->findByPlace($place);
     }
 }
