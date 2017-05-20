@@ -12,7 +12,7 @@ class WhosOnFirstDenormalizerTest extends \PHPUnit_Framework_TestCase
         $denormalizer = new WhosOnFirstDenormalizer();
 
         $data = [
-            'record' => [],
+            'place' => [],
         ];
 
         $this->assertTrue($denormalizer->supportsDenormalization($data, Place::class));
@@ -28,7 +28,7 @@ class WhosOnFirstDenormalizerTest extends \PHPUnit_Framework_TestCase
         $parent_id = 0;
         $name = 'Null Island';
         $data = [
-            'record' => [
+            'place' => [
                 'wof:id' => $id,
                 'wof:parent_id' => $parent_id,
                 'wof:lang_x_official' => [
