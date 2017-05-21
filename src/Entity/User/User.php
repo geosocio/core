@@ -134,7 +134,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Email", mappedBy="user",  cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Email", mappedBy="user")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Groups({"me_read"})
      */
@@ -143,7 +143,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Membership", mappedBy="user",  cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Membership", mappedBy="user")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Groups({"me_read", "standard_read"})
      */
@@ -152,7 +152,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @var Email
      *
-     * @ORM\OneToOne(targetEntity="Email", mappedBy="email", cascade={"all"})
+     * @ORM\OneToOne(targetEntity="Email", mappedBy="email")
      * @ORM\JoinColumn(name="primary_email", referencedColumnName="email")
      * @Groups({"me_read"})
      */
@@ -345,6 +345,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      */
     public function isEqualTo(UserInterface $user) : bool
     {
+
         if (!$user instanceof User) {
             return false;
         }

@@ -24,7 +24,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
      * @var Post
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Post")
+     * @ORM\ManyToOne(targetEntity="Post", cascade={"merge"})
      * @ORM\JoinColumn(name="post_id", referencedColumnName="post_id")
      */
     private $post;
@@ -33,7 +33,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
      * @var User
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User", cascade={"merge"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      */
     private $user;
@@ -41,7 +41,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
     /**
      * @var Place
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place", inversedBy="locations")
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place", inversedBy="locations", cascade={"merge"})
      * @ORM\JoinColumn(name="place_id", referencedColumnName="place_id")
      */
     private $place;
@@ -54,7 +54,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
         $post = $data['post'] ?? null;
         $this->post = $this->getSingle($post, Post::class);
 
-        $membership = $data['user'] ?? null;
+        $user = $data['user'] ?? null;
         $this->user = $this->getSingle($user, User::class);
 
         $place = $data['place'] ?? null;

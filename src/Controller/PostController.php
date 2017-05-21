@@ -55,24 +55,9 @@ class PostController extends Controller
 
         $em = $this->doctrine->getEntityManager();
 
-        $post->setUser($em->find(User::class, $post->getUser()->getId()));
+        $post = $em->merge($post);
 
-        $post->setPermission($em->find(Permission::class, $post->getPermission()->getId()));
-
-        if ($post->getPermissionPlace()) {
-            $post->setPermissionPlace($em->find(Place::class, $post->getPermissionPlace()->getId()));
-        }
-
-        // If the user is not a member of the site, set the site to null.
-        if (!$post->getUser()->isMember($post->getSite())) {
-            $post->setSite(null);
-        }
-
-        if ($post->getSite()) {
-            $post->setSite($em->find(Site::class, $post->getSite()->getId()));
-        }
-
-        if (!$this->canCreate($post)) {
+        if (!$post->canCreate($authenticated)) {
             throw new AccessDeniedHttpException();
         }
 

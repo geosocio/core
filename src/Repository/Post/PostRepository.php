@@ -4,18 +4,23 @@ namespace GeoSocio\Core\Repository\Post;
 
 use Doctrine\ORM\EntityRepository;
 use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Entity\Post\Post;
 
 class PostRepository extends EntityRepository
 {
     public function findByPlace(Place $place)
     {
-        return $this->createQueryBuilder('post')
-            ->select('post, MAX(placement.created) as HIDDEN created')
+        $qb = $this->createQueryBuilder('post');
+
+        // Get all of the pace ids to query against.
+        $placeIds = $place->getDescendants()->map(function ($tree) {
+            return $tree->getDescendant()->getId();
+        })->toArray();
+
+        // Does not perform permission checks.
+        return $qb->select('post, MAX(placement.created) as HIDDEN created')
             ->leftJoin('post.placements', 'placement')
-            ->where('placement.place = :place_id')
-            ->setParameter('place_id', $place->getId())
-            ->andWhere('post.deleted IS NULL')
+            ->where($qb->expr()->in('placement.place', $placeIds))
+            ->andWhere($qb->expr()->isNull('post.deleted'))
             ->groupBy('post.id')
             ->orderBy('created', 'DESC')
             ->getQuery()

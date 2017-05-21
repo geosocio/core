@@ -49,7 +49,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Post
      *
-     * @ORM\ManyToOne(targetEntity="Post")
+     * @ORM\ManyToOne(targetEntity="Post", cascade={"merge"})
      * @ORM\JoinColumn(name="reply", referencedColumnName="post_id")
      */
     private $reply;
@@ -57,7 +57,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Post
      *
-     * @ORM\ManyToOne(targetEntity="Post")
+     * @ORM\ManyToOne(targetEntity="Post", cascade={"merge"})
      * @ORM\JoinColumn(name="forward", referencedColumnName="post_id")
      */
     private $forward;
@@ -91,7 +91,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User", cascade={"merge"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Assert\NotNull()
      */
@@ -100,7 +100,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Site
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Site")
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Site", cascade={"merge"})
      * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
      */
     private $site;
@@ -108,7 +108,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Permission
      *
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Permission")
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Permission", cascade={"merge"})
      * @ORM\JoinColumn(name="permission_id", referencedColumnName="permission_id")
      * @Assert\NotNull()
      */
@@ -117,7 +117,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Place
      *
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Place\Place")
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Place\Place", cascade={"merge"})
      * @ORM\JoinColumn(name="permission_place_id", referencedColumnName="place_id")
      */
     private $permissionPlace;
@@ -128,6 +128,17 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $deleted;
+
+    /**
+     * @var Placement
+     *
+     * @ORM\OneToOne(targetEntity="Placement", cascade={"merge"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="post_id", referencedColumnName="post_id"),
+     *   @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * })
+     */
+    private $placement;
 
     /**
      * @var ArrayCollection
@@ -223,6 +234,10 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     public function setUser(User $user) : self
     {
         $this->user = $user;
+
+        if ($this->placement) {
+            $this->placement->setUser($user);
+        }
 
         return $this;
     }
@@ -592,6 +607,74 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     }
 
     /**
+     * Set place
+     *
+     * @Groups({"me_write"})
+     */
+    public function setPlaceId(int $id) : self
+    {
+        if (!$this->placement) {
+            $this->placement = new Placement([
+                'post' => $this,
+                'user' => $this->user,
+                'place' => new Place([
+                    'id' => $id,
+                ]),
+            ]);
+
+            return $this;
+        }
+
+        if (!$this->placement->getPlace()) {
+            $this->placement->setPlace(new Place([
+                'id' => $id,
+            ]));
+
+            return $this;
+        }
+
+        $this->placement->getPlace()->setId($id);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @Groups({"me_read"})
+     */
+    public function getPlaceId() :? int
+    {
+        if (!$this->placement) {
+            return null;
+        }
+
+        if (!$this->placement->getPlace()) {
+            return null;
+        }
+
+        return $this->placement->getPlace()->getId();
+    }
+
+    /**
+     * Set placement
+     */
+    public function setPlacement(Placement $placement) : self
+    {
+        $this->placement = $placement;
+
+        return $this;
+    }
+
+    /**
+     * Get Placement.
+     */
+    public function getPlacement() :? Placement
+    {
+        return $this->placement;
+    }
+
+    /**
      * Delte the post.
      */
     public function delete() : self
@@ -680,6 +763,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function canCreate(User $user = null) : bool
     {
+
         if (!$this->user || !$user) {
             return false;
         }
@@ -688,7 +772,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
             return false;
         }
 
-        if ($this->site && $user->isMember($site)) {
+        if ($this->site && !$user->isMember($this->site)) {
             return false;
         }
 
