@@ -24,7 +24,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
      * @var Post
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Post", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="Post", inversedBy="placements")
      * @ORM\JoinColumn(name="post_id", referencedColumnName="post_id")
      */
     private $post;
@@ -41,7 +41,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
     /**
      * @var Place
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place", inversedBy="locations", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place", cascade={"merge"})
      * @ORM\JoinColumn(name="place_id", referencedColumnName="place_id")
      */
     private $place;

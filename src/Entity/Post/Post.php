@@ -2,6 +2,7 @@
 
 namespace GeoSocio\Core\Entity\Post;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use GeoSocio\Core\Entity\AccessAwareInterface;
@@ -91,7 +92,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Assert\NotNull()
      */
@@ -100,7 +101,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Site
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Site", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Site", inversedBy="posts")
      * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
      */
     private $site;
@@ -108,7 +109,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Permission
      *
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Permission", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Permission")
      * @ORM\JoinColumn(name="permission_id", referencedColumnName="permission_id")
      * @Assert\NotNull()
      */
@@ -117,7 +118,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Place
      *
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Place\Place", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Place\Place")
      * @ORM\JoinColumn(name="permission_place_id", referencedColumnName="place_id")
      */
     private $permissionPlace;
@@ -128,17 +129,6 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $deleted;
-
-    /**
-     * @var Placement
-     *
-     * @ORM\OneToOne(targetEntity="Placement", cascade={"merge"})
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="post_id", referencedColumnName="post_id"),
-     *   @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
-     * })
-     */
-    private $placement;
 
     /**
      * @var ArrayCollection
@@ -155,7 +145,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     public function __construct(array $data = [])
     {
         $id = $data['id'] ?? null;
-        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : strtolower(uuid_create(UUID_TYPE_DEFAULT));
+        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : null;
 
         $text = $data['text'] ?? null;
         $this->text = is_string($text) ? $text : null;
@@ -177,6 +167,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
         $deleted = $data['deleted'] ?? null;
         $this->deleted = $deleted instanceof \DateTimeInterface ? $deleted : null;
+
+        $placements = $data['placements'] ?? null;
+        $this->placements = $this->getMultiple($placements, Placement::class);
     }
 
     /**
@@ -607,33 +600,47 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     }
 
     /**
+     * Get Primary Placement.
+     */
+    public function getPrimaryPlacement() :? Placement
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq("user", $this->user));
+        return $this->placements->matching($criteria)->first();
+    }
+
+    /**
      * Set place
      *
      * @Groups({"me_write"})
      */
     public function setPlaceId(int $id) : self
     {
-        if (!$this->placement) {
-            $this->placement = new Placement([
+        $placement = $this->getPrimaryPlacement();
+
+        if (!$placement) {
+            $this->placements->add(new Placement([
                 'post' => $this,
                 'user' => $this->user,
                 'place' => new Place([
                     'id' => $id,
                 ]),
-            ]);
+            ]));
 
             return $this;
         }
 
-        if (!$this->placement->getPlace()) {
-            $this->placement->setPlace(new Place([
+        $place = $placement->getPlace();
+
+        if (!$place) {
+            $placement->setPlace(new Place([
                 'id' => $id,
             ]));
 
             return $this;
         }
 
-        $this->placement->getPlace()->setId($id);
+        $placement->getPlace()->setId($id);
 
         return $this;
     }
@@ -645,33 +652,19 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function getPlaceId() :? int
     {
-        if (!$this->placement) {
+        $placement = $this->getPrimaryPlacement();
+
+        if (!$placement) {
             return null;
         }
 
-        if (!$this->placement->getPlace()) {
+        $place = $placement->getPlace();
+
+        if (!$place) {
             return null;
         }
 
-        return $this->placement->getPlace()->getId();
-    }
-
-    /**
-     * Set placement
-     */
-    public function setPlacement(Placement $placement) : self
-    {
-        $this->placement = $placement;
-
-        return $this;
-    }
-
-    /**
-     * Get Placement.
-     */
-    public function getPlacement() :? Placement
-    {
-        return $this->placement;
+        return $place->getId();
     }
 
     /**

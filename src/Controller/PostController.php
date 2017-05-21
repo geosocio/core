@@ -2,9 +2,6 @@
 
 namespace GeoSocio\Core\Controller;
 
-use GeoSocio\Core\Entity\Site;
-use GeoSocio\Core\Entity\Permission;
-use GeoSocio\Core\Entity\Place\Place;
 use GeoSocio\Core\Entity\Post\Post;
 use GeoSocio\Core\Entity\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -55,7 +52,7 @@ class PostController extends Controller
 
         $em = $this->doctrine->getEntityManager();
 
-        $post = $em->merge($post);
+        $repository = $this->doctrine->getRepository(Post::class);
 
         if (!$post->canCreate($authenticated)) {
             throw new AccessDeniedHttpException();

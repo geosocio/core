@@ -2,6 +2,7 @@
 
 namespace GeoSocio\Core\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -51,6 +52,13 @@ class Site extends Entity implements SiteAwareInterface
      * @Groups({"anonymous_read"})
      */
     private $domain;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="GeoSocio\Core\Entity\Post\Post", cascade={"merge"}, mappedBy="site")
+     */
+    private $posts;
 
     /**
      * Create new Location.
