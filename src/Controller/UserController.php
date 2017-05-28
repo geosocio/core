@@ -279,6 +279,7 @@ class UserController extends Controller
             'user' => $user,
         ]);
         $user->addMembership($membership);
+        $em->persist($membership);
         $em->flush();
 
         return $this->showMembershipsAction($user);
