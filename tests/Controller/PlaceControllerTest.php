@@ -35,7 +35,9 @@ class PlaceControllerTest extends ControllerTest
             ->with(Place::class)
             ->willReturn($repository);
 
-        $controller = new PlaceController($denormalizer, $doctrine);
+        $entityAttacher = $this->getEntityAttacher();
+
+        $controller = new PlaceController($denormalizer, $doctrine, $entityAttacher);
 
         $request = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()

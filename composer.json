@@ -62,8 +62,16 @@
         "post-update-cmd": [
             "@symfony-scripts"
         ],
+        "lint": [
+          "phpcs --colors ."
+        ],
         "test": [
-          "phpunit"
+            "@lint",
+            "phpunit -v"
+        ],
+        "test-coverage": [
+            "@lint",
+            "phpunit -v --coverage-clover=coverage.clover"
         ]
     },
     "extra": {

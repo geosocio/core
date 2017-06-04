@@ -16,7 +16,11 @@ class DefaultControllerTest extends ControllerTest
             'hello' => 'world!',
         ];
 
-        $default = new DefaultController($this->getDenormalizer(), $this->getDoctrine());
+        $default = new DefaultController(
+            $this->getDenormalizer(),
+            $this->getDoctrine(),
+            $this->getEntityAttacher()
+        );
         $result = $default->indexAction();
 
         $this->assertEquals($data, $result);

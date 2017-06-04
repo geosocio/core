@@ -6,6 +6,7 @@ use GeoSocio\Core\Entity\User\Login;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\Verify\EmailVerify;
 use GeoSocio\Core\Entity\User\Verify\VerifyInterface;
+use GeoSocio\Core\Utils\EntityAttacherInterface;
 use GeoSocio\Core\Utils\User\VerificationManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -46,10 +47,11 @@ class AuthController extends Controller
     public function __construct(
         DenormalizerInterface $denormalizer,
         RegistryInterface $doctrine,
+        EntityAttacherInterface $attacher,
         VerificationManagerInterface $verificationManager,
         JWTManagerInterface $jwtManager
     ) {
-        parent::__construct($denormalizer, $doctrine);
+        parent::__construct($denormalizer, $doctrine, $attacher);
         $this->verificationManager = $verificationManager;
         $this->jwtManager = $jwtManager;
     }

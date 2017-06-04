@@ -4,6 +4,7 @@ namespace GeoSocio\Core\Tests\Controller;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use GeoSocio\Core\Utils\EntityAttacherInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
@@ -37,6 +38,14 @@ abstract class ControllerTest extends \PHPUnit_Framework_TestCase
     protected function getEntityManager()
     {
         return $this->createMock(EntityManagerInterface::class);
+    }
+
+    /**
+     * Gets the mock entity attacher.
+     */
+    protected function getEntityAttacher()
+    {
+        return $this->createMock(EntityAttacherInterface::class);
     }
 
     /**

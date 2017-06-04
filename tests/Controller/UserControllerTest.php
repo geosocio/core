@@ -47,6 +47,7 @@ class UserControllerTest extends ControllerTest
         $controller = new UserController(
             $denormalizer,
             $this->getDoctrine(),
+            $this->getEntityAttacher(),
             $verificationManager,
             $placeFinder
         );
@@ -76,6 +77,7 @@ class UserControllerTest extends ControllerTest
         $controller = new UserController(
             $this->getDenormalizer(),
             $this->getDoctrine(),
+            $this->getEntityAttacher(),
             $verificationManager,
             $placeFinder
         );
@@ -110,6 +112,7 @@ class UserControllerTest extends ControllerTest
         $controller = new UserController(
             $this->getDenormalizer(),
             $this->getDoctrine(),
+            $this->getEntityAttacher(),
             $verificationManager,
             $placeFinder
         );
@@ -178,6 +181,7 @@ class UserControllerTest extends ControllerTest
         $controller = new UserController(
             $denormalizer,
             $doctrine,
+            $this->getEntityAttacher(),
             $verificationManager,
             $placeFinder
         );
@@ -255,6 +259,7 @@ class UserControllerTest extends ControllerTest
         $controller = new UserController(
             $denormalizer,
             $doctrine,
+            $this->getEntityAttacher(),
             $verificationManager,
             $placeFinder
         );
