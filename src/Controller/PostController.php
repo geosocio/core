@@ -58,6 +58,8 @@ class PostController extends Controller
             throw new AccessDeniedHttpException();
         }
 
+        $post = $this->attacher->attach($post);
+
         $em->persist($post);
         $em->flush();
 

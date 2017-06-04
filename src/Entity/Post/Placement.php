@@ -3,6 +3,7 @@
 namespace GeoSocio\Core\Entity\Post;
 
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\Core\Annotation\Attach;
 use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\Entity;
 use GeoSocio\Core\Entity\CreatedTrait;
@@ -33,16 +34,18 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
      * @var User
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @Attach()
      */
     private $user;
 
     /**
      * @var Place
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place")
      * @ORM\JoinColumn(name="place_id", referencedColumnName="place_id")
+     * @Attach()
      */
     private $place;
 
@@ -61,7 +64,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
         $this->place = $this->getSingle($place, Place::class);
 
         $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
+        $this->created = $created instanceof \DateTimeInterface ? $created : new \DateTime();
     }
 
     /**

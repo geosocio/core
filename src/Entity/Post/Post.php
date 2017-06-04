@@ -5,6 +5,7 @@ namespace GeoSocio\Core\Entity\Post;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use GeoSocio\Core\Annotation\Attach;
 use GeoSocio\Core\Entity\AccessAwareInterface;
 use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\Entity;
@@ -52,6 +53,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      *
      * @ORM\ManyToOne(targetEntity="Post", cascade={"merge"})
      * @ORM\JoinColumn(name="reply", referencedColumnName="post_id")
+     * @Attach()
      */
     private $reply;
 
@@ -60,6 +62,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      *
      * @ORM\ManyToOne(targetEntity="Post", cascade={"merge"})
      * @ORM\JoinColumn(name="forward", referencedColumnName="post_id")
+     * @Attach()
      */
     private $forward;
 
@@ -95,6 +98,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Assert\NotNull()
+     * @Attach()
      */
     private $user;
 
@@ -103,6 +107,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      *
      * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Site", inversedBy="posts")
      * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
+     * @Attach()
      */
     private $site;
 
@@ -112,6 +117,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Permission")
      * @ORM\JoinColumn(name="permission_id", referencedColumnName="permission_id")
      * @Assert\NotNull()
+     * @Attach()
      */
     private $permission;
 
@@ -120,6 +126,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      *
      * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Place\Place")
      * @ORM\JoinColumn(name="permission_place_id", referencedColumnName="place_id")
+     * @Attach()
      */
     private $permissionPlace;
 
@@ -133,7 +140,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Placement", mappedBy="post")
+     * @ORM\OneToMany(targetEntity="Placement", mappedBy="post", cascade={"persist"})
+     * @Attach()
      */
     private $placements;
 
@@ -145,7 +153,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     public function __construct(array $data = [])
     {
         $id = $data['id'] ?? null;
-        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : null;
+        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : strtolower(uuid_create(UUID_TYPE_DEFAULT));
 
         $text = $data['text'] ?? null;
         $this->text = is_string($text) ? $text : null;
@@ -606,7 +614,14 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     {
         $criteria = Criteria::create()
             ->where(Criteria::expr()->eq("user", $this->user));
-        return $this->placements->matching($criteria)->first();
+
+        $placement = $this->placements->matching($criteria)->first();
+
+        if (!$placement) {
+            return null;
+        }
+
+        return $placement;
     }
 
     /**
@@ -800,5 +815,15 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
         return new Post([
             "id" => $this->getId(),
         ]);
+    }
+
+    /**
+     * Clone magic method.
+     */
+    public function __clone()
+    {
+        if ($placement = $this->getPrimaryPlacement()) {
+            $placement->setPost($this);
+        }
     }
 }

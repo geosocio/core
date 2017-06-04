@@ -2,6 +2,7 @@
 
 namespace GeoSocio\Core\Controller;
 
+use GeoSocio\Core\Utils\EntityAttacherInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
@@ -22,6 +23,11 @@ abstract class Controller
     protected $doctrine;
 
     /**
+     * @var EntityAttacherInterface
+     */
+    protected $attacher;
+
+    /**
      * Creates the Controller.
      *
      * @param DenormalizerInterface $denormalizer
@@ -29,9 +35,11 @@ abstract class Controller
      */
     public function __construct(
         DenormalizerInterface $denormalizer,
-        RegistryInterface $doctrine
+        RegistryInterface $doctrine,
+        EntityAttacherInterface $attacher
     ) {
         $this->denormalizer = $denormalizer;
         $this->doctrine = $doctrine;
+        $this->attacher = $attacher;
     }
 }
