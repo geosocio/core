@@ -26,7 +26,6 @@ class Location extends Entity
      *
      * @ORM\Column(name="location_id", type="string", length=255)
      * @ORM\Id
-     * @Groups({"me_read", "me_write"})
      */
     private $id;
 

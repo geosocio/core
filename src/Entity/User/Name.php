@@ -19,7 +19,6 @@ class Name implements EntityInterface, UserAwareInterface
      * @var string
      *
      * @ORM\Column(name="first", type="string", length=255, nullable=true)
-     * @Groups({"anonymous_read", "me_write"})
      * @Assert\Length(
      *      max = 255
      * )
@@ -30,7 +29,6 @@ class Name implements EntityInterface, UserAwareInterface
      * @var string
      *
      * @ORM\Column(name="last", type="string", length=255, nullable=true)
-     * @Groups({"anonymous_read", "me_write"})
      * @Assert\Length(
      *      max = 255
      * )

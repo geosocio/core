@@ -102,7 +102,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      * @ORM\Column(name="user_id", type="guid")
      * @ORM\Id
      * @Assert\Uuid
-     * @Groups({"anonymous_read"})
      */
     private $id;
 
@@ -110,7 +109,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      * @var Name
      *
      * @ORM\Embedded(class = "Name", columnPrefix = "name_")
-     * @Groups({"me_read", "neighbor_read"})
      */
     private $name;
 
@@ -127,7 +125,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *     match=true,
      *     message="Username must consist of alphanumeric characters and underscores"
      * )
-     * @Groups({"anonymous_read", "me_write"})
      */
     private $username;
 
@@ -136,7 +133,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *
      * @ORM\OneToMany(targetEntity="Email", mappedBy="user")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
-     * @Groups({"me_read"})
      */
     private $emails;
 
@@ -145,7 +141,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *
      * @ORM\OneToMany(targetEntity="Membership", mappedBy="user")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
-     * @Groups({"me_read", "standard_read"})
      */
     private $memberships;
 
@@ -154,7 +149,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *
      * @ORM\OneToOne(targetEntity="Email", mappedBy="email")
      * @ORM\JoinColumn(name="primary_email", referencedColumnName="email")
-     * @Groups({"me_read"})
      */
     private $primaryEmail;
 
@@ -163,7 +157,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *
      * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Location")
      * @ORM\JoinColumn(name="location", referencedColumnName="location_id")
-     * @Groups({"me_read", "neighbor_read"})
      */
     private $location;
 
@@ -232,6 +225,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Get id
+     *
+     * @Groups({"anonymous_read"})
      */
     public function getId() :? string
     {
@@ -240,6 +235,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Set Username.
+     *
+     * @Groups({"me_write"})
      *
      * @param string $username
      */
@@ -252,6 +249,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * @inheritDoc
+     *
+     * @Groups({"anonymous_read"})
      */
     public function getUsername() :? string
     {
@@ -417,6 +416,62 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
+     * @Groups({"neighbor_read", "me_read"})
+     */
+    public function getFirstName() :? string
+    {
+        if ($this->name) {
+            return $this->name->getFirst();
+        }
+
+        return null;
+    }
+
+    /**
+     * @Groups({"me_write"})
+     */
+    public function setFirstName(string $firstName) : self
+    {
+        if ($this->name) {
+            $this->name->setFirst($firstName);
+        } else {
+            $this->name = new Name([
+                "first" => $firstName,
+            ]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @Groups({"neighbor_read", "me_read"})
+     */
+    public function getLastName() :? string
+    {
+        if ($this->name) {
+            return $this->name->getLast();
+        }
+
+        return null;
+    }
+
+    /**
+     * @Groups({"me_write"})
+     */
+    public function setLastName(string $lastName) : self
+    {
+        if ($this->name) {
+            $this->name->setLast($lastName);
+        } else {
+            $this->name = new Name([
+                "last" => $lastName,
+            ]);
+        }
+
+        return $this;
+    }
+
+    /**
      * Add emails
      *
      * @param Email $email
@@ -442,6 +497,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Get emails
+     *
+     * @Groups({"me_read"})
      *
      * @return Collection
      */
@@ -472,6 +529,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Get memberships
+     *
+     * @Groups({"me_read", "standard_read"})
      *
      * @return Collection
      */
@@ -515,6 +574,45 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
+     * Set Primary Email.
+     *
+     * @Groups({"me_read"})
+     *
+     * @param string $primaryEmailAdress
+     * @return User
+     */
+    public function setPrimaryEmailAddress(string $primaryEmailAddress) : self
+    {
+        // Always override the entire primaryEmail object
+        // rather than modifying the id.
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq("email", $primaryEmailAddress));
+        $emails = $this->emails->matching($criteria);
+
+        if ($primary = $emails->first()) {
+            $this->primaryEmail = $primary;
+        } else {
+            $this->primaryEmail = new Email([
+                'email' => $primaryEmailAddress,
+            ]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get Primary Email.
+     *
+     * @Groups({"me_write"})
+     *
+     * @return string
+     */
+    public function getPrimaryEmailAddress() :? string
+    {
+        return $this->primaryEmail ?: '';
+    }
+
+    /**
      * Set location
      *
      * @param Location $location
@@ -527,11 +625,65 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
+     * Remove location
+     */
+    public function removeLocation() : self
+    {
+        $this->location = null;
+
+        return $this;
+    }
+
+    /**
      * Get current location
      */
     public function getLocation() :? Location
     {
         return $this->location;
+    }
+
+    /**
+     * Get current location id.
+     *
+     * @Groups({"me_read", "neighbor_read"})
+     */
+    public function getLocationId() :? string
+    {
+        if ($this->location) {
+            return $this->location->getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Get current location id.
+     *
+     * @Groups({"me_write"})
+     */
+    public function setLocationId(string $id) : self
+    {
+        // Always override the entire locaiton object rather than modifying the
+        // id.
+        $this->location = new Location([
+            'id' => $id,
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Get current place id.
+     *
+     * @Groups({"me_read", "neighbor_read"})
+     */
+    public function getPlaceId() :? int
+    {
+        if ($this->location) {
+            return $this->location->getPlaceId();
+        }
+
+        return null;
     }
 
     /**

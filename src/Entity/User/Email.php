@@ -30,7 +30,6 @@ class Email implements UserAwareInterface
      *     strict = true,
      *     checkMX = true
      * )
-     * @Groups({"me_read", "me_write"})
      */
     private $email;
 
@@ -57,7 +56,6 @@ class Email implements UserAwareInterface
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"me_read"})
      */
     private $verified;
 
@@ -87,6 +85,8 @@ class Email implements UserAwareInterface
     /**
      * Set email
      *
+     * @Groups({"me_write"})
+     *
      * @param string $email
      * @return Email
      */
@@ -99,6 +99,8 @@ class Email implements UserAwareInterface
 
     /**
      * Get email
+     *
+     * @Groups({"me_read"})
      *
      * @return string
      */
@@ -143,6 +145,8 @@ class Email implements UserAwareInterface
 
     /**
      * Get verified.
+     *
+     * @Groups({"me_read"})
      */
     public function getVerified() :? \DateTimeInterface
     {
@@ -174,7 +178,7 @@ class Email implements UserAwareInterface
      */
     public function __toString() : string
     {
-        return $this->email;
+        return $this->email ?: '';
     }
 
     /**

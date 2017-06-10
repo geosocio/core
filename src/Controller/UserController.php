@@ -119,11 +119,60 @@ class UserController extends Controller
         }
 
         $em = $this->doctrine->getEntityManager();
+
+        // Get the original data for comparison.
+        $locationId = $user->getLocationId();
+        $primaryEmailAddress = $user->getPrimaryEmailAddress();
+
         $user = $this->denormalizer->denormalize($input, $user);
+
+        // If the primary email has changed, update it before updating the user.
+        if ($primaryEmailAddress !== $user->getPrimaryEmailAddress()) {
+            if (!$user->getPrimaryEmailAddress()) {
+                throw new BadRequestHttpException('Cannot remove primary email address');
+            }
+
+            if (!$user->getPrimaryEmail()->getVerified()) {
+                throw new BadRequestHttpException("Can only set a verified email as the primary email");
+            }
+        }
+
+        // If the location id has changed, get the location's places before
+        // updating the user.
+        if ($locationId !== $user->getLocationId()) {
+            $user = $this->updateLocation($user);
+        }
 
         $em->flush();
 
         return $this->showAction($user);
+    }
+
+    /**
+     * Update the user's location.
+     *
+     * @TODO Get rid of this method!
+     */
+    protected function updateLocation(User $user) : User
+    {
+        // Get the new locaiton from the user and set it to null to prevent
+        // the data from being updated.
+        $location = $user->getLocation();
+
+        // @TODO Create a new entity manager for placeFinder so we don't
+        //       modify the entity manager state!
+        $user->removeLocation();
+        $em->detach($location);
+
+        // This gets called in placeFinder anyways, so we will explicitly
+        // call it here first.
+        $em->flush();
+
+        $location = $this->placeFinder->find($location);
+
+        $user->setLocation($location);
+
+        return $user;
     }
 
     /**
@@ -148,51 +197,6 @@ class UserController extends Controller
         $em->flush();
 
         return '';
-    }
-
-    /**
-     * Show the user's real name
-     *
-     * @Route("/user/{user}/name.{_format}")
-     * @Method("GET")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
-     * @Security("has_role('authenticated')")
-     *
-     * @param Request $request
-     */
-    public function showNameAction(User $user) : Name
-    {
-        if (!$user->isEnabled()) {
-            throw new NotFoundHttpException("User account is disabled");
-        }
-
-        return $user->getName();
-    }
-
-    /**
-     * Update the user's real name.
-     *
-     * @Route("/user/{user}/name")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
-     * @Method("PATCH")
-     * @Security("has_role('authenticated')")
-     *
-     * @param Request $request
-     */
-    public function updateNameAction(User $authenticated, User $user, array $input) : Name
-    {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
-
-        $em = $this->doctrine->getEntityManager();
-        $name = $this->denormalizer->denormalize($input, $user->getName());
-
-        $user->setName($name);
-
-        $em->flush();
-
-        return $this->showNameAction($user);
     }
 
     /**
@@ -323,12 +327,31 @@ class UserController extends Controller
         }
 
         $em = $this->doctrine->getEntityManager();
-        // @TODO this wont work because the denormalizer is not aware of the
-        //       the user, so the proper access will not be applied.
-        $email = $this->denormalizer->denormalize($input, Email::class);
+        $email = $this->denormalizer->denormalize($input, Email::class, null, [
+            'user' => $user,
+        ]);
 
-        $email->setUser($user);
-        $user->addEmail($email);
+        $repository = $this->doctrine->getRepository(Email::class);
+
+        if ($existing = $repository->find($email->getEmail())) {
+            $email = $existing;
+
+            if ($email->getVerified()) {
+                if ($user->isEqualTo($email->getUser())) {
+                    throw new BadRequestHttpException('Email already added to user');
+                } else {
+                    throw new BadRequestHttpException('Email already belongs to another user');
+                }
+            }
+
+            $email->setUser($user);
+            $user->addEmail($email);
+        } else {
+            $email->setUser($user);
+            $em->persist($email);
+            $user->addEmail($email);
+        }
+
         $em->flush();
 
         $verification = $this->verificationManager->getVerification('email');
@@ -338,118 +361,6 @@ class UserController extends Controller
         $verification->send($verify);
 
         return $verify;
-    }
-
-    /**
-     * Shows the user's primary email.
-     *
-     * @Route("/user/{user}/primary-email.{_format}")
-     * @Method("GET")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
-     * @Security("has_role('authenticated')")
-     *
-     * @param Request $request
-     */
-    public function showPrimaryEmailAction(User $user) : Email
-    {
-        if (!$user->isEnabled()) {
-            throw new NotFoundHttpException("User account is disabled");
-        }
-
-        if (!$user->getPrimaryEmail()) {
-            throw new NotFoundHttpException("No primary email set");
-        }
-
-        return $user->getPrimaryEmail();
-    }
-
-    /**
-     * Sets the user's primary email.
-     *
-     * @Route("/user/{user}/primary-email")
-     * @Method("POST")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
-     * @Security("has_role('authenticated')")
-     *
-     * @param Request $request
-     */
-    public function setPrimaryEmailAction(User $authenticated, User $user, array $input) : Email
-    {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
-
-        $input = $this->denormalizer->denormalize($input, Email::class);
-
-        $accepted = ArrayUtils::search($user->getEmails(), function ($item) use ($input) {
-            return $item->getEmail() === $input->getEmail();
-        });
-
-        if (!$accepted) {
-            throw new BadRequestHttpException("Can only set primary email from user's existing emails");
-        }
-
-        if (!$accepted->getVerified()) {
-            throw new BadRequestHttpException("Can only set a verified email as the primary email");
-        }
-
-        $em = $this->doctrine->getEntityManager();
-        $user->setPrimaryEmail($accepted);
-        $em->flush();
-
-        return $this->showPrimaryEmailAction($user);
-    }
-
-    /**
-     * Shows the user's location.
-     *
-     * @Route("/user/{user}/location.{_format}")
-     * @Method("GET")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
-     * @Security("has_role('authenticated')")
-     *
-     * @param Request $request
-     */
-    public function showLocaitonAction(User $user) : Location
-    {
-        if (!$user->isEnabled()) {
-            throw new NotFoundHttpException("User account is disabled");
-        }
-
-        if (!$user->getLocation()) {
-            throw new NotFoundHttpException("No location set.");
-        }
-
-        return $user->getLocation();
-    }
-
-    /**
-     * Sets the user's location
-     *
-     * @Route("/user/{user}/location")
-     * @Method("POST")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
-     * @Security("has_role('authenticated')")
-     *
-     * @param Request $request
-     */
-    public function setLocationAction(User $authenticated, User $user, array $input) : Location
-    {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
-
-        $em = $this->doctrine->getEntityManager();
-        $input = $this->denormalizer->denormalize($input, Location::class, null, [
-            'user' => $user,
-        ]);
-
-        $location = $this->placeFinder->find($input);
-
-        $user->setLocation($location);
-        $em->flush();
-
-        return $this->showLocaitonAction($user);
     }
 
     /**
@@ -493,7 +404,10 @@ class UserController extends Controller
             throw new AccessDeniedHttpException("You may only modify your own user");
         }
 
-        $input = $this->denormalizer->denormalize($input, EmailVerify::class);
+        $input = $this->denormalizer->denormalize($input, EmailVerify::class, null, [
+            'user' => $user,
+        ]);
+
         $em = $this->doctrine->getEntityManager();
         $repository = $this->doctrine->getRepository(EmailVerify::class);
 
@@ -514,7 +428,6 @@ class UserController extends Controller
 
         $email->setVerified(new \DateTime());
 
-        $em->persist($email);
         $em->remove($verify);
         $em->flush();
 
