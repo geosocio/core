@@ -24,7 +24,6 @@ class Login implements EntityInterface
      *     strict = true,
      *     checkMX = true
      * )
-     * @Groups({"anonymous_write"})
      */
     protected $value;
 
@@ -42,7 +41,7 @@ class Login implements EntityInterface
     /**
      * Sets the value of the login.
      *
-     * @param string $value
+     * @Groups({"anonymous_write"})
      */
     public function setValue(string $value) : self
     {

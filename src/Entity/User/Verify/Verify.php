@@ -24,7 +24,6 @@ abstract class Verify extends Entity implements VerifyInterface
      * @var string
      *
      * @ORM\Column(type="string", length=6, unique=true)
-     * @Groups({"anonymous_read", "anonymous_write"})
      * @Assert\NotBlank()
      */
     private $token;
@@ -32,7 +31,6 @@ abstract class Verify extends Entity implements VerifyInterface
     /**
      * @var string
      *
-     * @Groups({"anonymous_write"})
      * @Assert\NotBlank()
      */
     private $code;
@@ -86,7 +84,7 @@ abstract class Verify extends Entity implements VerifyInterface
     /**
      * Set token
      *
-     * @param string $token
+     * @Groups({"anonymous_write"})
      */
     public function setToken(string $token) : self
     {
@@ -97,6 +95,8 @@ abstract class Verify extends Entity implements VerifyInterface
 
     /**
      * Get token
+     *
+     * @Groups({"anonymous_read"})
      */
     public function getToken() :? string
     {
@@ -106,7 +106,7 @@ abstract class Verify extends Entity implements VerifyInterface
     /**
      * Set code
      *
-     * @param string $code
+     * @Groups({"anonymous_write"})
      */
     public function setCode(string $code) : self
     {

@@ -44,7 +44,6 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      * @ORM\Column(name="post_id", type="guid")
      * @ORM\Id
      * @Assert\Uuid
-     * @Groups({"anonymous_read"})
      */
     private $id;
 
@@ -86,9 +85,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      * @var string
      *
      * @ORM\Column(type="string", length=20000, nullable=true)
-     * @Groups({"anonymous_read", "me_write"})
      * @Assert\NotBlank()
-     * @Groups({"anonymous_read", "me_write"})
      */
     private $text;
 
@@ -193,6 +190,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Get id
+     *
+     * @Groups({"anonymous_read"})
      */
     public function getId() : string
     {
@@ -213,6 +212,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Get Text
+     *
+     * @Groups({"anonymous_read"})
      */
     public function getText() :? string
     {
@@ -221,6 +222,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set Text
+     *
+     * @Groups({"me_write"})
      */
     public function setText(string $text) : self
     {

@@ -5,7 +5,6 @@ namespace GeoSocio\Core\Entity\User;
 use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\EntityInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

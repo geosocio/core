@@ -9,7 +9,6 @@ use GeoSocio\Core\Entity\User\User;
 use GeoSocio\Core\Entity\User\Email;
 use GeoSocio\Core\Entity\User\Membership;
 use GeoSocio\Core\Entity\User\Verify\EmailVerify;
-use GeoSocio\Core\Utils\ArrayUtils;
 use GeoSocio\Core\Utils\PlaceFinderInterface;
 use GeoSocio\Core\Utils\EntityAttacherInterface;
 use GeoSocio\Core\Utils\User\VerificationManagerInterface;

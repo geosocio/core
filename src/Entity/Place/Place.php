@@ -27,7 +27,6 @@ class Place extends Entity implements TreeAwareInterface
      *
      * @ORM\Column(name="place_id", type="integer")
      * @ORM\Id
-     * @Groups({"anonymous_read"})
      */
     private $id;
 
@@ -40,7 +39,6 @@ class Place extends Entity implements TreeAwareInterface
      * @var string
      *
      * @ORM\Column(type="string", unique=true, length=255)
-     * @Groups({"anonymous_read"})
      */
     private $slug;
 
@@ -139,6 +137,8 @@ class Place extends Entity implements TreeAwareInterface
 
     /**
      * Get id
+     *
+     * @Groups({"anonymous_read"})
      */
     public function getId() :? int
     {
@@ -191,6 +191,8 @@ class Place extends Entity implements TreeAwareInterface
 
     /**
      * Get slug
+     *
+     * @Groups({"anonymous_read"})
      */
     public function getSlug() :? string
     {
