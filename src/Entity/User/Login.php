@@ -41,7 +41,7 @@ class Login implements EntityInterface
     /**
      * Sets the value of the login.
      *
-     * @Groups({"anonymous_write"})
+     * @Groups({"anonymous"})
      */
     public function setValue(string $value) : self
     {

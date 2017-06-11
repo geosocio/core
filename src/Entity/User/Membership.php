@@ -60,7 +60,7 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
 
     /**
      * Get Id.
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getId()
     {

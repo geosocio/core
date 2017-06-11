@@ -84,7 +84,7 @@ abstract class Verify extends Entity implements VerifyInterface
     /**
      * Set token
      *
-     * @Groups({"anonymous_write"})
+     * @Groups({"anonymous"})
      */
     public function setToken(string $token) : self
     {
@@ -96,7 +96,7 @@ abstract class Verify extends Entity implements VerifyInterface
     /**
      * Get token
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getToken() :? string
     {
@@ -106,7 +106,7 @@ abstract class Verify extends Entity implements VerifyInterface
     /**
      * Set code
      *
-     * @Groups({"anonymous_write"})
+     * @Groups({"anonymous"})
      */
     public function setCode(string $code) : self
     {

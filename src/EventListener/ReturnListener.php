@@ -72,19 +72,14 @@ class ReturnListener
      * Generates the Response.
      */
     protected function getResponse(
-        $data,
+        array $data,
         string $format,
-        array $roles = [],
         int $status = 200,
         array $headers = []
     ) : Response {
 
-        $context = [
-            'groups' => User::getGroups(User::OPERATION_READ, $roles),
-            'enable_max_depth' => true,
-        ];
         return new Response(
-            $this->serializer->serialize($data, $format, $context),
+            $this->serializer->serialize($data, $format),
             $status,
             $headers
         );
@@ -135,7 +130,7 @@ class ReturnListener
             $result = $this->normalize($result);
         }
 
-        $response = $this->getResponse($result, $request->getRequestFormat('json'), [], $status);
+        $response = $this->getResponse($result, $request->getRequestFormat('json'), $status);
         $event->setResponse($response);
 
         return $response;
@@ -156,10 +151,12 @@ class ReturnListener
             $site = $result->getSite();
         }
 
-        $roles = $this->getUser() ? $this->getUser()->getRoles($user, $site) : [];
+        $roles = $this->getUser() ? $this->getUser()->getRoles($user, $site) : [
+            'anonymous'
+        ];
 
         $context = [
-            'groups' => User::getGroups(User::OPERATION_READ, $roles),
+            'groups' => $roles,
             'enable_max_depth' => true,
         ];
 
@@ -201,7 +198,6 @@ class ReturnListener
             $response = $this->getResponse(
                 $data,
                 $request->getRequestFormat(),
-                [],
                 $exception->getStatusCode(),
                 $exception->getHeaders()
             );
@@ -209,7 +205,6 @@ class ReturnListener
             $response = $this->getResponse(
                 $data,
                 $request->getRequestFormat(),
-                [],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }

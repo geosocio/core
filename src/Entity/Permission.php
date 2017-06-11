@@ -20,7 +20,6 @@ class Permission extends Entity
      *
      * @ORM\Column(name="permission_id", length=7, type="string")
      * @ORM\Id
-     * @Groups({"anonymous_read", "me_write"})
      */
     private $id;
 
@@ -28,7 +27,6 @@ class Permission extends Entity
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"anonymous_read"})
      */
     private $name;
 
@@ -48,6 +46,8 @@ class Permission extends Entity
 
     /**
      * Get id
+     *
+     * @Groups({"anonymous"})
      */
     public function getId() :? string
     {
@@ -57,7 +57,7 @@ class Permission extends Entity
     /**
      * Set id
      *
-     * @param string $id
+     * @Groups({"me"})
      */
     public function setId(string $id) : self
     {
@@ -68,6 +68,8 @@ class Permission extends Entity
 
     /**
      * Get Name
+     *
+     * @Groups({"anonymous"})
      */
     public function getName() :? string
     {

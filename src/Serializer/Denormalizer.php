@@ -95,11 +95,13 @@ class Denormalizer implements DenormalizerInterface
         }
 
         $roles = $this->getUser() ? $this->getUser()->getRoles($user, $site) : [];
-        $roles = array_merge($roles, $context['roles'] ?? []);
+        $roles = array_merge($roles, $context['roles'] ?? [
+            'anonymous'
+        ]);
 
         $context = array_merge([
             'object_to_populate' => $object,
-            'groups' => User::getGroups(User::OPERATION_WRITE, $roles),
+            'groups' => $roles,
         ], $context);
 
         $result = $this->denormalizer->denormalize(

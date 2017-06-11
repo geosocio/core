@@ -88,16 +88,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * @var string
-     */
-    const OPERATION_READ = 'read';
-
-    /**
-     * @var string
-     */
-    const OPERATION_WRITE = 'write';
-
-    /**
-     * @var string
      *
      * @ORM\Column(name="user_id", type="guid")
      * @ORM\Id
@@ -226,7 +216,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get id
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getId() :? string
     {
@@ -236,7 +226,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Set Username.
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      *
      * @param string $username
      */
@@ -250,7 +240,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @inheritDoc
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getUsername() :? string
     {
@@ -276,7 +266,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @inheritDoc
      *
-     * @Groups({"me_read"})
+     * @Groups({"me"})
      */
     public function getRoles(User $user = null, Site $site = null) : array
     {
@@ -416,7 +406,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
-     * @Groups({"neighbor_read", "me_read"})
+     * @Groups({"neighbor", "me"})
      */
     public function getFirstName() :? string
     {
@@ -428,7 +418,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setFirstName(string $firstName) : self
     {
@@ -444,7 +434,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
-     * @Groups({"neighbor_read", "me_read"})
+     * @Groups({"neighbor", "me"})
      */
     public function getLastName() :? string
     {
@@ -456,7 +446,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setLastName(string $lastName) : self
     {
@@ -498,7 +488,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get emails
      *
-     * @Groups({"me_read"})
+     * @Groups({"me"})
      *
      * @return Collection
      */
@@ -530,7 +520,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get memberships
      *
-     * @Groups({"me_read", "standard_read"})
+     * @Groups({"me", "standard"})
      *
      * @return Collection
      */
@@ -576,7 +566,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Set Primary Email.
      *
-     * @Groups({"me_read"})
+     * @Groups({"me"})
      *
      * @param string $primaryEmailAdress
      * @return User
@@ -603,7 +593,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get Primary Email.
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      *
      * @return string
      */
@@ -645,7 +635,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get current location id.
      *
-     * @Groups({"me_read", "neighbor_read"})
+     * @Groups({"me"})
      */
     public function getLocationId() :? string
     {
@@ -659,7 +649,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get current location id.
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setLocationId(string $id) : self
     {
@@ -675,7 +665,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get current place id.
      *
-     * @Groups({"me_read", "neighbor_read"})
+     * @Groups({"me", "neighbor"})
      */
     public function getPlaceId() :? int
     {
@@ -709,7 +699,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get Enabled.
      *
-     * @Groups({"me_read"})
+     * @Groups({"me"})
      */
     public function isEnabled() : bool
     {
@@ -719,7 +709,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Get Color.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getColor() :? string
     {
@@ -732,20 +722,6 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     public function getUser() :? User
     {
         return $this;
-    }
-
-    /**
-     * Gets the Groups.
-     */
-    public static function getGroups(string $operation, array $roles = []) : array
-    {
-        if (!$roles) {
-            $roles = [self::ROLE_ANONYMOUS];
-        }
-
-        return array_map(function ($role) use ($operation) {
-            return $role . '_' . $operation;
-        }, $roles);
     }
 
     /**

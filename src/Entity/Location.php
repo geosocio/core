@@ -97,7 +97,7 @@ class Location extends Entity
     /**
      * Get the place id.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getPlaceId() :? int
     {

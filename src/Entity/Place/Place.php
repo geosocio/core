@@ -138,7 +138,7 @@ class Place extends Entity implements TreeAwareInterface
     /**
      * Get id
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getId() :? int
     {
@@ -192,7 +192,7 @@ class Place extends Entity implements TreeAwareInterface
     /**
      * Get slug
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getSlug() :? string
     {
@@ -342,7 +342,7 @@ class Place extends Entity implements TreeAwareInterface
     /**
      * Get parent ids.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getParentIds() : Collection
     {

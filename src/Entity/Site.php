@@ -25,7 +25,6 @@ class Site extends Entity implements SiteAwareInterface
      * @ORM\Column(name="site_id", type="guid")
      * @ORM\Id
      * @Assert\Uuid
-     * @Groups({"anonymous_read", "me_write"})
      */
     private $id;
 
@@ -33,7 +32,6 @@ class Site extends Entity implements SiteAwareInterface
      * @var string
      *
      * @ORM\Column(type="string", length=15, unique=true, nullable=true)
-     * @Groups({"anonymous_read"})
      */
     private $key;
 
@@ -41,7 +39,6 @@ class Site extends Entity implements SiteAwareInterface
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"anonymous_read"})
      */
     private $name;
 
@@ -49,7 +46,6 @@ class Site extends Entity implements SiteAwareInterface
      * @var string
      *
      * @ORM\Column(type="string", length=15, nullable=true)
-     * @Groups({"anonymous_read"})
      */
     private $domain;
 
@@ -93,6 +89,8 @@ class Site extends Entity implements SiteAwareInterface
 
     /**
      * Set id
+     *
+     * @Groups({"me"})
      */
     public function setId(string $id) : self
     {
@@ -103,6 +101,8 @@ class Site extends Entity implements SiteAwareInterface
 
     /**
      * Get id
+     *
+     * @Groups({"anonymous"})
      */
     public function getId() : string
     {
@@ -111,6 +111,8 @@ class Site extends Entity implements SiteAwareInterface
 
     /**
      * Get Key
+     *
+     * @Groups({"anonymous"})
      */
     public function getKey() :? string
     {
@@ -131,6 +133,8 @@ class Site extends Entity implements SiteAwareInterface
 
     /**
      * Get Name
+     *
+     * @Groups({"anonymous"})
      */
     public function getName() :? string
     {
@@ -151,6 +155,8 @@ class Site extends Entity implements SiteAwareInterface
 
     /**
      * Get Domain
+     *
+     * @Groups({"anonymous"})
      */
     public function getDomain() :? string
     {

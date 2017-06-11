@@ -191,7 +191,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Get id
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getId() : string
     {
@@ -213,7 +213,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Get Text
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getText() :? string
     {
@@ -223,7 +223,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set Text
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setText(string $text) : self
     {
@@ -257,7 +257,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Get User id.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getUserId() :? string
     {
@@ -271,7 +271,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set User id.
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setUserId(string $id) : self
     {
@@ -291,7 +291,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set site
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setSiteId(string $id) : self
     {
@@ -311,7 +311,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * {@inheritdoc}
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getSiteId() :? string
     {
@@ -405,7 +405,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set reply id.
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setReplyId(string $id) : self
     {
@@ -425,7 +425,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Get the reply id.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getReplyId() :? string
     {
@@ -457,7 +457,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set forward id.
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setForwardId(string $id) : self
     {
@@ -477,7 +477,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Get the forward id.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getForwardId() :? string
     {
@@ -509,7 +509,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set permission id.
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setPermissionId(string $id) : self
     {
@@ -529,7 +529,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Get the permission id.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getPermissionId() :? string
     {
@@ -561,7 +561,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set permission place id.
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setPermissionPlaceId(string $id) : self
     {
@@ -581,7 +581,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Get the permission place id.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function getPermissionPlaceId() :? string
     {
@@ -630,7 +630,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set place
      *
-     * @Groups({"me_write"})
+     * @Groups({"me"})
      */
     public function setPlaceId(int $id) : self
     {
@@ -666,7 +666,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * {@inheritdoc}
      *
-     * @Groups({"me_read"})
+     * @Groups({"me"})
      */
     public function getPlaceId() :? int
     {
@@ -724,7 +724,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Get Enabled.
      *
-     * @Groups({"anonymous_read"})
+     * @Groups({"anonymous"})
      */
     public function isDeleted() : bool
     {
