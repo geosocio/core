@@ -275,15 +275,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function setUserId(string $id) : self
     {
-        if (!$this->user) {
-            $this->user = new User([
-                'id' => $id,
-            ]);
-
-            return $this;
-        }
-
-        $this->user->setId($id);
+        $this->user = new User([
+            'id' => $id,
+        ]);
 
         return $this;
     }
@@ -295,15 +289,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function setSiteId(string $id) : self
     {
-        if (!$this->site) {
-            $this->site = new Site([
-                'id' => $id,
-            ]);
-
-            return $this;
-        }
-
-        $this->site->setId($id);
+        $this->site = new Site([
+            'id' => $id,
+        ]);
 
         return $this;
     }
@@ -409,15 +397,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function setReplyId(string $id) : self
     {
-        if (!$this->reply) {
-            $this->reply = new Post([
-                'id' => $id,
-            ]);
-
-            return $this;
-        }
-
-        $this->reply->setId($id);
+        $this->reply = new Post([
+            'id' => $id,
+        ]);
 
         return $this;
     }
@@ -461,15 +443,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function setForwardId(string $id) : self
     {
-        if (!$this->forward) {
-            $this->forward = new Post([
-                'id' => $id,
-            ]);
-
-            return $this;
-        }
-
-        $this->forward->setId($id);
+        $this->forward = new Post([
+            'id' => $id,
+        ]);
 
         return $this;
     }
@@ -513,15 +489,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function setPermissionId(string $id) : self
     {
-        if (!$this->permission) {
-            $this->permission = new Permission([
-                'id' => $id,
-            ]);
-
-            return $this;
-        }
-
-        $this->permission->setId($id);
+        $this->permission = new Permission([
+            'id' => $id,
+        ]);
 
         return $this;
     }
@@ -565,15 +535,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function setPermissionPlaceId(string $id) : self
     {
-        if (!$this->permissionPlace) {
-            $this->permissionPlace = new Place([
-                'id' => $id,
-            ]);
-
-            return $this;
-        }
-
-        $this->permissionPlace->setId($id);
+        $this->permissionPlace = new Place([
+            'id' => $id,
+        ]);
 
         return $this;
     }
@@ -648,17 +612,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
             return $this;
         }
 
-        $place = $placement->getPlace();
-
-        if (!$place) {
-            $placement->setPlace(new Place([
-                'id' => $id,
-            ]));
-
-            return $this;
-        }
-
-        $placement->getPlace()->setId($id);
+        $placement->setPlace(new Place([
+            'id' => $id,
+        ]));
 
         return $this;
     }
