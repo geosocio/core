@@ -32,6 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     message="Post with permission of 'place' must include a 'permissionPlace'"
  * )
  * @TODO Replies cannot have a placeId.
+ * @TODO Create a property for the primaryPlacement.
  */
 // @codingStandardsIgnoreEnd
 class Post extends Entity implements AccessAwareInterface, UserAwareInterface, SiteAwareInterface, TreeAwareInterface
@@ -51,7 +52,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Post
      *
-     * @ORM\ManyToOne(targetEntity="Post", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="Post")
      * @ORM\JoinColumn(name="reply", referencedColumnName="post_id")
      * @Attach()
      */

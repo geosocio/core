@@ -70,6 +70,6 @@ class PlaceController extends Controller
     {
         $repository = $this->doctrine->getRepository(Post::class);
 
-        return $repository->findByPlace($place, $this->getOffset($request), $this->getLimit($request));
+        return $repository->findByPlace($place, $this->getLimit($request), $this->getOffset($request));
     }
 }

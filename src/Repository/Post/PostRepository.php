@@ -7,7 +7,7 @@ use GeoSocio\Core\Entity\Place\Place;
 
 class PostRepository extends EntityRepository
 {
-    public function findByPlace(Place $place, $offset = 0, $limit = 0)
+    public function findByPlace(Place $place, $limit = 0, $offset = 0)
     {
         $qb = $this->createQueryBuilder('post');
 

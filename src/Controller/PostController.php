@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -84,5 +85,22 @@ class PostController extends Controller
         $em->flush();
 
         return '';
+    }
+
+    /**
+     * @Route("/post/{post}/replies.{_format}")
+     * @Method("GET")
+     * @ParamConverter("post", converter="doctrine.orm", class="GeoSocio\Core\Entity\Post\Post")
+     */
+    public function showRepliesAction(Post $post, Request $request) : array
+    {
+        $repository = $this->doctrine->getRepository(Post::class);
+
+        return $repository->findByReply(
+            $post,
+            ['created' => 'DESC'],
+            $this->getLimit($request),
+            $this->getOffset($request)
+        );
     }
 }

@@ -134,7 +134,7 @@ class ReturnListener
             $result = $this->normalize($result);
         }
 
-        $response = $this->getResponse($result, $request->getRequestFormat('json'), $status);
+        $response = $this->getResponse($result, $request->getRequestFormat(), $status);
         $event->setResponse($response);
 
         return $response;
@@ -178,6 +178,7 @@ class ReturnListener
         $exception = $event->getException();
         $request = $event->getRequest();
 
+        // @TODO Convert to a normalizer.
         if ($exception instanceof HttpExceptionInterface) {
             $data = [
                 'error' => $exception->getMessage(),
@@ -193,8 +194,7 @@ class ReturnListener
         }
 
         // Override the default request format.
-        // @TODO The Symfony exception handler converts the format back to text/html. :(
-        if ($request->getRequestFormat('json') === 'html') {
+        if ($request->getRequestFormat() === 'html') {
             $request->setRequestFormat('json');
         }
 
