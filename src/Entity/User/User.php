@@ -607,19 +607,9 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      *
      * @param Location $location
      */
-    public function setLocation(Location $location) : self
+    public function setLocation(Location $location = null) : self
     {
         $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Remove location
-     */
-    public function removeLocation() : self
-    {
-        $this->location = null;
 
         return $this;
     }

@@ -3,29 +3,37 @@
 namespace GeoSocio\Core\Repository\Post;
 
 use Doctrine\ORM\EntityRepository;
+use GeoSocio\Core\Entity\Site;
 use GeoSocio\Core\Entity\Place\Place;
 
 class PostRepository extends EntityRepository
 {
-    public function findByPlace(Place $place, $limit = 0, $offset = 0)
+    public function findBySitePlace(Site $site = null, Place $place = null, $limit = 0, $offset = 0)
     {
         $qb = $this->createQueryBuilder('post');
 
-        // Get all of the pace ids to query against.
-        $placeIds = $place->getDescendants()->map(function ($tree) {
-            return $tree->getDescendant()->getId();
-        })->toArray();
-
-        // Does not perform permission checks.
-        return $qb->select('post, MAX(placement.created) as HIDDEN created')
+        $qb->select('post, MAX(placement.created) as HIDDEN created')
             ->leftJoin('post.placements', 'placement')
-            ->where($qb->expr()->in('placement.place', $placeIds))
             ->andWhere($qb->expr()->isNull('post.deleted'))
             ->groupBy('post.id')
             ->orderBy('created', 'DESC')
             ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults($limit);
+
+        if ($place) {
+            // Get all of the pace ids to query against.
+            $placeIds = $place->getDescendants()->map(function ($tree) {
+                return $tree->getDescendant()->getId();
+            })->toArray();
+
+            $qb->andWhere($qb->expr()->in('placement.place', $placeIds));
+        }
+
+        if ($site) {
+            $qb->andWhere($qb->expr()->eq('post.site', ':siteId'))
+                ->setParameter('siteId', $site->getId());
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

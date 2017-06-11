@@ -2,6 +2,8 @@
 
 namespace GeoSocio\Core\Controller;
 
+use GeoSocio\Core\Entity\Site;
+use GeoSocio\Core\Entity\Place\Place;
 use GeoSocio\Core\Entity\Post\Post;
 use GeoSocio\Core\Entity\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -10,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -26,6 +29,43 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 class PostController extends Controller
 {
+
+    /**
+     * @Route("/post.{_format}")
+     * @Method("GET")
+     */
+    public function indexAction(Request $request) : array
+    {
+        $repository = $this->doctrine->getRepository(Post::class);
+
+        $place = null;
+        if ($request->query->has('placeId')) {
+            $placeId = (int) $request->query->get('placeId');
+
+            $repository = $this->doctrine->getRepository(Place::class);
+            $place = $repository->find($placeId);
+
+            if (!$place) {
+                throw new BadRequestHttpException('Place not found');
+            }
+        }
+
+        $site = null;
+        if ($request->query->has('siteId')) {
+            $siteId = (string) $request->query->get('siteId');
+
+            $repository = $this->doctrine->getRepository(Site::class);
+            $site = $repository->find($siteId);
+
+            if (!$site) {
+                throw new BadRequestHttpException('Site not found');
+            }
+        }
+
+        $repository = $this->doctrine->getRepository(Post::class);
+
+        return $repository->findBySitePlace($site, $place, $this->getLimit($request), $this->getOffset($request));
+    }
 
     /**
      * @Route("/post/{post}.{_format}")
@@ -45,6 +85,8 @@ class PostController extends Controller
      * @Route("/post")
      * @Method("POST")
      * @Security("has_role('standard')")
+     *
+     * @TODO Creating a post without a place should defult to user's place.
      */
     public function createAction(User $authenticated, array $input) : Post
     {

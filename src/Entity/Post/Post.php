@@ -33,6 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * )
  * @TODO Replies cannot have a placeId.
  * @TODO Create a property for the primaryPlacement.
+ * @TODO Replies and forwards should have the same site id as their parent.
  */
 // @codingStandardsIgnoreEnd
 class Post extends Entity implements AccessAwareInterface, UserAwareInterface, SiteAwareInterface, TreeAwareInterface

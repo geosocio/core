@@ -344,11 +344,13 @@ class Place extends Entity implements TreeAwareInterface
      *
      * @Groups({"anonymous"})
      */
-    public function getParentIds() : Collection
+    public function getParentId() :? int
     {
-        return $this->getParents()->map(function ($place) {
-            return $place->getId();
-        });
+        if ($this->parent) {
+            return $this->parent->getId();
+        }
+
+        return null;
     }
 
     /**

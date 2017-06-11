@@ -60,16 +60,4 @@ class PlaceController extends Controller
     {
         return $place;
     }
-
-    /**
-     * @Route("/place/{place}/posts.{_format}")
-     * @Method("GET")
-     * @ParamConverter("place", converter="doctrine.orm", class="GeoSocio\Core\Entity\Place\Place")
-     */
-    public function showPostsAction(Place $place, Request $request) : array
-    {
-        $repository = $this->doctrine->getRepository(Post::class);
-
-        return $repository->findByPlace($place, $this->getLimit($request), $this->getOffset($request));
-    }
 }

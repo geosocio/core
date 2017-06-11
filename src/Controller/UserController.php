@@ -32,6 +32,9 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
  *       "_format" = "json"
  *    }
  * )
+ *
+ * @TODO Need a route to determine the place a user should see
+ *      (not too many people, not too few)
  */
 class UserController extends Controller
 {
@@ -160,7 +163,7 @@ class UserController extends Controller
 
         // @TODO Create a new entity manager for placeFinder so we don't
         //       modify the entity manager state!
-        $user->removeLocation();
+        $user->setLocation();
         $em->detach($location);
 
         // This gets called in placeFinder anyways, so we will explicitly
