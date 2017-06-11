@@ -98,7 +98,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
     /**
      * Get user.
      */
-    public function getUser() : User
+    public function getUser() :? User
     {
         return $this->user;
     }

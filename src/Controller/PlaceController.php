@@ -66,8 +66,8 @@ class PlaceController extends Controller
      * @Method("GET")
      * @ParamConverter("place", converter="doctrine.orm", class="GeoSocio\Core\Entity\Place\Place")
      *
-     * @param Place $place
-     * @param Request $request
+     * @TODO Find child posts as well.
+     * @TODO Add pagination.
      */
     public function showPostsAction(Place $place) : array
     {

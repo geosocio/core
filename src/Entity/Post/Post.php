@@ -239,8 +239,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     {
         $this->user = $user;
 
-        if ($this->placement) {
-            $this->placement->setUser($user);
+        // Update the primary placement if it exists.
+        if ($placement = $this->getPrimaryPlacement()) {
+            $placement->setUser($user);
         }
 
         return $this;
@@ -275,11 +276,9 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function setUserId(string $id) : self
     {
-        $this->user = new User([
+        return $this->setUser(new User([
             'id' => $id,
-        ]);
-
-        return $this;
+        ]));
     }
 
     /**
@@ -579,6 +578,15 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function getPrimaryPlacement() :? Placement
     {
+
+        if (!$this->placements->count()) {
+            return null;
+        }
+
+        if ($this->placements->count() == 1) {
+            return $this->placements->first();
+        }
+
         $criteria = Criteria::create()
             ->where(Criteria::expr()->eq("user", $this->user));
 
