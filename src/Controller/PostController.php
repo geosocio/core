@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  *       "_format" = "json"
  *    }
  * )
- * @TODO Need a route to return the replies.
+ * @TODO Need a route to "repost"
  */
 class PostController extends Controller
 {
