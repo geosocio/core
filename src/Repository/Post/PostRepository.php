@@ -7,7 +7,7 @@ use GeoSocio\Core\Entity\Place\Place;
 
 class PostRepository extends EntityRepository
 {
-    public function findByPlace(Place $place)
+    public function findByPlace(Place $place, $offset = 0, $limit = 0)
     {
         $qb = $this->createQueryBuilder('post');
 
@@ -23,6 +23,8 @@ class PostRepository extends EntityRepository
             ->andWhere($qb->expr()->isNull('post.deleted'))
             ->groupBy('post.id')
             ->orderBy('created', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }

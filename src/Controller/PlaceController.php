@@ -65,14 +65,20 @@ class PlaceController extends Controller
      * @Route("/place/{place}/posts.{_format}")
      * @Method("GET")
      * @ParamConverter("place", converter="doctrine.orm", class="GeoSocio\Core\Entity\Place\Place")
-     *
-     * @TODO Find child posts as well.
-     * @TODO Add pagination.
      */
-    public function showPostsAction(Place $place) : array
+    public function showPostsAction(Place $place, Request $request) : array
     {
         $repository = $this->doctrine->getRepository(Post::class);
 
-        return $repository->findByPlace($place);
+        $limit = (int) $request->query->get('limit', 5);
+        $page = (int) $request->query->get('page', 1);
+        $offset = ($page * $limit) - $limit;
+
+        // Offset cannot be negative.
+        if ($offset < 0) {
+            $offset = 0;
+        }
+
+        return $repository->findByPlace($place, $offset, $limit);
     }
 }

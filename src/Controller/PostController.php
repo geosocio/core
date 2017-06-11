@@ -46,9 +46,7 @@ class PostController extends Controller
      */
     public function createAction(User $authenticated, array $input) : Post
     {
-        $post = $this->denormalizer->denormalize($input, Post::class, null, [
-            'user' => $authenticated,
-        ]);
+        $post = $this->denormalizer->denormalize($input, Post::class);
 
         $em = $this->doctrine->getEntityManager();
 

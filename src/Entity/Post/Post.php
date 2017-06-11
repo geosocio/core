@@ -31,6 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "(this.getPermission() and this.getPermission().getId() != 'place') or (this.getPermission() and this.getPermission().getId() == 'place' and this.getPermissionPlace())",
  *     message="Post with permission of 'place' must include a 'permissionPlace'"
  * )
+ * @TODO Replies cannot have a placeId.
  */
 // @codingStandardsIgnoreEnd
 class Post extends Entity implements AccessAwareInterface, UserAwareInterface, SiteAwareInterface, TreeAwareInterface
@@ -223,7 +224,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set Text
      *
-     * @Groups({"me"})
+     * @Groups({"standard"})
      */
     public function setText(string $text) : self
     {
@@ -272,7 +273,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set User id.
      *
-     * @Groups({"me"})
+     * @Groups({"standard"})
      */
     public function setUserId(string $id) : self
     {
@@ -284,7 +285,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set site
      *
-     * @Groups({"me"})
+     * @Groups({"standard"})
      */
     public function setSiteId(string $id) : self
     {
@@ -392,7 +393,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set reply id.
      *
-     * @Groups({"me"})
+     * @Groups({"standard"})
      */
     public function setReplyId(string $id) : self
     {
@@ -438,7 +439,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set forward id.
      *
-     * @Groups({"me"})
+     * @Groups({"standard"})
      */
     public function setForwardId(string $id) : self
     {
@@ -484,7 +485,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set permission id.
      *
-     * @Groups({"me"})
+     * @Groups({"standard"})
      */
     public function setPermissionId(string $id) : self
     {
@@ -530,7 +531,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set permission place id.
      *
-     * @Groups({"me"})
+     * @Groups({"standard"})
      */
     public function setPermissionPlaceId(string $id) : self
     {
@@ -602,7 +603,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set place
      *
-     * @Groups({"me"})
+     * @Groups({"standard"})
      */
     public function setPlaceId(int $id) : self
     {
@@ -630,7 +631,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * {@inheritdoc}
      *
-     * @Groups({"me"})
+     * @Groups({"me", "neighbor"})
      */
     public function getPlaceId() :? int
     {
@@ -782,6 +783,16 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
         return new Post([
             "id" => $this->getId(),
         ]);
+    }
+
+    /**
+     * Get created
+     *
+     * @Groups({"anonymous"})
+     */
+    public function getCreated() :? \DateTimeInterface
+    {
+        return $this->created;
     }
 
     /**
