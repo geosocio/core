@@ -4,6 +4,8 @@ namespace GeoSocio\Core\Entity;
 
 use GeoSocio\Core\Entity\User\User;
 
+// @TODO Replace with Symfony Security Voter.
+//       @see http://symfony.com/doc/current/security/voters.html
 interface AccessAwareInterface
 {
     /**
