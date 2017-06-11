@@ -72,11 +72,15 @@ class ReturnListener
      * Generates the Response.
      */
     protected function getResponse(
-        array $data,
+        $data,
         string $format,
         int $status = 200,
         array $headers = []
     ) : Response {
+
+        if (is_object($data)) {
+            throw new \InvalidArgumentException('Data must already be normalized!');
+        }
 
         return new Response(
             $this->serializer->serialize($data, $format),
