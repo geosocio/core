@@ -10,6 +10,8 @@ $kernel = new App\Kernel('prod', false);
 $kernel->loadClassCache();
 //$kernel = new App\Cache($kernel);
 
+ini_set('opcache.enable', '0');
+
 // When using the HttpCache, you need to call the method in your front
 // controller instead of relying on the configuration parameter
 //Request::enableHttpMethodParameterOverride();

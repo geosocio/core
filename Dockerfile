@@ -1,20 +1,35 @@
-FROM php:7
+FROM php:7.1-apache
 
-EXPOSE 80
+RUN a2enmod rewrite
 
-RUN mkdir -p /var/www/web
+# System Dependencies.
+RUN apt-get update && apt-get install -y \
+        libicu-dev \
+	--no-install-recommends && rm -r /var/lib/apt/lists/*
 
-WORKDIR /var/www/web
+# install the PHP extensions we need
+RUN set -ex \
+	&& buildDeps=' \
+		uuid-dev \
+	' \
+	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps && rm -rf /var/lib/apt/lists/* \
+    && pecl channel-update pecl.php.net \
+    && pecl install uuid \
+    && docker-php-ext-enable uuid \
+	&& apt-get purge -y --auto-remove $buildDeps
 
-RUN apt-get update \
-    && apt-get install uuid-dev libicu-dev --yes \
-    && rm -rf /var/lib/apt/lists/*
+RUN docker-php-ext-install intl opcache pdo_mysql
 
-RUN pecl channel-update pecl.php.net \
-    && pecl install uuid
-
-RUN docker-php-ext-install intl opcache pdo_mysql \
-    && docker-php-ext-enable uuid
+# set recommended PHP.ini settings
+# see https://secure.php.net/manual/en/opcache.installation.php
+RUN { \
+		echo 'opcache.memory_consumption=128'; \
+		echo 'opcache.interned_strings_buffer=8'; \
+		echo 'opcache.max_accelerated_files=4000'; \
+		echo 'opcache.revalidate_freq=60'; \
+		echo 'opcache.fast_shutdown=1'; \
+		echo 'opcache.enable_cli=1'; \
+	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Install Composer.
 RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
@@ -23,11 +38,6 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
     && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer \
     && rm -rf /tmp/composer-setup.php
 
-# Copy the PHP Configuration.
-COPY ./php.ini /usr/local/etc/php/
-
 COPY ./ /var/www
 
 RUN composer --working-dir=../ install
-
-CMD /var/www/bin/console server:run 0.0.0.0:80

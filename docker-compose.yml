@@ -1,11 +1,21 @@
 version: '3'
 services:
-    api:
-        ports:
-            - '80:80'
-        build: ./
-        image: 192.168.99.101:5000/geosocio
-        volumes:
-            - './:/var/www'
-        deploy:
-            replicas: 1
+  api:
+    build: ./
+    ports:
+      - '8888:80'
+    volumes:
+      - ./:/var/www:cached
+    links:
+      - database
+  database:
+    image: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: 'geosocio'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - database:/var/lib/mysql
+volumes:
+  database:
