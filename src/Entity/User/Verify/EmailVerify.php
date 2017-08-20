@@ -1,15 +1,15 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User\Verify;
+namespace App\Entity\User\Verify;
 
+use App\Entity\User\User;
+use App\Entity\User\UserAwareInterface;
+use App\Entity\User\Email;
+use GeoSocio\EntityUtils\ParameterBag;
 use Doctrine\ORM\Mapping as ORM;
 
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\UserAwareInterface;
-use GeoSocio\Core\Entity\User\Email;
-
 /**
- * GeoSocio\Core\Entity\User\EmailVerify
+ * Email Verify
  *
  * @ORM\Table(name="users_email_verify")
  * @ORM\Entity
@@ -22,7 +22,7 @@ class EmailVerify extends Verify implements UserAwareInterface
      * @var Email
      *
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="\GeoSocio\Core\Entity\User\Email", inversedBy="verify")
+     * @ORM\OneToOne(targetEntity="\App\Entity\User\Email", inversedBy="verify")
      * @ORM\JoinColumn(name="email", referencedColumnName="email")
      */
     private $email;
@@ -34,8 +34,8 @@ class EmailVerify extends Verify implements UserAwareInterface
      */
     public function __construct(array $data = [])
     {
-        $email = $data['email'] ?? null;
-        $this->email = $this->getSingle($email, Email::class);
+        $params = new ParameterBag($data);
+        $this->email = $params->getInstance('email', Email::class);
 
         parent::__construct($data);
     }

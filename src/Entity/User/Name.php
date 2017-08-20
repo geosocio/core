@@ -1,10 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User;
+namespace App\Entity\User;
 
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\EntityInterface;
+use App\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\EntityUtils\ParameterBag;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Embeddable()
  */
-class Name implements EntityInterface, UserAwareInterface
+class Name implements UserAwareInterface
 {
     /**
      * @var string
@@ -46,14 +46,10 @@ class Name implements EntityInterface, UserAwareInterface
      */
     public function __construct(array $data = [])
     {
-        $first = $data['first'] ?? null;
-        $this->first = is_string($first) ? $first : null;
-
-        $last = $data['last'] ?? null;
-        $this->last = is_string($last) ? $last : null;
-
-        $user = $data['user'] ?? null;
-        $this->user = $user instanceof User ? $user : null;
+        $params = new ParameterBag($data);
+        $this->first = $params->getString('first');
+        $this->last = $params->getString('last');
+        $this->user = $params->getInstance('user', User::class);
     }
 
     /**
@@ -100,6 +96,8 @@ class Name implements EntityInterface, UserAwareInterface
 
     /**
      * Set the User.
+     *
+     * @param User $user
      */
     public function setUser(User $user) : self
     {

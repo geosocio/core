@@ -1,10 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Entity\User;
+namespace App\Tests\Entity\User;
 
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Tests\Entity\EntityTest;
+use App\Entity\User\Email;
+use App\Entity\User\User;
+use App\Tests\Entity\EntityTest;
 
 class EmailTest extends EntityTest
 {

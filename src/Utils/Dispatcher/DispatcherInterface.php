@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Utils\Dispatcher;
+namespace App\Utils\Dispatcher;
 
-use GeoSocio\Core\Entity\Message\MessageInterface;
+use App\Entity\Message\MessageInterface;
 
 /**
  * Dispatcher Interface

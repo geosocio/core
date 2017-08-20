@@ -1,11 +1,12 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Serializer\Mapzen;
+namespace App\Tests\Serializer\Mapzen;
 
-use GeoSocio\Core\Entity\Location;
-use GeoSocio\Core\Serializer\Mapzen\SearchDenormalizer;
+use App\Entity\Location;
+use App\Serializer\Mapzen\SearchDenormalizer;
+use PHPUnit\Framework\TestCase;
 
-class SearchDenormalizerTest extends \PHPUnit_Framework_TestCase
+class SearchDenormalizerTest extends TestCase
 {
     /**
      * {@inheritdoc}

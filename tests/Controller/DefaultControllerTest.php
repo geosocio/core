@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Controller;
+namespace App\Tests\Controller;
 
-use GeoSocio\Core\Controller\DefaultController;
+use App\Controller\DefaultController;
 
 class DefaultControllerTest extends ControllerTest
 {

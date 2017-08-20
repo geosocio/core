@@ -1,19 +1,23 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Utils\User;
+namespace App\Tests\Utils\User;
 
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Repository\User\UserRepository;
-use GeoSocio\Core\Utils\Dispatcher\DispatcherInterface;
-use GeoSocio\Core\Utils\User\EmailVerification;
+use App\Entity\User\User;
+use App\Entity\User\Email;
+use App\Repository\User\UserRepository;
+use App\Utils\Dispatcher\DispatcherInterface;
+use App\Utils\User\EmailVerification;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use RandomLib\Generator;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use PHPUnit\Framework\TestCase;
 
-class EmailVerificationTest extends \PHPUnit_Framework_TestCase
+class EmailVerificationTest extends TestCase
 {
+    /**
+     * Test Create
+     */
     public function testCreate()
     {
         $userRespository = $this->getMockBuilder(UserRepository::class)

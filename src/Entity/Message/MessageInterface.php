@@ -1,13 +1,11 @@
 <?php
 
-namespace GeoSocio\Core\Entity\Message;
-
-use GeoSocio\Core\Entity\EntityInterface;
+namespace App\Entity\Message;
 
 /**
  * Interface for Messages.
  */
-interface MessageInterface extends EntityInterface
+interface MessageInterface
 {
     /**
      * Get To.

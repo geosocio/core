@@ -1,27 +1,31 @@
 <?php
 
-namespace GeoSocio\Core\Entity\Place;
+namespace App\Entity\Place;
 
+use GeoSocio\EntityUtils\CreatedTrait;
+use GeoSocio\EntityUtils\ParameterBag;
 use Doctrine\Common\Collections\Criteria;
-use GeoSocio\Core\Entity\Location;
-use GeoSocio\Core\Entity\Entity;
-use GeoSocio\Core\Entity\Post\Post;
+use App\Entity\Location;
+use App\Entity\Post\Post;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use GeoSocio\Core\Entity\TreeAwareInterface;
+use App\Entity\TreeAwareInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * GeoSocio\Core\Entity\Place
+ * App\Entity\Place
  *
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="place")
  * @ORM\Entity()
  */
-class Place extends Entity implements TreeAwareInterface
+class Place implements TreeAwareInterface
 {
+
+    use CreatedTrait;
+
     /**
      * @var int
      *
@@ -67,21 +71,21 @@ class Place extends Entity implements TreeAwareInterface
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="GeoSocio\Core\Entity\Location", mappedBy="place",  cascade={"all"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Location", mappedBy="place",  cascade={"all"})
      */
     private $locations;
 
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="GeoSocio\Core\Entity\Post\Post", mappedBy="place")
+     * @ORM\OneToMany(targetEntity="App\Entity\Post\Post", mappedBy="place")
      */
     private $posts;
 
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="GeoSocio\Core\Entity\Post\Placement", mappedBy="place")
+     * @ORM\OneToMany(targetEntity="App\Entity\Post\Placement", mappedBy="place")
      */
     private $placements;
 
@@ -99,40 +103,16 @@ class Place extends Entity implements TreeAwareInterface
      */
     public function __construct(array $data = [])
     {
-        $id = $data['id'] ?? null;
-        $this->id = is_integer($id) ? $id : null;
-
-        $name = $data['name'] ?? '';
-        $this->name = is_string($name) ? $name : null;
-
-        $slug = $data['slug'] ?? null;
-        $this->slug = is_string($slug) ? $slug : null;
-
-        $parent = $data['parent'] ?? null;
-        $this->parent = $this->getSingle($parent, Place::class);
-
-        $ancestor = $data['ancestor'] ?? null;
-        $this->ancestor = $this->getMultiple($ancestor, Tree::class);
-
-        $descendant = $data['descendant'] ?? null;
-        $this->descendant = $this->getMultiple($descendant, Tree::class);
-
-        $locations = $data['locations'] ?? null;
-        $this->locations = $this->getMultiple($locations, Location::class);
-
-        $posts = $data['posts'] ?? null;
-        $this->posts = $this->getMultiple($posts, Post::class);
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedValue()
-    {
-        $this->created = new \DateTime();
+        $params = new ParameterBag($data);
+        $this->id = $params->getInt('id');
+        $this->name = $params->getString('name');
+        $this->slug = $params->getString('slug');
+        $this->parent = $params->getInstance('parent', Place::class);
+        $this->ancestor = $params->getInstance('ancestor', Place::class);
+        $this->descendant = $params->getInstance('descendant', Tree::class);
+        $this->locations = $params->getCollection('locations', Location::class, new ArrayCollection());
+        $this->posts = $params->getCollection('posts', Post::class, new ArrayCollection());
+        $this->created = $params->getInstance('created', \DateTimeInterface::class);
     }
 
     /**
@@ -264,7 +244,7 @@ class Place extends Entity implements TreeAwareInterface
     /**
      * Set parent
      *
-     * @param Place $parent
+     * @param Place|null $parent
      */
     public function setParent(Place $parent = null) : self
     {
@@ -314,18 +294,6 @@ class Place extends Entity implements TreeAwareInterface
     }
 
     /**
-     * Set created
-     *
-     * @param \DateTimeInterface $created
-     */
-    public function setCreated(\DateTimeInterface $created) : self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
      * Get parents.
      */
     public function getParents() : Collection
@@ -353,13 +321,6 @@ class Place extends Entity implements TreeAwareInterface
         return null;
     }
 
-    /**
-     * Get created.
-     */
-    public function getCreated() :? \DateTimeInterface
-    {
-        return $this->created;
-    }
 
     public function getTreeClass() : string
     {
@@ -368,6 +329,8 @@ class Place extends Entity implements TreeAwareInterface
 
     /**
      * Test if place is equal.
+     *
+     * @param Place $place
      */
     public function isEqualTo(Place $place) : bool
     {

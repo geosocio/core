@@ -1,10 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Serializer;
+namespace App\Serializer;
 
-use GeoSocio\Core\Entity\SiteAwareInterface;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\UserAwareInterface;
+use App\Entity\SiteAwareInterface;
+use App\Entity\User\User;
+use App\Entity\User\UserAwareInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;

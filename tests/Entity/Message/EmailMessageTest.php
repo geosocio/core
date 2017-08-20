@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Entity\Message;
+namespace App\Tests\Entity\Message;
 
-use GeoSocio\Core\Entity\Message\EmailMessage;
+use App\Entity\Message\EmailMessage;
 
 class EmailMessageTest extends MessageTest
 {

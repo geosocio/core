@@ -1,17 +1,17 @@
 <?php
 
-namespace GeoSocio\Core\Utils\User;
+namespace App\Utils\User;
 
-use GeoSocio\Core\Entity\Message\EmailMessage;
-use GeoSocio\Core\Entity\User\Verify\VerifyInterface;
+use App\Entity\Message\EmailMessage;
+use App\Entity\User\Verify\VerifyInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bridge\Doctrine\RegistryInterface as Doctrine;
 use RandomLib\Generator as RandomGenerator;
 
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\Verify\EmailVerify;
-use GeoSocio\Core\Utils\Dispatcher\DispatcherInterface;
+use App\Entity\User\User;
+use App\Entity\User\Email;
+use App\Entity\User\Verify\EmailVerify;
+use App\Utils\Dispatcher\DispatcherInterface;
 
 /**
  * Email Verification.
@@ -30,7 +30,7 @@ class EmailVerification implements VerificationInterface
     protected $random;
 
     /**
-     * @var \GeoSocio\Core\Utils\Dispatcher\DispatcherInterface
+     * @var \App\Utils\Dispatcher\DispatcherInterface
      */
     protected $dispatcher;
 

@@ -1,11 +1,12 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Serializer\Mapzen;
+namespace App\Tests\Serializer\Mapzen;
 
-use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Serializer\Mapzen\WhosOnFirstDenormalizer;
+use App\Entity\Place\Place;
+use App\Serializer\Mapzen\WhosOnFirstDenormalizer;
+use PHPUnit\Framework\TestCase;
 
-class WhosOnFirstDenormalizerTest extends \PHPUnit_Framework_TestCase
+class WhosOnFirstDenormalizerTest extends TestCase
 {
     public function testSupportsDenormalization()
     {

@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Client\Mapzen;
+namespace App\Client\Mapzen;
 
-use GeoSocio\Core\Entity\Location;
+use GuzzleHttp\Promise\PromiseInterface;
 
 /**
  * Executing a Search on Mapzen.
@@ -15,5 +15,5 @@ interface SearchInterface
      *
      * @param string $id
      */
-    public function get(string $id) : Location;
+    public function get(string $id) : PromiseInterface;
 }

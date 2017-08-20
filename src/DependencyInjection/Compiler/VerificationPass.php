@@ -1,6 +1,6 @@
 <?php
 
-namespace GeoSocio\Core\DependencyInjection\Compiler;
+namespace App\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,12 +17,12 @@ class VerificationPass implements CompilerPassInterface
     public function process(ContainerBuilder $container) : void
     {
         // Always first check if the primary service is defined.
-        if (!$container->has('geosocio.verification_manager')) {
+        if (!$container->has('app.verification_manager')) {
             return;
         }
 
-        $definition = $container->getDefinition('geosocio.verification_manager');
-        $taggedServices = $container->findTaggedServiceIds('geosocio.verification');
+        $definition = $container->getDefinition('app.verification_manager');
+        $taggedServices = $container->findTaggedServiceIds('app.verification');
 
         foreach ($taggedServices as $id => $tags) {
             foreach ($tags as $attributes) {

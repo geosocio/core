@@ -1,6 +1,6 @@
 <?php
 
-namespace GeoSocio\Core\Client;
+namespace App\Client;
 
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\Serializer\SerializerInterface;

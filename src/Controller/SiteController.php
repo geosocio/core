@@ -1,19 +1,20 @@
 <?php
 
-namespace GeoSocio\Core\Controller;
+namespace App\Controller;
 
-use GeoSocio\Core\Entity\Site;
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Site actions.
  *
  * @Route(
- *    service="geosocio.controller_site",
+ *    service="app.controller_site",
  *    defaults = {
  *       "version" = "1.0",
  *       "_format" = "json"
@@ -26,6 +27,8 @@ class SiteController extends Controller
     /**
      * @Route("/site.{_format}")
      * @Method("GET")
+     *
+     * @Groups("anonymous")
      *
      * @param Request $request
      */
@@ -55,7 +58,8 @@ class SiteController extends Controller
     /**
      * @Route("/site/{site}.{_format}")
      * @Method("GET")
-     * @ParamConverter("site", converter="doctrine.orm", class="GeoSocio\Core\Entity\Site")
+     * @ParamConverter("site", converter="doctrine.orm", class="App\Entity\Site")
+     * @Groups("anonymous")
      */
     public function showAction(Site $site) : Site
     {

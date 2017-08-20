@@ -18,7 +18,13 @@ RUN set -ex \
     && docker-php-ext-enable uuid \
 	&& apt-get purge -y --auto-remove $buildDeps
 
-RUN docker-php-ext-install intl opcache pdo_mysql
+RUN set -ex \
+	&& buildDeps=' \
+		libsqlite3-dev \
+	' \
+	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install intl opcache pdo_mysql pdo_sqlite \
+	&& apt-get purge -y --auto-remove $buildDeps
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php

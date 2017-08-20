@@ -1,10 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Client\Mapzen;
+namespace App\Client\Mapzen;
 
-use GeoSocio\Core\Client\Client;
-use GeoSocio\Core\Entity\Location;
-use GuzzleHttp\Exception\ClientException;
+use App\Client\Client;
+use App\Entity\Location;
+use GuzzleHttp\Promise\PromiseInterface;
 
 /**
  * Search Client.
@@ -15,28 +15,14 @@ class Search extends Client implements SearchInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $id) : Location
+    public function get(string $id) : PromiseInterface
     {
-        $response = null;
-        while (!$response) {
-            try {
-                $response = $this->client->get('place', [
-                    'query' => [
-                        'ids' => $id
-                    ],
-                ]);
-            } catch (ClientException $e) {
-                // Wait a second and try again.
-                if ($e->getResponse()->getStatusCode() === 429) {
-                    $response = null;
-                    sleep(1);
-                    continue;
-                }
-
-                throw $e;
-            }
-        }
-
-        return $this->serializer->deserialize((string) $response->getBody(), Location::class, 'json');
+        return $this->client->requestAsync('GET', 'place', [
+            'query' => [
+                'ids' => $id
+            ],
+        ])->then(function ($response) {
+            return $this->serializer->deserialize((string) $response->getBody(), Location::class, 'json');
+        });
     }
 }

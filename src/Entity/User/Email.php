@@ -1,17 +1,18 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User;
+namespace App\Entity\User;
 
 use Doctrine\ORM\Mapping as ORM;
-use GeoSocio\Core\Entity\CreatedTrait;
+use GeoSocio\EntityUtils\ParameterBag;
+use GeoSocio\EntityUtils\CreatedTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Verify\EmailVerify;
+use App\Entity\User\User;
+use App\Entity\User\Verify\EmailVerify;
 
 /**
- * GeoSocio\Core\Entity\User\Email
+ * App\Entity\User\Email
  *
  * @ORM\Table(name="users_email")
  * @ORM\Entity
@@ -45,7 +46,7 @@ class Email implements UserAwareInterface
      * @var EmailVerify
      *
      * @ORM\OneToOne(
-     *  targetEntity="\GeoSocio\Core\Entity\User\Verify\EmailVerify",
+     *  targetEntity="\App\Entity\User\Verify\EmailVerify",
      *  mappedBy="email",
      *  cascade={"remove"}
      * )
@@ -66,20 +67,12 @@ class Email implements UserAwareInterface
      */
     public function __construct(array $data = [])
     {
-        $email = $data['email'] ?? null;
-        $this->email = is_string($email) ? $email : null;
-
-        $user = $data['user'] ?? null;
-        $this->user = $user instanceof User ? $user : null;
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
-
-        $verify = $data['verify'] ?? null;
-        $this->verify = $verify instanceof EmailVerify ? $verify : null;
-
-        $verified = $data['verified'] ?? null;
-        $this->verified = $verified instanceof \DateTimeInterface ? $verified : null;
+        $params = new ParameterBag($data);
+        $this->email = $params->getString('email');
+        $this->user = $params->getInstance('user', User::class);
+        $this->created = $params->getInstance('created', \DateTimeInterface::class);
+        $this->verify = $params->getInstance('verify', EmailVerify::class);
+        $this->verified = $params->getInstance('verified', \DateTimeInterface::class);
     }
 
     /**
@@ -183,6 +176,8 @@ class Email implements UserAwareInterface
 
     /**
      * Determines if one email is equal to another.
+     *
+     * @param Email $email
      */
     public function isEqualTo(Email $email) : bool
     {

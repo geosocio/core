@@ -1,24 +1,24 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User;
+namespace App\Entity\User;
 
+use App\Entity\Site;
+use App\Entity\SiteAwareInterface;
+use App\Entity\User\User;
+use App\Entity\User\UserAwareInterface;
 use Doctrine\ORM\Mapping as ORM;
-use GeoSocio\Core\Entity\Site;
-use GeoSocio\Core\Entity\Entity;
-use GeoSocio\Core\Entity\CreatedTrait;
-use GeoSocio\Core\Entity\SiteAwareInterface;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\UserAwareInterface;
+use GeoSocio\EntityUtils\ParameterBag;
+use GeoSocio\EntityUtils\CreatedTrait;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * GeoSocio\Core\Entity\User\Membership
+ * App\Entity\User\Membership
  *
  * @ORM\Table(name="users_membership")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
-class Membership extends Entity implements UserAwareInterface, SiteAwareInterface
+class Membership implements UserAwareInterface, SiteAwareInterface
 {
 
     use CreatedTrait;
@@ -27,7 +27,7 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
      * @var User
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\User\User", inversedBy="sites")
+     * @ORM\ManyToOne(targetEntity="\App\Entity\User\User", inversedBy="sites")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      */
     private $user;
@@ -36,7 +36,7 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
      * @var Site
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Site")
+     * @ORM\ManyToOne(targetEntity="\App\Entity\Site")
      * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
      */
     private $site;
@@ -48,14 +48,10 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
      */
     public function __construct(array $data = [])
     {
-        $user = $data['user'] ?? null;
-        $this->user = $this->getSingle($user, User::class);
-
-        $site = $data['site'] ?? null;
-        $this->site = $this->getSingle($site, Site::class);
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
+        $params = new ParameterBag($data);
+        $this->user = $params->getInstance('user', User::class);
+        $this->site = $params->getInstance('site', Site::class);
+        $this->created = $params->getInstance('created', \DateTimeInterface::class);
     }
 
     /**
@@ -93,6 +89,8 @@ class Membership extends Entity implements UserAwareInterface, SiteAwareInterfac
 
     /**
      * Set site
+     *
+     * @param Site $site
      */
     public function setSite(Site $site) : self
     {

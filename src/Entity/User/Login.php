@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User;
+namespace App\Entity\User;
 
-use GeoSocio\Core\Entity\EntityInterface;
+use GeoSocio\EntityUtils\ParameterBag;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *
  * This entity is not persisted into the database.
  */
-class Login implements EntityInterface
+class Login
 {
 
     /**
@@ -34,12 +34,14 @@ class Login implements EntityInterface
      */
     public function __construct(array $data = [])
     {
-        $value = $data['value'] ?? '';
-        $this->value = is_string($value) ? $value : '';
+        $params = new ParameterBag($data);
+        $this->value = $params->getString('value');
     }
 
     /**
      * Sets the value of the login.
+     *
+     * @param string $value
      *
      * @Groups({"anonymous"})
      */

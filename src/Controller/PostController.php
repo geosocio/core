@@ -1,11 +1,11 @@
 <?php
 
-namespace GeoSocio\Core\Controller;
+namespace App\Controller;
 
-use GeoSocio\Core\Entity\Site;
-use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Entity\Post\Post;
-use GeoSocio\Core\Entity\User\User;
+use App\Entity\Site;
+use App\Entity\Place\Place;
+use App\Entity\Post\Post;
+use App\Entity\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  * Post actions.
  *
  * @Route(
- *    service="geosocio.controller_post",
+ *    service="app.controller_post",
  *    defaults = {
  *       "version" = "1.0",
  *       "_format" = "json"
@@ -70,7 +70,7 @@ class PostController extends Controller
     /**
      * @Route("/post/{post}.{_format}")
      * @Method("GET")
-     * @ParamConverter("post", converter="doctrine.orm", class="GeoSocio\Core\Entity\Post\Post")
+     * @ParamConverter("post", converter="doctrine.orm", class="App\Entity\Post\Post")
      */
     public function showAction(Post $post, User $authenticated = null) : Post
     {
@@ -132,7 +132,7 @@ class PostController extends Controller
     /**
      * @Route("/post/{post}/replies.{_format}")
      * @Method("GET")
-     * @ParamConverter("post", converter="doctrine.orm", class="GeoSocio\Core\Entity\Post\Post")
+     * @ParamConverter("post", converter="doctrine.orm", class="App\Entity\Post\Post")
      */
     public function showRepliesAction(Post $post, Request $request) : array
     {

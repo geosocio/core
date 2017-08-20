@@ -1,8 +1,9 @@
 <?php
 
-namespace GeoSocio\Core\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\EntityUtils\ParameterBag;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -12,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="permission")
  */
-class Permission extends Entity
+class Permission
 {
 
     /**
@@ -37,11 +38,9 @@ class Permission extends Entity
      */
     public function __construct(array $data = [])
     {
-        $id = $data['id'] ?? null;
-        $this->id = is_string($id) ? $id  : null;
-
-        $name = $data['name'] ?? null;
-        $this->name = is_string($name) ? $name : null;
+        $params = new ParameterBag($data);
+        $this->id = $params->getString('id');
+        $this->name = $params->getString('name');
     }
 
     /**
@@ -56,6 +55,8 @@ class Permission extends Entity
 
     /**
      * Set id
+     *
+     * @param string $id
      *
      * @Groups({"me"})
      */

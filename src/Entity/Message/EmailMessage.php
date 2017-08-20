@@ -1,6 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Entity\Message;
+namespace App\Entity\Message;
+
+use GeoSocio\EntityUtils\ParameterBag;
 
 class EmailMessage extends Message
 {
@@ -17,8 +19,8 @@ class EmailMessage extends Message
     {
         parent::__construct($data);
 
-        $subject = $data['subject'] ?? '';
-        $this->subject = is_string($subject) ? $subject : '';
+        $params = new ParameterBag($data);
+        $this->subject = $params->getString('subject', '');
     }
 
     /**

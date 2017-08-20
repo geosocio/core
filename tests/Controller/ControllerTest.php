@@ -1,14 +1,15 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Controller;
+namespace App\Tests\Controller;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use GeoSocio\Core\Utils\EntityAttacherInterface;
+use GeoSocio\EntityAttacher\EntityAttacherInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use PHPUnit\Framework\TestCase;
 
-abstract class ControllerTest extends \PHPUnit_Framework_TestCase
+abstract class ControllerTest extends TestCase
 {
 
     /**

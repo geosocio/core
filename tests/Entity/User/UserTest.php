@@ -1,12 +1,12 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Entity\User;
+namespace App\Tests\Entity\User;
 
-use GeoSocio\Core\Entity\Location;
-use GeoSocio\Core\Entity\User\Name;
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Tests\Entity\EntityTest;
+use App\Entity\Location;
+use App\Entity\User\Name;
+use App\Entity\User\Email;
+use App\Entity\User\User;
+use App\Tests\Entity\EntityTest;
 
 class UserTest extends EntityTest
 {
@@ -84,7 +84,7 @@ class UserTest extends EntityTest
             ],
             'username' => 'test',
             'location' => [
-                'id' => 1234,
+                'id' => '12345',
             ],
         ]);
 

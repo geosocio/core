@@ -1,12 +1,12 @@
 <?php
 
-namespace GeoSocio\Core\Controller;
+namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
- * @Route(service="geosocio.controller_default")
+ * @Route(service="app.controller_default")
  */
 class DefaultController extends Controller
 {

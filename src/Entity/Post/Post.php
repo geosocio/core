@@ -1,30 +1,30 @@
 <?php
 
-namespace GeoSocio\Core\Entity\Post;
+namespace App\Entity\Post;
 
+use GeoSocio\EntityAttacher\Annotation\Attach;
+use GeoSocio\EntityUtils\CreatedTrait;
+use GeoSocio\EntityUtils\ParameterBag;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use GeoSocio\Core\Annotation\Attach;
-use GeoSocio\Core\Entity\AccessAwareInterface;
-use GeoSocio\Core\Entity\Site;
-use GeoSocio\Core\Entity\Entity;
-use GeoSocio\Core\Entity\Permission;
-use GeoSocio\Core\Entity\CreatedTrait;
-use GeoSocio\Core\Entity\SiteAwareInterface;
-use GeoSocio\Core\Entity\TreeAwareInterface;
-use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Entity\User\User;
+use App\Entity\AccessAwareInterface;
+use App\Entity\Site;
+use App\Entity\Permission;
+use App\Entity\SiteAwareInterface;
+use App\Entity\TreeAwareInterface;
+use App\Entity\Place\Place;
+use App\Entity\User\User;
 use Doctrine\ORM\Mapping as ORM;
-use GeoSocio\Core\Entity\User\UserAwareInterface;
+use App\Entity\User\UserAwareInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 // @codingStandardsIgnoreStart
 /**
- * GeoSocio\Entity\Location
+ * Post
  *
- * @ORM\Entity(repositoryClass="GeoSocio\Core\Repository\Post\PostRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\Post\PostRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="post")
  * @Assert\Expression(
@@ -36,7 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @TODO Replies and forwards should have the same site id as their parent.
  */
 // @codingStandardsIgnoreEnd
-class Post extends Entity implements AccessAwareInterface, UserAwareInterface, SiteAwareInterface, TreeAwareInterface
+class Post implements AccessAwareInterface, UserAwareInterface, SiteAwareInterface, TreeAwareInterface
 {
 
     use CreatedTrait;
@@ -95,7 +95,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Assert\NotNull()
      * @Attach()
@@ -105,7 +105,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Site
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Site", inversedBy="posts")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Site", inversedBy="posts")
      * @ORM\JoinColumn(name="site_id", referencedColumnName="site_id")
      * @Attach()
      */
@@ -114,7 +114,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Permission
      *
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Permission")
+     * @ORM\ManyToOne(targetEntity="\App\Entity\Permission")
      * @ORM\JoinColumn(name="permission_id", referencedColumnName="permission_id")
      * @Assert\NotNull()
      * @Attach()
@@ -124,7 +124,7 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * @var Place
      *
-     * @ORM\ManyToOne(targetEntity="\GeoSocio\Core\Entity\Place\Place")
+     * @ORM\ManyToOne(targetEntity="\App\Entity\Place\Place")
      * @ORM\JoinColumn(name="permission_place_id", referencedColumnName="place_id")
      * @Attach()
      */
@@ -152,32 +152,16 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
      */
     public function __construct(array $data = [])
     {
-        $id = $data['id'] ?? null;
-        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : strtolower(uuid_create(UUID_TYPE_DEFAULT));
-
-        $text = $data['text'] ?? null;
-        $this->text = is_string($text) ? $text : null;
-
-        $user = $data['user'] ?? null;
-        $this->user = $this->getSingle($user, User::class);
-
-        $site = $data['site'] ?? null;
-        $this->site = $this->getSingle($site, Site::class);
-
-        $permission = $data['permission'] ?? null;
-        $this->permission = $this->getSingle($permission, Permission::class);
-
-        $permissionPlace = $data['permissionPlace'] ?? null;
-        $this->permissionPlace = $this->getSingle($permissionPlace, Place::class);
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
-
-        $deleted = $data['deleted'] ?? null;
-        $this->deleted = $deleted instanceof \DateTimeInterface ? $deleted : null;
-
-        $placements = $data['placements'] ?? null;
-        $this->placements = $this->getMultiple($placements, Placement::class);
+        $params = new ParameterBag($data);
+        $this->id = $params->getUuid('id', strtolower(uuid_create(UUID_TYPE_DEFAULT)));
+        $this->text = $params->getString('text');
+        $this->user = $params->getInstnace('user', User::class);
+        $this->site = $params->getInstnace('site', Site::class);
+        $this->permission = $params->getInstnace('permission', Permission::class);
+        $this->permissionPlace = $params->getInstnace('permissionPlace', Place::class);
+        $this->created = $params->getInstnace('created', \DateTimeInterface::class);
+        $this->deleted = $params->getInstnace('deleted', \DateTimeInterface::class);
+        $this->placements = $params->getCollection('placements', Placement::class, new ArrayCollection());
     }
 
     /**
@@ -226,6 +210,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set Text
      *
+     * @param string $text
+     *
      * @Groups({"standard"})
      */
     public function setText(string $text) : self
@@ -237,6 +223,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set user
+     *
+     * @param User $user
      */
     public function setUser(User $user) : self
     {
@@ -275,6 +263,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set User id.
      *
+     * @param string $id
+     *
      * @Groups({"standard"})
      */
     public function setUserId(string $id) : self
@@ -286,6 +276,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set site
+     *
+     * @param string $id
      *
      * @Groups({"standard"})
      */
@@ -314,6 +306,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set site
+     *
+     * @param Site $site
      */
     public function setSite(Site $site) : self
     {
@@ -395,6 +389,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
     /**
      * Set reply id.
      *
+     * @param string $id
+     *
      * @Groups({"standard"})
      */
     public function setReplyId(string $id) : self
@@ -422,6 +418,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set reply
+     *
+     * @param Post $reply
      */
     public function setReply(Post $reply) : self
     {
@@ -440,6 +438,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set forward id.
+     *
+     * @param string $id
      *
      * @Groups({"standard"})
      */
@@ -468,6 +468,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set forward
+     *
+     * @param Post $forward
      */
     public function setForward(Post $forward) : self
     {
@@ -486,6 +488,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set permission id.
+     *
+     * @param string $id
      *
      * @Groups({"standard"})
      */
@@ -514,6 +518,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set Permission.
+     *
+     * @param Permission $permission
      */
     public function setPermission(Permission $permission) : self
     {
@@ -532,6 +538,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set permission place id.
+     *
+     * @param string $id
      *
      * @Groups({"standard"})
      */
@@ -560,6 +568,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set Permission Place.
+     *
+     * @param Place $permissionPlace
      */
     public function setPermissionPlace(Place $permissionPlace) : self
     {
@@ -604,6 +614,8 @@ class Post extends Entity implements AccessAwareInterface, UserAwareInterface, S
 
     /**
      * Set place
+     *
+     * @param int $id
      *
      * @Groups({"standard"})
      */

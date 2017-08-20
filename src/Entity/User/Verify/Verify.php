@@ -1,11 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User\Verify;
+namespace App\Entity\User\Verify;
 
-use GeoSocio\Core\Entity\Entity;
 use Doctrine\ORM\Mapping as ORM;
-
-use GeoSocio\Core\Entity\CreatedTrait;
+use GeoSocio\EntityUtils\ParameterBag;
+use GeoSocio\EntityUtils\CreatedTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -15,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks()
  */
-abstract class Verify extends Entity implements VerifyInterface
+abstract class Verify implements VerifyInterface
 {
 
     use CreatedTrait;
@@ -49,14 +48,10 @@ abstract class Verify extends Entity implements VerifyInterface
      */
     public function __construct(array $data = [])
     {
-        $token = $data['token'] ?? null;
-        $this->token = is_string($token) ? $token : null;
-
-        $code = $data['code'] ?? null;
-        $this->code = is_string($code) ? $code : null;
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
+        $params = new ParameterBag($data);
+        $this->token = $params->getString('token');
+        $this->code = $params->getString('code');
+        $this->created = $params->getInstance('created', \DateTimeInterface::class);
     }
 
     /**
@@ -84,6 +79,8 @@ abstract class Verify extends Entity implements VerifyInterface
     /**
      * Set token
      *
+     * @param string $token
+     *
      * @Groups({"anonymous"})
      */
     public function setToken(string $token) : self
@@ -105,6 +102,8 @@ abstract class Verify extends Entity implements VerifyInterface
 
     /**
      * Set code
+     *
+     * @param string $code
      *
      * @Groups({"anonymous"})
      */

@@ -1,9 +1,9 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Controller;
+namespace App\Tests\Controller;
 
-use GeoSocio\Core\Controller\PlaceController;
-use GeoSocio\Core\Entity\Place\Place;
+use App\Controller\PlaceController;
+use App\Entity\Place\Place;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;

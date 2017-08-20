@@ -1,17 +1,14 @@
 <?php
 
-namespace GeoSocio\Core\Controller;
+namespace App\Controller;
 
-use GeoSocio\Core\Entity\Location;
-use GeoSocio\Core\Entity\Site;
-use GeoSocio\Core\Entity\User\Name;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\Membership;
-use GeoSocio\Core\Entity\User\Verify\EmailVerify;
-use GeoSocio\Core\Utils\PlaceFinderInterface;
-use GeoSocio\Core\Utils\EntityAttacherInterface;
-use GeoSocio\Core\Utils\User\VerificationManagerInterface;
+use App\Entity\User\User;
+use App\Entity\User\Email;
+use App\Entity\User\Membership;
+use App\Entity\User\Verify\EmailVerify;
+use App\Utils\PlaceFinderInterface;
+use App\Utils\User\VerificationManagerInterface;
+use GeoSocio\EntityAttacher\EntityAttacherInterface;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,15 +23,16 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
  * @Route(
- *    service="geosocio.controller_user",
+ *    service="app.controller_user",
  *    defaults = {
  *       "version" = "1.0",
  *       "_format" = "json"
  *    }
  * )
  *
- * @TODO Need a route to determine the place a user should see
+ * @todo Need a route to determine the place a user should see
  *      (not too many people, not too few)
+ * @todo need to create some sort of system for dynamic serialization gorups!
  */
 class UserController extends Controller
 {
@@ -90,7 +88,7 @@ class UserController extends Controller
   /**
    * @Route("/user/{user}.{_format}")
    * @Method("GET")
-   * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+   * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
    *
    * @param User $user
    * @param Request $request
@@ -109,7 +107,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}")
      * @Method("PATCH")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -153,7 +151,7 @@ class UserController extends Controller
     /**
      * Update the user's location.
      *
-     * @TODO Get rid of this method!
+     * @todo Get rid of this method!
      */
     protected function updateLocation(User $user) : User
     {
@@ -182,7 +180,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}")
      * @Method("DELETE")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -206,7 +204,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/memberships.{_format}")
      * @Method("GET")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -225,8 +223,8 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/memberships/{site}")
      * @Method("DELETE")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
-     * @ParamConverter("site", converter="doctrine.orm", class="GeoSocio\Core\Entity\Site")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
+     * @ParamConverter("site", converter="doctrine.orm", class="App\Entity\Site")
      * @Security("has_role('authenticated')")
      *
      * @param Email $email
@@ -256,7 +254,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/memberships.{_format}")
      * @Method("POST")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -298,7 +296,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/emails.{_format}")
      * @Method("GET")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -317,7 +315,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/emails")
      * @Method("POST")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request
@@ -370,7 +368,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/emails/{email}")
      * @Method("DELETE")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Email $email
@@ -395,7 +393,7 @@ class UserController extends Controller
      *
      * @Route("/user/{user}/emails/verify")
      * @Method("POST")
-     * @ParamConverter("user", converter="doctrine.orm", class="GeoSocio\Core\Entity\User\User")
+     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
      * @param Request $request

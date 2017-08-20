@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\EventListener;
+namespace App\EventListener;
 
-use GeoSocio\Core\Entity\TreeAwareInterface;
+use App\Entity\TreeAwareInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
 /**

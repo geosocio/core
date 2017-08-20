@@ -1,10 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Tests\EventListener;
+namespace App\Tests\EventListener;
 
-use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Entity\Place\Tree;
-use GeoSocio\Core\EventListener\TreeMaker;
+use App\Entity\Place\Place;
+use App\Entity\Place\Tree;
+use App\EventListener\TreeMaker;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\AbstractQuery;
@@ -12,8 +12,9 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Query\Expr;
+use PHPUnit\Framework\TestCase;
 
-class TreeMakerTest extends \PHPUnit_Framework_TestCase
+class TreeMakerTest extends TestCase
 {
     /**
      * Tests Post Persist.

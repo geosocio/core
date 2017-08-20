@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Serializer\Mapzen;
+namespace App\Serializer\Mapzen;
 
-use GeoSocio\Core\Entity\Place\Place;
+use App\Entity\Place\Place;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**

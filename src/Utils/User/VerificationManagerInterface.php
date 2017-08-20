@@ -1,6 +1,6 @@
 <?php
 
-namespace GeoSocio\Core\Utils\User;
+namespace App\Utils\User;
 
 /**
  * Verification Manager Interface.

@@ -1,10 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Repository\Post;
+namespace App\Repository\Post;
 
 use Doctrine\ORM\EntityRepository;
-use GeoSocio\Core\Entity\Site;
-use GeoSocio\Core\Entity\Place\Place;
+use App\Entity\Site;
+use App\Entity\Place\Place;
 
 class PostRepository extends EntityRepository
 {

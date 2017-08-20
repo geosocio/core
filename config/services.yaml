@@ -1,0 +1,139 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: 'en'
+    app.mapzen_api_key: '%env(MAPZEN_API_KEY)%'
+    app.sendgrid_api_key: '%env(SENDGRID_API_KEY)%'
+
+services:
+    app.controller:
+        abstract:  true
+        arguments:
+            - '@app.denormalizer'
+            - '@doctrine'
+            - '@geosocio_entity_attacher'
+
+    app.controller_default:
+        parent: app.controller
+        class: App\Controller\DefaultController
+
+    app.controller_auth:
+        parent: app.controller
+        class: App\Controller\AuthController
+        arguments:
+            - "@app.verification_manager"
+            - '@lexik_jwt_authentication.jwt_manager'
+
+    app.controller_user:
+        parent: app.controller
+        class: App\Controller\UserController
+        arguments:
+            - "@app.verification_manager"
+            - '@app.place_finder'
+
+    app.controller_place:
+        parent: app.controller
+        class: App\Controller\PlaceController
+
+    app.controller_post:
+        parent: app.controller
+        class: App\Controller\PostController
+
+    app.controller_site:
+        parent: app.controller
+        class: App\Controller\SiteController
+
+    app.denormalizer:
+        class: App\Serializer\Denormalizer
+        arguments:
+            - '@serializer'
+            - '@validator'
+            - '@security.token_storage'
+
+    app.tree_maker:
+        class: App\EventListener\TreeMaker
+        public: false
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+            - { name: doctrine.event_listener, event: preRemove }
+
+    app.verification_manager:
+         class: App\Utils\User\VerificationManager
+
+    app.verification_email:
+        class: App\Utils\User\EmailVerification
+        public: false
+        arguments:
+            - '@doctrine'
+            - '@app.ircmaxell_random'
+            - '@app.dispatcher_email'
+        tags:
+            - { name: app.verification, type: email }
+
+    app.dispatcher_email:
+        class: App\Utils\Dispatcher\EmailDispatcher
+        arguments:
+            - '@app.sendgrid'
+
+    app.place_finder:
+        class: App\Utils\PlaceFinder
+        arguments:
+            - '@doctrine'
+            - '@app.client_mapzen_search'
+            - '@app.client_mapzen_whos_on_first'
+            - '@geosocio_slugger'
+
+    app.sendgrid:
+        class: SendGrid
+        arguments:
+            - '%app.sendgrid_api_key%'
+
+    app.ircmaxell_random_factory:
+        class: RandomLib\Factory
+
+    app.ircmaxell_random:
+        class: RandomLib\Generator
+        factory: ["@app.ircmaxell_random_factory", getMediumStrengthGenerator]
+
+    app.client_mapzen_search:
+        class: App\Client\Mapzen\Search
+        arguments:
+            - '@app.guzzle_client_mapzen_search'
+            - '@serializer'
+
+    app.client_mapzen_whos_on_first:
+        class: App\Client\Mapzen\WhosOnFirst
+        arguments:
+            - '@app.guzzle_client_mapzen_whos_on_first'
+            - '@serializer'
+
+    app.serializer_mapzen_search:
+        class: App\Serializer\Mapzen\SearchDenormalizer
+        public: false
+        tags:
+            - { name: serializer.normalizer }
+
+    app.serializer_mapzen_whos_on_first:
+        class: App\Serializer\Mapzen\WhosOnFirstDenormalizer
+        public: false
+        tags:
+            - { name: serializer.normalizer }
+
+    app.guzzle_client_mapzen_search:
+        class: GuzzleHttp\Client
+        arguments:
+            -
+                base_url: https://search.mapzen.com/v1/
+                defaults:
+                    query:
+                        api_key: '%app.mapzen_api_key%'
+
+    app.guzzle_client_mapzen_whos_on_first:
+        class: GuzzleHttp\Client
+        arguments:
+            -
+                base_url: https://whosonfirst-api.mapzen.com
+                defaults:
+                    query:
+                        api_key: '%app.mapzen_api_key%'

@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Entity;
+namespace App\Entity;
 
-use GeoSocio\Core\Entity\User\User;
+use App\Entity\User\User;
 
 // @TODO Replace with Symfony Security Voter.
 //       @see http://symfony.com/doc/current/security/voters.html

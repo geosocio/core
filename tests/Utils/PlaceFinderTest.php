@@ -1,25 +1,28 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Utils;
+namespace App\Tests\Utils;
 
-use GeoSocio\Core\Entity\Location;
-use GeoSocio\Core\Client\Mapzen\SearchInterface;
-use GeoSocio\Core\Client\Mapzen\WhosOnFirstInterface;
-use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Entity\Place\Tree;
-use GeoSocio\Core\Utils\PlaceFinder;
+use App\Entity\Location;
+use App\Client\Mapzen\SearchInterface;
+use App\Client\Mapzen\WhosOnFirstInterface;
+use App\Entity\Place\Place;
+use App\Entity\Place\Tree;
+use App\Utils\PlaceFinder;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use PHPUnit\Framework\TestCase;
+use GeoSocio\Slugger\SluggerInterface;
 
 /**
  * Array Utilties Test.
  */
-class PlaceFinderTest extends \PHPUnit_Framework_TestCase
+class PlaceFinderTest extends TestCase
 {
     /**
      * Tests the find method.
@@ -69,17 +72,27 @@ class PlaceFinderTest extends \PHPUnit_Framework_TestCase
         $doctrine->method('getEntityManager')
             ->willReturn($em);
 
+        $promise = $this->createMock(PromiseInterface::class);
+        $promise->method('wait')
+            ->willReturn($location);
+
         $search = $this->createMock(SearchInterface::class);
         $search->method('get')
             ->with($id)
-            ->willReturn($location);
+            ->willReturn($promise);
+
+        $promise = $this->createMock(PromiseInterface::class);
+        $promise->method('wait')
+            ->willReturn($place);
 
         $whosonfirst = $this->createMock(WhosOnFirstInterface::class);
         $whosonfirst->method('get')
             ->with($place_id)
-            ->willReturn($place);
+            ->willReturn($promise);
 
-        $placeFinder = new PlaceFinder($doctrine, $search, $whosonfirst);
+        $slugger = $this->createMock(SluggerInterface::class);
+
+        $placeFinder = new PlaceFinder($doctrine, $search, $whosonfirst, $slugger);
 
         $result = $placeFinder->find($location);
         $this->assertInstanceOf(Location::class, $result);
@@ -96,12 +109,16 @@ class PlaceFinderTest extends \PHPUnit_Framework_TestCase
         $exception->method('getResponse')
             ->willReturn($response);
 
+        $promise = $this->createMock(PromiseInterface::class);
+        $promise->method('wait')
+            ->willReturn($place);
+
         $whosonfirst
             ->method('get')
             ->with($place_id)
             ->willReturnOnConsecutiveCalls(
                 $this->throwException($exception),
-                $this->returnValue($place)
+                $this->returnValue($promise)
             );
 
         $tree = $this->getMockBuilder(Tree::class)
@@ -122,13 +139,17 @@ class PlaceFinderTest extends \PHPUnit_Framework_TestCase
 
         $this->resetCount();
 
+        $promise = $this->createMock(PromiseInterface::class);
+        $promise->method('wait')
+            ->willReturn($place);
+
         $whosonfirst
             ->method('get')
             ->with($place_id)
             ->willReturnOnConsecutiveCalls(
                 $this->throwException($exception),
                 $this->throwException($exception),
-                $this->returnValue($place)
+                $this->returnValue($promise)
             );
 
         $ancestor->expects($this->once())
@@ -189,17 +210,27 @@ class PlaceFinderTest extends \PHPUnit_Framework_TestCase
         $doctrine->method('getEntityManager')
             ->willReturn($em);
 
+        $promise = $this->createMock(PromiseInterface::class);
+        $promise->method('wait')
+            ->willReturn($location);
+
         $search = $this->createMock(SearchInterface::class);
         $search->method('get')
             ->with($id)
-            ->willReturn($location);
+            ->willReturn($promise);
+
+        $promise = $this->createMock(PromiseInterface::class);
+        $promise->method('wait')
+            ->willReturn($place);
 
         $whosonfirst = $this->createMock(WhosOnFirstInterface::class);
         $whosonfirst->method('get')
             ->with($place_id)
-            ->willReturn($place);
+            ->willReturn($promise);
 
-        $placeFinder = new PlaceFinder($doctrine, $search, $whosonfirst);
+        $slugger = $this->createMock(SluggerInterface::class);
+
+        $placeFinder = new PlaceFinder($doctrine, $search, $whosonfirst, $slugger);
 
         $result = $placeFinder->find($location);
         $this->assertInstanceOf(Location::class, $result);
@@ -266,17 +297,27 @@ class PlaceFinderTest extends \PHPUnit_Framework_TestCase
         $doctrine->method('getEntityManager')
             ->willReturn($em);
 
+        $promise = $this->createMock(PromiseInterface::class);
+        $promise->method('wait')
+            ->willReturn($location);
+
         $search = $this->createMock(SearchInterface::class);
         $search->method('get')
             ->with($id)
-            ->willReturn($location);
+            ->willReturn($promise);
+
+        $promise = $this->createMock(PromiseInterface::class);
+        $promise->method('wait')
+            ->willReturn($place);
 
         $whosonfirst = $this->createMock(WhosOnFirstInterface::class);
         $whosonfirst->method('get')
             ->with($place_id)
-            ->willReturn($place);
+            ->willReturn($promise);
 
-        $placeFinder = new PlaceFinder($doctrine, $search, $whosonfirst);
+        $slugger = $this->createMock(SluggerInterface::class);
+
+        $placeFinder = new PlaceFinder($doctrine, $search, $whosonfirst, $slugger);
 
         $result = $placeFinder->find($location);
         $this->assertInstanceOf(Location::class, $result);

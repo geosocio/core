@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Utils\User;
+namespace App\Utils\User;
 
-use GeoSocio\Core\Entity\User\Verify\VerifyInterface;
+use App\Entity\User\Verify\VerifyInterface;
 
 /**
  * Verification Interface.

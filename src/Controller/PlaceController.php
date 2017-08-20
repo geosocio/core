@@ -1,9 +1,9 @@
 <?php
 
-namespace GeoSocio\Core\Controller;
+namespace App\Controller;
 
-use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Entity\Post\Post;
+use App\Entity\Place\Place;
+use App\Entity\Post\Post;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * Place actions.
  *
  * @Route(
- *    service="geosocio.controller_place",
+ *    service="app.controller_place",
  *    defaults = {
  *       "version" = "1.0",
  *       "_format" = "json"
@@ -51,7 +51,7 @@ class PlaceController extends Controller
     /**
      * @Route("/place/{place}.{_format}")
      * @Method("GET")
-     * @ParamConverter("place", converter="doctrine.orm", class="GeoSocio\Core\Entity\Place\Place")
+     * @ParamConverter("place", converter="doctrine.orm", class="App\Entity\Place\Place")
      *
      * @param Place $place
      * @param Request $request

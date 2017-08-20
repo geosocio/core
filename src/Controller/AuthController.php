@@ -1,13 +1,13 @@
 <?php
 
-namespace GeoSocio\Core\Controller;
+namespace App\Controller;
 
-use GeoSocio\Core\Entity\User\Login;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Verify\EmailVerify;
-use GeoSocio\Core\Entity\User\Verify\VerifyInterface;
-use GeoSocio\Core\Utils\EntityAttacherInterface;
-use GeoSocio\Core\Utils\User\VerificationManagerInterface;
+use App\Entity\User\Login;
+use App\Entity\User\User;
+use App\Entity\User\Verify\EmailVerify;
+use App\Entity\User\Verify\VerifyInterface;
+use App\Utils\User\VerificationManagerInterface;
+use GeoSocio\EntityAttacher\EntityAttacherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
  * Current User actions.
  *
  * @Route(
- *    service="geosocio.controller_auth",
+ *    service="app.controller_auth",
  *    defaults = {
  *       "version" = "1.0",
  *       "_format" = "json"

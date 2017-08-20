@@ -1,10 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\DataFixtures\ORM;
+namespace App\DataFixtures\ORM;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use GeoSocio\Core\Entity\Permission;
+use App\Entity\Permission;
 
 class LoadPermissions implements FixtureInterface
 {

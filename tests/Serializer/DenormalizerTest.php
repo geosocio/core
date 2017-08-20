@@ -1,16 +1,17 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Serializer;
+namespace App\Tests\Serializer;
 
-use GeoSocio\Core\Serializer\Denormalizer;
+use App\Serializer\Denormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Serializer Test.
  */
-class DenormalizerTest extends \PHPUnit_Framework_TestCase
+class DenormalizerTest extends TestCase
 {
     /**
      * Tests the Request method.

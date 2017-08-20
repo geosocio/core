@@ -1,8 +1,13 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Entity;
+namespace App\Tests\Entity;
 
-abstract class EntityTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class EntityTest extends TestCase
 {
+    /**
+     * @var string
+     */
     protected $class;
 }

@@ -1,9 +1,11 @@
 <?php
 
-namespace GeoSocio\Core\Entity;
+namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\EntityUtils\ParameterBag;
+use GeoSocio\EntityUtils\CreatedTrait;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -14,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="site")
  */
-class Site extends Entity implements SiteAwareInterface
+class Site implements SiteAwareInterface
 {
 
     use CreatedTrait;
@@ -52,7 +54,7 @@ class Site extends Entity implements SiteAwareInterface
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="GeoSocio\Core\Entity\Post\Post", cascade={"merge"}, mappedBy="site")
+     * @ORM\OneToMany(targetEntity="App\Entity\Post\Post", cascade={"merge"}, mappedBy="site")
      */
     private $posts;
 
@@ -63,32 +65,18 @@ class Site extends Entity implements SiteAwareInterface
      */
     public function __construct(array $data = [])
     {
-        $id = $data['id'] ?? null;
-        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : strtolower(uuid_create(UUID_TYPE_DEFAULT));
-
-        $key = $data['key'] ?? null;
-        $this->key = is_string($key) ? $key : null;
-
-        $name = $data['name'] ?? null;
-        $this->name = is_string($name) ? $name : null;
-
-        $domain = $data['domain'] ?? null;
-        $this->domain = is_string($domain) ? $domain : null;
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setCreatedValue()
-    {
-        $this->created = new \DateTime();
+        $params = new ParameterBag($data);
+        $this->id = $params->getUuid('id', strtolower(uuid_create(UUID_TYPE_DEFAULT)));
+        $this->key = $params->getString('key');
+        $this->name = $params->getString('name');
+        $this->domain = $params->getString('domain');
+        $this->created = $params->getInstance('created', \DateTimeInterface::class);
     }
 
     /**
      * Set id
+     *
+     * @param string $id
      *
      * @Groups({"me"})
      */

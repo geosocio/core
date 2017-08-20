@@ -1,8 +1,9 @@
 <?php
 
-namespace GeoSocio\Core\Entity\Place;
+namespace App\Entity\Place;
 
-use GeoSocio\Core\Entity\Tree as TreeBase;
+use App\Entity\Tree as TreeBase;
+use GeoSocio\EntityUtils\ParameterBag;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,15 +33,15 @@ class Tree extends TreeBase
 
     /**
      * Create new Tree.
+     *
+     * @param array $data
      */
     public function __construct(array $data = [])
     {
         parent::__construct($data);
 
-        $ancestor = $data['ancestor'] ?? null;
-        $this->ancestor = $this->getSingle($ancestor, Place::class);
-
-        $descendant = $data['descendant'] ?? null;
-        $this->descendant = $this->getSingle($descendant, Place::class);
+        $params = new ParameterBag($data);
+        $this->ancestor = $params->getInstance('ancestor', Place::class);
+        $this->descendant = $params->getInstance('descendant', Place::class);
     }
 }

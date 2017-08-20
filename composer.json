@@ -3,64 +3,56 @@
     "description": "GeoSoc.io Core",
     "license": "AGPL-3.0",
     "type": "project",
+    "require": {
+        "php": "^7.1",
+        "doctrine/doctrine-bundle": "^1.7",
+        "doctrine/doctrine-fixtures-bundle": "^2.3",
+        "doctrine/orm": "^2.5",
+        "geosocio/entity-attacher-bundle": "^2.0",
+        "geosocio/entity-utils": "^1.2",
+        "geosocio/http-serializer-bundle": "^1.0",
+        "geosocio/slugger-bundle": "^1.0",
+        "guzzlehttp/guzzle": "^6.3",
+        "ircmaxell/random-lib": "^1.2",
+        "lexik/jwt-authentication-bundle": "^2.4",
+        "sendgrid/sendgrid": "^6.0",
+        "sensio/framework-extra-bundle": "^3.0",
+        "symfony/console": "^3.3",
+        "symfony/flex": "^1.0",
+        "symfony/framework-bundle": "^3.3",
+        "symfony/yaml": "^3.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.3",
+        "squizlabs/php_codesniffer": "^3.0",
+        "symfony/dotenv": "^3.3",
+        "symfony/var-dumper": "^3.3"
+    },
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
     "autoload": {
         "psr-4": {
-          "App\\": "app/",
-          "GeoSocio\\Core\\": "src/"
+            "App\\": "src/"
         }
     },
     "autoload-dev": {
-      "psr-4": {
-        "GeoSocio\\Core\\Tests\\": "tests/"
-      }
-    },
-    "require": {
-        "php": "^7.1.0",
-        "ext-uuid": "*",
-        "symfony/framework-bundle": "~3.2",
-        "symfony/security-bundle": "~3.2",
-        "symfony/finder": "~3.2",
-        "symfony/serializer": "~3.2",
-        "symfony/validator": "~3.2",
-        "symfony/monolog-bundle": "~3.0",
-        "doctrine/orm": "^2.5",
-        "doctrine/doctrine-bundle": "^1.6",
-        "doctrine/doctrine-cache-bundle": "^1.2",
-        "doctrine/doctrine-fixtures-bundle": "^2.3",
-        "sensio/distribution-bundle": "~5.0",
-        "sensio/framework-extra-bundle": "^3.0.2",
-        "incenteev/composer-parameter-handler": "~2.0",
-        "ircmaxell/random-lib": "~1.0",
-        "guzzlehttp/guzzle": "~5.0",
-        "guzzlehttp/oauth-subscriber": "~0.1",
-        "egulias/email-validator": "~1.0",
-        "giggsey/libphonenumber-for-php": "~7.0",
-        "symfony/security": "^3.2",
-        "symfony/expression-language": "^3.2",
-        "sendgrid/sendgrid": "^5.1",
-        "symfony/property-info": "^3.2",
-        "lexik/jwt-authentication-bundle": "^2.2"
-     },
-     "require-dev": {
-       "symfony/debug-bundle": "~3.2",
-       "sensio/generator-bundle": "~3.0",
-       "squizlabs/php_codesniffer": "~2.0",
-       "symfony/phpunit-bridge": "^3.0",
-        "phpunit/phpunit": "^5.7"
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
     },
     "scripts": {
-        "symfony-scripts": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
-        ],
+        "auto-scripts": {
+            "make cache-warmup": "script"
+        },
         "post-install-cmd": [
-            "@symfony-scripts"
+            "@auto-scripts"
         ],
         "post-update-cmd": [
-            "@symfony-scripts"
+            "@auto-scripts"
         ],
         "lint": [
           "phpcs --colors ."
@@ -74,14 +66,15 @@
             "phpunit -v --coverage-clover=coverage.clover"
         ]
     },
+    "conflict": {
+        "symfony/symfony": "*",
+        "symfony/twig-bundle": "<3.3",
+        "symfony/debug": "<3.3"
+    },
     "extra": {
-        "symfony-app-dir": "app",
-        "symfony-bin-dir": "bin",
-        "symfony-var-dir": "var",
-        "symfony-web-dir": "web",
-        "symfony-tests-dir": "tests",
-        "incenteev-parameters": {
-            "file": "app/config/parameters.yml"
+        "symfony": {
+            "id": "01BQXH4RZ9TTF5S1GMS0PMFDV0",
+            "allow-contrib": true
         }
     }
 }

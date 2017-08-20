@@ -1,14 +1,14 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Controller;
+namespace App\Tests\Controller;
 
-use GeoSocio\Core\Controller\AuthController;
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\Login;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Verify\EmailVerify;
-use GeoSocio\Core\Entity\User\Verify\VerifyInterface;
-use GeoSocio\Core\Utils\User\VerificationManagerInterface;
+use App\Controller\AuthController;
+use App\Entity\User\Email;
+use App\Entity\User\Login;
+use App\Entity\User\User;
+use App\Entity\User\Verify\EmailVerify;
+use App\Entity\User\Verify\VerifyInterface;
+use App\Utils\User\VerificationManagerInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;

@@ -1,9 +1,9 @@
 <?php
 
-namespace GeoSocio\Core\Utils\Dispatcher;
+namespace App\Utils\Dispatcher;
 
-use GeoSocio\Core\Entity\Message\EmailMessage;
-use GeoSocio\Core\Entity\Message\MessageInterface;
+use App\Entity\Message\EmailMessage;
+use App\Entity\Message\MessageInterface;
 use SendGrid\Content;
 use SendGrid\Mail;
 use SendGrid\Email;

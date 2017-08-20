@@ -1,9 +1,9 @@
 <?php
 
-namespace GeoSocio\Core\Repository\User;
+namespace App\Repository\User;
 
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\User;
+use App\Entity\User\Email;
+use App\Entity\User\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;

@@ -1,8 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Entity\Message;
+namespace App\Tests\Entity\Message;
 
-abstract class MessageTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class MessageTest extends TestCase
 {
 
 }

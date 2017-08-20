@@ -1,8 +1,10 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Client;
+namespace App\Tests\Client;
 
-abstract class ClientTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class ClientTest extends TestCase
 {
 
 }

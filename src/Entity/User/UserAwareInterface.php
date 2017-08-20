@@ -1,6 +1,6 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User;
+namespace App\Entity\User;
 
 interface UserAwareInterface
 {

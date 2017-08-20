@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Client\Mapzen;
+namespace App\Client\Mapzen;
 
-use GeoSocio\Core\Entity\Place\Place;
+use GuzzleHttp\Promise\PromiseInterface;
 
 /**
  * Who's on First.
@@ -15,5 +15,5 @@ interface WhosOnFirstInterface
      *
      * @param int $id
      */
-    public function get(int $id) : Place;
+    public function get(int $id) : PromiseInterface;
 }

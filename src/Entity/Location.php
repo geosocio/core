@@ -1,12 +1,14 @@
 <?php
 
-namespace GeoSocio\Core\Entity;
+namespace App\Entity;
 
+use App\Entity\Place\Place;
+use GeoSocio\EntityUtils\ParameterBag;
+use GeoSocio\EntityUtils\CreatedTrait;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use GeoSocio\Core\Entity\Place\Place;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -16,7 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="location")
  */
-class Location extends Entity
+class Location
 {
 
     use CreatedTrait;
@@ -32,7 +34,7 @@ class Location extends Entity
     /**
      * @var Place
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place", inversedBy="locations")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Place\Place", inversedBy="locations")
      * @ORM\JoinColumn(name="place_id", referencedColumnName="place_id")
      */
     private $place;
@@ -58,20 +60,12 @@ class Location extends Entity
      */
     public function __construct(array $data = [])
     {
-        $id = $data['id'] ?? null;
-        $this->id = is_string($id) ? $id : '';
-
-        $place = $data['place'] ?? null;
-        $this->place = $this->getSingle($place, Place::class);
-
-        $latitude = $data['latitude'] ?? null;
-        $this->latitude = is_numeric($latitude) ? (float) $latitude : null;
-
-        $longitude = $data['longitude'] ?? null;
-        $this->longitude = is_numeric($longitude) ? (float) $longitude : null;
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
+        $params = new ParameterBag($data);
+        $this->id = $params->getString('id');
+        $this->place = $params->getInstance('place', Place::class);
+        $this->latitude = (float) $params->getNumber('latitude') ?: null;
+        $this->longitude = (float) $params->getNumber('longitude') ?: null;
+        $this->created = $params->getInstance('created', \DateTimeInterface::class);
     }
 
     /**

@@ -1,16 +1,16 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User;
+namespace App\Entity\User;
 
 use Doctrine\Common\Collections\Criteria;
-use GeoSocio\Core\Entity\Location;
-use GeoSocio\Core\Entity\Entity;
-use GeoSocio\Core\Entity\Site;
-use GeoSocio\Core\Entity\CreatedTrait;
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\Name;
-use GeoSocio\Core\Entity\User\Membership;
+use App\Entity\Location;
+use App\Entity\Site;
+use App\Entity\User\Email;
+use App\Entity\User\Name;
+use App\Entity\User\Membership;
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\EntityUtils\ParameterBag;
+use GeoSocio\EntityUtils\CreatedTrait;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,14 +20,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * GeoSocio\Core\Entity\User\User
+ * App\Entity\User\User
  *
  * @ORM\Table(name="users")
- * @ORM\Entity(repositoryClass="GeoSocio\Core\Repository\User\UserRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\User\UserRepository")
  * @ORM\HasLifecycleCallbacks()
  * @UniqueEntity({"primaryEmail", "username"})
  */
-class User extends Entity implements UserInterface, \Serializable, EquatableInterface, UserAwareInterface
+class User implements UserInterface, \Serializable, EquatableInterface, UserAwareInterface
 {
 
     use CreatedTrait;
@@ -145,7 +145,7 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Location")
      * @ORM\JoinColumn(name="location", referencedColumnName="location_id")
      */
     private $location;
@@ -164,33 +164,16 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
      */
     public function __construct(array $data = [])
     {
-        $id = $data['id'] ?? null;
-        $this->id = is_string($id) && uuid_is_valid($id) ? strtolower($id) : strtolower(uuid_create(UUID_TYPE_DEFAULT));
-
-        $name = $data['name'] ?? null;
-        $name = $this->getSingle($name, Name::class);
-        $this->name = $name ? $name : new Name();
-
-        $username = $data['username'] ?? null;
-        $this->username = is_string($username) ? $username : null;
-
-        $emails = $data['emails'] ?? [];
-        $this->emails = $this->getMultiple($emails, Email::class);
-
-        $primaryEmail = $data['primaryEmail'] ?? null;
-        $this->primaryEmail = $this->getSingle($primaryEmail, Email::class);
-
-        $location = $data['location'] ?? null;
-        $this->location = $this->getSingle($location, Location::class);
-
-        $memberships = $data['memberships'] ?? null;
-        $this->memberships = $this->getMultiple($memberships, Membership::class);
-
-        $disabled = $data['disabled'] ?? null;
-        $this->disabled = $disabled instanceof \DateTimeInterface ? $disabled : null;
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : null;
+        $params = new ParameterBag($data);
+        $this->id = $params->getUuid('id', strtolower(uuid_create(UUID_TYPE_DEFAULT)));
+        $this->name = $params->getInstance('name', Name::class, new Name());
+        $this->username = $params->getString('username');
+        $this->emails = $params->getCollection('emails', Email::class, new ArrayCollection());
+        $this->primaryEmail = $params->getInstance('primaryEmail', Email::class);
+        $this->location = $params->getInstance('location', Location::class);
+        $this->memberships = $params->getCollection('memberships', Membership::class, new ArrayCollection());
+        $this->disabled = $params->getInstance('disabled', \DateTimeInterface::class);
+        $this->disabled = $params->getInstance('created', \DateTimeInterface::class);
     }
 
     /**
@@ -205,6 +188,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Set id
+     *
+     * @param string $id
      */
     public function setId(string $id) : self
     {
@@ -265,6 +250,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * @inheritDoc
+     *
+     * @TODO Roles must start with `ROLE_` and be uppercase!
      *
      * @Groups({"me"})
      */
@@ -418,6 +405,10 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
+     * Set First Name
+     *
+     * @param string $firstName
+     *
      * @Groups({"me"})
      */
     public function setFirstName(string $firstName) : self
@@ -446,6 +437,10 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     }
 
     /**
+     * Set Last Name
+     *
+     * @param string $lastName
+     *
      * @Groups({"me"})
      */
     public function setLastName(string $lastName) : self
@@ -499,6 +494,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Add Membership
+     *
+     * @param Membership $membership
      */
     public function addMembership(Membership $membership) : self
     {
@@ -509,6 +506,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Remove membership
+     *
+     * @param Membership $membership
      */
     public function removeMembership(Membership $membership) : self
     {
@@ -531,6 +530,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Get Memberships by Site.
+     *
+     * @param Site $site
      */
     public function getMembershipsBySite(Site $site) : Collection
     {
@@ -566,10 +567,11 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Set Primary Email.
      *
-     * @Groups({"me"})
+     * @param string $primaryEmailAddress
      *
-     * @param string $primaryEmailAdress
      * @return User
+     *
+     * @Groups({"me"})
      */
     public function setPrimaryEmailAddress(string $primaryEmailAddress) : self
     {
@@ -605,9 +607,9 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
     /**
      * Set location
      *
-     * @param Location $location
+     * @param Location|null $location
      */
-    public function setLocation(Location $location = null) : self
+    public function setLocation(?Location $location) : self
     {
         $this->location = $location;
 
@@ -638,6 +640,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Get current location id.
+     *
+     * @param string $id
      *
      * @Groups({"me"})
      */
@@ -716,6 +720,8 @@ class User extends Entity implements UserInterface, \Serializable, EquatableInte
 
     /**
      * Determine if User is a member of a given site.
+     *
+     * @param Site $site
      */
     public function isMember(Site $site) : bool
     {

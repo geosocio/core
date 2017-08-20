@@ -1,22 +1,22 @@
 <?php
 
-namespace GeoSocio\Core\Entity\Post;
+namespace App\Entity\Post;
 
 use Doctrine\ORM\Mapping as ORM;
-use GeoSocio\Core\Annotation\Attach;
-use GeoSocio\Core\Entity\Site;
-use GeoSocio\Core\Entity\Entity;
-use GeoSocio\Core\Entity\CreatedTrait;
-use GeoSocio\Core\Entity\SiteAwareInterface;
-use GeoSocio\Core\Entity\Place\Place;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\UserAwareInterface;
+use GeoSocio\EntityAttacher\Annotation\Attach;
+use App\Entity\Site;
+use App\Entity\SiteAwareInterface;
+use App\Entity\Place\Place;
+use App\Entity\User\User;
+use App\Entity\User\UserAwareInterface;
+use GeoSocio\EntityUtils\CreatedTrait;
+use GeoSocio\EntityUtils\ParameterBag;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="post_placement")
  */
-class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
+class Placement implements UserAwareInterface, SiteAwareInterface
 {
 
     use CreatedTrait;
@@ -34,7 +34,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
      * @var User
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\User\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * @Attach()
      */
@@ -43,7 +43,7 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
     /**
      * @var Place
      *
-     * @ORM\ManyToOne(targetEntity="GeoSocio\Core\Entity\Place\Place")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Place\Place")
      * @ORM\JoinColumn(name="place_id", referencedColumnName="place_id")
      * @Attach()
      */
@@ -51,24 +51,22 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
 
     /**
      * Create new Tree.
+     *
+     * @param array $data
      */
     public function __construct(array $data = [])
     {
-        $post = $data['post'] ?? null;
-        $this->post = $this->getSingle($post, Post::class);
-
-        $user = $data['user'] ?? null;
-        $this->user = $this->getSingle($user, User::class);
-
-        $place = $data['place'] ?? null;
-        $this->place = $this->getSingle($place, Place::class);
-
-        $created = $data['created'] ?? null;
-        $this->created = $created instanceof \DateTimeInterface ? $created : new \DateTime();
+        $params = new ParameterBag($data);
+        $this->post = $params->getInstance('post', Post::class);
+        $this->user = $params->getInstance('user', User::class);
+        $this->place = $params->getInstance('place', Place::class);
+        $this->created = $params->getInstance('created', \DateTimeInterface::class, new \DateTime());
     }
 
     /**
      * Set post.
+     *
+     * @param Post $post
      */
     public function setPost(Post $post) : self
     {
@@ -87,6 +85,8 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
 
     /**
      * Set user.
+     *
+     * @param User $user
      */
     public function setUser(User $user) : self
     {
@@ -113,6 +113,8 @@ class Placement extends Entity implements UserAwareInterface, SiteAwareInterface
 
     /**
      * Set place.
+     *
+     * @param Place $place
      */
     public function setPlace(Place $place) : self
     {

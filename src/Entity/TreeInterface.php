@@ -1,6 +1,6 @@
 <?php
 
-namespace GeoSocio\Core\Entity;
+namespace App\Entity;
 
 /**
  * Tree

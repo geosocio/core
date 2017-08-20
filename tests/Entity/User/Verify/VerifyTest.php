@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Entity\User\Verify;
+namespace App\Tests\Entity\User\Verify;
 
-use GeoSocio\Core\Tests\Entity\EntityTest;
+use App\Tests\Entity\EntityTest;
 
 abstract class VerifyTest extends EntityTest
 {

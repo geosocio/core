@@ -1,13 +1,13 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Controller;
+namespace App\Tests\Controller;
 
-use GeoSocio\Core\Controller\UserController;
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Entity\User\Verify\EmailVerify;
-use GeoSocio\Core\Utils\PlaceFinderInterface;
-use GeoSocio\Core\Utils\User\VerificationManagerInterface;
+use App\Controller\UserController;
+use App\Entity\User\User;
+use App\Entity\User\Email;
+use App\Entity\User\Verify\EmailVerify;
+use App\Utils\PlaceFinderInterface;
+use App\Utils\User\VerificationManagerInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;

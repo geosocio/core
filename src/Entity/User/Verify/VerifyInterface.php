@@ -1,10 +1,11 @@
 <?php
 
-namespace GeoSocio\Core\Entity\User\Verify;
+namespace App\Entity\User\Verify;
 
-use GeoSocio\Core\Entity\EntityInterface;
-
-interface VerifyInterface extends EntityInterface
+/*&
+ * Verify Interface
+ */
+interface VerifyInterface
 {
     /**
      * Get Created Date.

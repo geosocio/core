@@ -1,11 +1,13 @@
 <?php
 
-namespace GeoSocio\Core\Entity\Message;
+namespace App\Entity\Message;
+
+use GeoSocio\EntityUtils\ParameterBag;
 
 /**
  * Interface for Messages.
  */
-abstract class Message implements MessageInterface
+abstract class Message
 {
     /**
      * @var string
@@ -22,16 +24,9 @@ abstract class Message implements MessageInterface
      */
     public function __construct(array $data = [])
     {
-        $to = $data['to'] ?? '';
-        $this->to = is_string($to) ? $to : '';
-
-        $text = $data['text'] ?? [];
-        if (is_array($text)) {
-            $text = array_filter($text, function ($line) {
-                return is_string($line);
-            });
-        }
-        $this->text = is_array($text) ? $text : [];
+        $params = new ParameterBag($data);
+        $this->to = $params->getString('to', '');
+        $this->text = $params->getStringArray('text', []);
     }
 
 

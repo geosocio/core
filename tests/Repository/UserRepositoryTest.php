@@ -1,14 +1,15 @@
 <?php
 
-namespace GeoSocio\Core\Tests\Repository;
+namespace App\Tests\Repository;
 
-use GeoSocio\Core\Entity\User\User;
-use GeoSocio\Core\Entity\User\Email;
-use GeoSocio\Core\Repository\User\UserRepository;
+use App\Entity\User\User;
+use App\Entity\User\Email;
+use App\Repository\User\UserRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\TestCase;
 
-class UserRepositoryTest extends \PHPUnit_Framework_TestCase
+class UserRepositoryTest extends TestCase
 {
     public function testCreateFromEmail()
     {

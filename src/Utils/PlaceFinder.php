@@ -1,11 +1,12 @@
 <?php
 
-namespace GeoSocio\Core\Utils;
+namespace App\Utils;
 
-use GeoSocio\Core\Client\Mapzen\SearchInterface;
-use GeoSocio\Core\Client\Mapzen\WhosOnFirstInterface;
-use GeoSocio\Core\Entity\Location;
-use GeoSocio\Core\Entity\Place\Place;
+use App\Client\Mapzen\SearchInterface;
+use App\Client\Mapzen\WhosOnFirstInterface;
+use App\Entity\Location;
+use App\Entity\Place\Place;
+use GeoSocio\Slugger\SluggerInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use GuzzleHttp\Exception\ClientException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -32,6 +33,11 @@ class PlaceFinder implements PlaceFinderInterface
     protected $whosonfirst;
 
     /**
+     * @var SluggerInterface
+     */
+    protected $slugger;
+
+    /**
      * Creates a Place Finder.
      *
      * @param RegistryInterface $doctrine
@@ -41,12 +47,14 @@ class PlaceFinder implements PlaceFinderInterface
     public function __construct(
         RegistryInterface $doctrine,
         SearchInterface $search,
-        WhosOnFirstInterface $whosonfirst
+        WhosOnFirstInterface $whosonfirst,
+        SluggerInterface $slugger
     ) {
 
         $this->doctrine = $doctrine;
         $this->search = $search;
         $this->whosonfirst = $whosonfirst;
+        $this->slugger = $slugger;
     }
 
     /**
@@ -58,7 +66,7 @@ class PlaceFinder implements PlaceFinderInterface
         $repository = $em->getRepository(Location::class);
 
         // Get all of the details from Mapzen.
-        $input = $this->search->get($input->getId());
+        $input = $this->search->get($input->getId())->wait();
 
         if (!$input->getPlace()) {
             throw new \Exception('Place is missing from input');
@@ -119,7 +127,7 @@ class PlaceFinder implements PlaceFinderInterface
     {
         $em = $this->doctrine->getEntityManager();
         $repository = $em->getRepository(Place::class);
-        $input = $this->whosonfirst->get($input->getId());
+        $input = $this->whosonfirst->get($input->getId())->wait();
 
         $place = $repository->find($input->getId());
 
@@ -136,7 +144,7 @@ class PlaceFinder implements PlaceFinderInterface
         if (!$place) {
             $place = new Place([
                 'id' => $input->getId(),
-                'slug' => Slug::create($input->getName()),
+                'slug' => $this->slugger->slug($input->getName()),
                 'parent' => $parent,
                 'name' => $input->getName(),
             ]);

@@ -1,14 +1,15 @@
 <?php
 
-namespace GeoSocio\Core\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use GeoSocio\EntityUtils\ParameterBag;
 
 /**
  * Tree
  * @ORM\MappedSuperclass
  */
-abstract class Tree extends Entity implements TreeInterface
+abstract class Tree implements TreeInterface
 {
     /**
      * @var int
@@ -24,8 +25,8 @@ abstract class Tree extends Entity implements TreeInterface
      */
     public function __construct(array $data = [])
     {
-        $depth = $data['depth'] ?? null;
-        $this->depth = is_integer($depth) ? $depth : null;
+        $params = new ParameterBag($data);
+        $this->depth = $params->getInt('depth');
     }
 
     /**
@@ -50,6 +51,8 @@ abstract class Tree extends Entity implements TreeInterface
 
     /**
      * Set ancestor
+     *
+     * @param object $ancestor
      */
     public function setAncestor($ancestor) : self
     {
@@ -68,6 +71,8 @@ abstract class Tree extends Entity implements TreeInterface
 
     /**
      * Set descendant
+     *
+     * @param object $descendant
      */
     public function setDescendant($descendant) : self
     {

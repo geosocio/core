@@ -1,8 +1,8 @@
 <?php
 
-namespace GeoSocio\Core\Utils;
+namespace App\Utils;
 
-use GeoSocio\Core\Entity\Location;
+use App\Entity\Location;
 
 /**
  * Place Finder.
