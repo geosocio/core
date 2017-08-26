@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Site;
 use App\Entity\Place\Place;
 use App\Entity\Post\Post;
+use App\Entity\Post\Placement;
 use App\Entity\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -144,5 +145,41 @@ class PostController extends Controller
             $this->getLimit($request),
             $this->getOffset($request)
         );
+    }
+
+    /**
+     * @Route("/post/{post}/place/{user}.{_format}")
+     * @Method("POST")
+     * @ParamConverter("post", converter="doctrine.orm", class="App\Entity\Post\Post")
+     *
+     * @todo add security voter to ensure that user does not place for some
+     *       other user!
+     *
+     * @param Post $post
+     * @param User $user
+     */
+    public function placeAction(Post $post, User $user) : array
+    {
+        if (!$user->getPlace()) {
+            throw new BadRequestHttpException('User has no place');
+        }
+
+        if ($post->getUserPlacement($user)) {
+            throw new BadRequestHttpException('User has already placed post');
+        }
+
+        $em = $this->doctrine->getEntityManager();
+
+        $placement = new Placement([
+            'post' => $post,
+            'user' => $user,
+            'place' => $user->getPlace()
+        ]);
+        $place->addPlacement($placement);
+
+        $em->persist($placement);
+        $em->flush();
+
+        return $placement;
     }
 }

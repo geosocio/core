@@ -2,6 +2,7 @@
 
 namespace App\Entity\Post;
 
+use ParseError;
 use GeoSocio\EntityAttacher\Annotation\Attach;
 use GeoSocio\EntityUtils\CreatedTrait;
 use GeoSocio\EntityUtils\ParameterBag;
@@ -584,6 +585,74 @@ class Post implements AccessAwareInterface, UserAwareInterface, SiteAwareInterfa
     public function getPermissionPlace() :? Place
     {
         return $this->permissionPlace;
+    }
+
+    /**
+     * Get Placements.
+     */
+    public function getPlacements() : Collection
+    {
+        return $this->placements;
+    }
+
+    /**
+     * Add Placement.
+     *
+     * @param Placement $placement
+     */
+    public function addPlacement(Placement $placement) : self
+    {
+        $this->placements->add($placement);
+
+        return $this;
+    }
+
+    /**
+     * Remove Placement.
+     *
+     * @param Placement $placement
+     */
+    public function removePlacement(Placement $placement) : self
+    {
+        $this->placements->remove($placement);
+
+        return $this;
+    }
+
+    /**
+     * Get Placements.
+     *
+     * @param Collection $placements
+     */
+    public function setPlacements(Collection $placements) : self
+    {
+        $this->placements = $placements;
+
+        return $this;
+    }
+
+    /**
+     * Get Primary Placement.
+     *
+     * @param User $user
+     */
+    public function getUserPlacement(User $user) :? Placement
+    {
+
+        if (!$this->placements->count()) {
+            return null;
+        }
+
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq("user", $user));
+
+        $placement = $this->placements->matching($criteria)->first();
+
+        if (!$placement) {
+            return null;
+        }
+
+        return $placement;
     }
 
     /**

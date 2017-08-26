@@ -15,6 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
@@ -62,6 +63,7 @@ class AuthController extends Controller
      * @Route("/login")
      * @Method("POST")
      * @Security("!has_role('authenticated')")
+     * @Groups("anonymous")
      *
      * @param Request $request
      */

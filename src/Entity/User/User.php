@@ -2,6 +2,7 @@
 
 namespace App\Entity\User;
 
+use App\Entity\Place\Place;
 use Doctrine\Common\Collections\Criteria;
 use App\Entity\Location;
 use App\Entity\Site;
@@ -726,6 +727,18 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     public function isMember(Site $site) : bool
     {
         return !$this->getMembershipsBySite($site)->isEmpty();
+    }
+
+    /**
+     * Get a user's place
+     */
+    public function getPlace() :? Place
+    {
+        if (!$this->location) {
+            return null;
+        }
+
+        return $this->location->getPlace();
     }
 
     /**

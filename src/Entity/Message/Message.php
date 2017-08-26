@@ -7,7 +7,7 @@ use GeoSocio\EntityUtils\ParameterBag;
 /**
  * Interface for Messages.
  */
-abstract class Message
+abstract class Message implements MessageInterface
 {
     /**
      * @var string
