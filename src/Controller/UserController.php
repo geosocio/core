@@ -33,7 +33,6 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
  *
  * @todo Need a route to determine the place a user should see
  *      (not too many people, not too few)
- * @todo need to create some sort of system for dynamic serialization gorups!
  */
 class UserController extends Controller
 {
