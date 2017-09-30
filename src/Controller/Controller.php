@@ -5,6 +5,7 @@ namespace App\Controller;
 use GeoSocio\EntityAttacher\EntityAttacherInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
@@ -29,20 +30,28 @@ abstract class Controller
     protected $attacher;
 
     /**
+     * @var AuthorizationCheckerInterface
+     */
+    protected $authorizationChecker;
+
+    /**
      * Creates the Controller.
      *
      * @param DenormalizerInterface $denormalizer
      * @param RegistryInterface $doctrine
      * @param EntityAttacherInterface $attacher
+     * @param AuthorizationCheckerInterface $attacher
      */
     public function __construct(
         DenormalizerInterface $denormalizer,
         RegistryInterface $doctrine,
-        EntityAttacherInterface $attacher
+        EntityAttacherInterface $attacher,
+        AuthorizationCheckerInterface $authorizationChecker
     ) {
         $this->denormalizer = $denormalizer;
         $this->doctrine = $doctrine;
         $this->attacher = $attacher;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**

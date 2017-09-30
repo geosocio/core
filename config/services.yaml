@@ -12,6 +12,7 @@ services:
             - '@app.denormalizer'
             - '@doctrine'
             - '@geosocio_entity_attacher'
+            - '@security.authorization_checker'
 
     app.controller_default:
         parent: app.controller
@@ -59,6 +60,11 @@ services:
       class: App\GroupResolver\ResponseGroupResolver
       tags:
           - { name: geosocio_http_serializer.response_group_resolver }
+
+    app.user_voter:
+        class: App\Security\UserVoter
+        tags:
+          - { name: security.voter }
 
     app.denormalizer:
         class: App\Serializer\Denormalizer

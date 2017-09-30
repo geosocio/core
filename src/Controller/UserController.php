@@ -19,6 +19,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
@@ -47,16 +49,22 @@ class UserController extends Controller
     protected $placeFinder;
 
     /**
+     * @var AuthorizationCheckerInterface
+     */
+    protected $authorizationChecker;
+
+    /**
      * {@inheritdoc}
      */
     public function __construct(
         DenormalizerInterface $denormalizer,
         RegistryInterface $doctrine,
         EntityAttacherInterface $attacher,
+        AuthorizationCheckerInterface $authorizationChecker,
         VerificationManagerInterface $verificationManager,
         PlaceFinderInterface $placeFinder
     ) {
-        parent::__construct($denormalizer, $doctrine, $attacher);
+        parent::__construct($denormalizer, $doctrine, $attacher, $authorizationChecker);
         $this->verificationManager = $verificationManager;
         $this->placeFinder = $placeFinder;
     }
@@ -81,55 +89,48 @@ class UserController extends Controller
             throw new NotFoundHttpException("No user found");
         }
 
-        // @TODO Use a security voter!
-
-        return $this->showAction($user);
-    }
-
-  /**
-   * @Route("/user/{user}.{_format}")
-   * @Method("GET")
-   * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-   *
-   * @param User $user
-   */
-    public function showAction(User $user) : User
-    {
-        // @TODO Use a security voter!
-        if (!$user->isEnabled()) {
-            throw new NotFoundHttpException("User account is disabled");
+        if (!$this->authorizationChecker->isGranted('view', $user)) {
+            throw new AccessDeniedHttpException();
         }
 
         return $user;
     }
 
+  /**
+   * @Route("/user/{account}.{_format}")
+   * @Method("GET")
+   * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+   * @Security("is_granted('view', account)", statusCode=404)
+   *
+   * @param User $account
+   */
+    public function showAction(User $account) : User
+    {
+        return $account;
+    }
+
     /**
      * Update the current user.
      *
-     * @Route("/user/{user}")
+     * @Route("/user/{account}")
      * @Method("PATCH")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('ROLE_AUTHENTICATED')")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+     * @Security("is_granted('edit', account)")
      *
-     * @param User $user
+     * @param User $account
      * @param array $input
      *
      * @return User
      */
-    public function updateAction(User $user, array $input) : User
+    public function updateAction(User $account, array $input) : User
     {
-        // @TODO Use a security voter!
-        // if (!$authenticated->isEqualTo($user)) {
-        //     throw new AccessDeniedHttpException("You may only modify your own user");
-        // }
-
         $em = $this->doctrine->getEntityManager();
 
         // Get the original data for comparison.
-        $locationId = $user->getLocationId();
-        $primaryEmailAddress = $user->getPrimaryEmailAddress();
+        $locationId = $account->getLocationId();
+        $primaryEmailAddress = $account->getPrimaryEmailAddress();
 
-        $user = $this->denormalizer->denormalize($input, $user);
+        $user = $this->denormalizer->denormalize($input, $account);
 
         // If the primary email has changed, update it before updating the user.
         if ($primaryEmailAddress !== $user->getPrimaryEmailAddress()) {
@@ -187,23 +188,18 @@ class UserController extends Controller
     /**
      * Delete the current user.
      *
-     * @Route("/user/{user}")
+     * @Route("/user/{account}")
      * @Method("DELETE")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('ROLE_AUTHENTICATED')")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+     * @Security("is_granted('edit', account)")
      *
-     * @param User $user
+     * @param User $account
      *
      * @return string
      */
-    public function deleteAction(User $user) : string
+    public function deleteAction(User $account) : string
     {
-        // @TODO Use a Symfony Security Voter!
-        // if (!$authenticated->isEqualTo($user)) {
-        //     throw new AccessDeniedHttpException("You may only deactivate your own user");
-        // }
-
-        $user->disable();
+        $account->disable();
 
         $em = $this->doctrine->getEntityManager();
         $em->flush();
@@ -214,46 +210,37 @@ class UserController extends Controller
     /**
      * Show the ueer's memberships.
      *
-     * @Route("/user/{user}/memberships.{_format}")
+     * @Route("/user/{account}/memberships.{_format}")
      * @Method("GET")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('authenticated')")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+     * @Security("is_granted('view', account)", statusCode=404)
      *
-     * @param User $user
+     * @param User $account
      *
      * @return Collection
      */
-    public function showMembershipsAction(User $user) : Collection
+    public function showMembershipsAction(User $account) : Collection
     {
-        if (!$user->isEnabled()) {
-            throw new NotFoundHttpException("User account is disabled");
-        }
-
-        return $user->getMemberships();
+        return $account->getMemberships();
     }
 
     /**
      * Removes an email.
      *
-     * @Route("/user/{user}/memberships/{site}")
+     * @Route("/user/{account}/memberships/{site}")
      * @Method("DELETE")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
      * @ParamConverter("site", converter="doctrine.orm", class="App\Entity\Site")
-     * @Security("has_role('ROLE_AUTHENTICATED')")
+     * @Security("is_granted('edit', account)")
      *
-     * @param User $user
+     * @param User $account
      * @param Site $site
      *
      * @return string
      */
-    public function removeMembershipAction(User $user, Site $site) : string
+    public function removeMembershipAction(User $account, Site $site) : string
     {
-        // @TODO use a Symfony Security Voter!
-        // if (!$authenticated->isEqualTo($user)) {
-        //     throw new AccessDeniedHttpException("You may only modify your own user");
-        // }
-
-        $memberships = $user->getMembershipsBySite($site);
+        $memberships = $account->getMembershipsBySite($site);
 
         $em = $this->doctrine->getEntityManager();
 
@@ -269,27 +256,22 @@ class UserController extends Controller
     /**
      * Add memberships to the user.
      *
-     * @Route("/user/{user}/memberships.{_format}")
+     * @Route("/user/{account}/memberships.{_format}")
      * @Method("POST")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('ROLE_AUTHENTICATEDd')")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+     * @Security("is_granted('edit', account)")
      *
-     * @param User $user
+     * @param User $account
      * @param Site $site
      *
      * @return Collection
      */
-    public function createMembershipAction(User $user, Site $site) : Collection
+    public function createMembershipAction(User $account, Site $site) : Collection
     {
-        // @TODO use a Symfony Security Voter!
-        // if (!$authenticated->isEqualTo($user)) {
-        //     throw new AccessDeniedHttpException("You may only modify your own user");
-        // }
-
         $em = $this->doctrine->getEntityManager();
         $repository = $this->doctrine->getRepository(Site::class);
 
-        $memberships = $user->getMembershipsBySite($site);
+        $memberships = $account->getMembershipsBySite($site);
 
         if (!$memberships->isEmpty()) {
             throw new BadRequestHttpException("Membership already exists");
@@ -299,56 +281,49 @@ class UserController extends Controller
 
         $membership = new Membership([
             'site' => $site,
-            'user' => $user,
+            'user' => $account,
         ]);
-        $user->addMembership($membership);
+        $account->addMembership($membership);
         $em->persist($membership);
         $em->flush();
 
-        return $this->showMembershipsAction($user);
+        return $account->getMemberships();
     }
 
     /**
      * Show the ueer's emails.
      *
-     * @Route("/user/{user}/emails.{_format}")
+     * @Route("/user/{account}/emails.{_format}")
      * @Method("GET")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('ROLE_AUTHENTICATED')")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+     * @Security("is_granted('view', account)", statusCode=404)
      *
-     * @param User $user
+     * @param User $account
      *
      * @return Collection
+     *
+     * @todo We can't handle collections now?
      */
-    public function showEmailsAction(User $user) : Collection
+    public function showEmailsAction(User $account) : Collection
     {
-        if (!$user->isEnabled()) {
-            throw new NotFoundHttpException("User account is disabled");
-        }
-
-        return $user->getEmails();
+        return $account->getEmails();
     }
 
     /**
      * Add emails to the user.
      *
-     * @Route("/user/{user}/emails")
+     * @Route("/user/{account}/emails")
      * @Method("POST")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('ROLE_AUTHENTICATED')")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+     * @Security("is_granted('edit', account)")
      *
-     * @param User $user
+     * @param User $account
      * @param Email $email
      *
      * @return EmailVerify
      */
-    public function createEmailAction(User $user, Email $email) : EmailVerify
+    public function createEmailAction(User $account, Email $email) : EmailVerify
     {
-        // @TODO Use a Symfony Security Voter!
-        // if (!$authenticated->isEqualTo($user)) {
-        //     throw new AccessDeniedHttpException("You may only modify your own user");
-        // }
-
         $em = $this->doctrine->getEntityManager();
 
         $repository = $this->doctrine->getRepository(Email::class);
@@ -357,19 +332,19 @@ class UserController extends Controller
             $email = $existing;
 
             if ($email->getVerified()) {
-                if ($user->isEqualTo($email->getUser())) {
+                if ($account->isEqualTo($email->getUser())) {
                     throw new BadRequestHttpException('Email already added to user');
                 } else {
                     throw new BadRequestHttpException('Email already belongs to another user');
                 }
             }
 
-            $email->setUser($user);
-            $user->addEmail($email);
+            $email->setUser($account);
+            $account->addEmail($email);
         } else {
-            $email->setUser($user);
+            $email->setUser($account);
             $em->persist($email);
-            $user->addEmail($email);
+            $account->addEmail($email);
         }
 
         $em->flush();
@@ -386,24 +361,21 @@ class UserController extends Controller
     /**
      * Removes an email.
      *
-     * @Route("/user/{user}/emails/{email}")
+     * @Route("/user/{account}/emails/{email}")
      * @Method("DELETE")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('ROLE_AUTHENTICATED')")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+     * @Security("is_granted('edit', account)")
      *
+     * @param User $account
      * @param Email $email
      *
      * @return string
      */
-    public function removeEmailAction(Email $email) : string
+    public function removeEmailAction(User $account, Email $email) : string
     {
-        // @TODO Use a Symfony Security Voter!
-        // if (!$authenticated->isEqualTo($user)) {
-        //     throw new AccessDeniedHttpException("You may only modify your own user");
-        // }
-
         $em = $this->doctrine->getEntityManager();
 
+        // @TODO this doesn't seem right...
         $em->remove($email);
         $em->flush();
 
@@ -413,22 +385,18 @@ class UserController extends Controller
     /**
      * Verify Email.
      *
-     * @Route("/user/{user}/emails/verify")
+     * @Route("/user/{account}/emails/verify")
      * @Method("POST")
-     * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('ROLE_AUTHENTICATED')")
+     * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
+     * @Security("is_granted('edit', account)")
      *
-     * @param User $user
+     * @param User $account
      * @param EmailVerify $input
      *
      * @return Collection
      */
-    public function verifyEmailAction(User $user, EmailVerify $input) : Collection
+    public function verifyEmailAction(User $account, EmailVerify $input) : Collection
     {
-        // if (!$authenticated->isEqualTo($user)) {
-        //     throw new AccessDeniedHttpException("You may only modify your own user");
-        // }
-
         $em = $this->doctrine->getEntityManager();
         $repository = $this->doctrine->getRepository(EmailVerify::class);
 
@@ -452,6 +420,6 @@ class UserController extends Controller
         $em->remove($verify);
         $em->flush();
 
-        return $this->showEmailsAction($user);
+        return $account->getEmails();
     }
 }

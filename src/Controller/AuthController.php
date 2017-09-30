@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
@@ -41,16 +42,22 @@ class AuthController extends Controller
     protected $jwtManager;
 
     /**
+     * @var AuthorizationCheckerInterface
+     */
+    protected $authorizationChecker;
+
+    /**
      * {@inheritdoc}
      */
     public function __construct(
         DenormalizerInterface $denormalizer,
         RegistryInterface $doctrine,
         EntityAttacherInterface $attacher,
+        AuthorizationCheckerInterface $authorizationChecker,
         VerificationManagerInterface $verificationManager,
         JWTManagerInterface $jwtManager
     ) {
-        parent::__construct($denormalizer, $doctrine, $attacher);
+        parent::__construct($denormalizer, $doctrine, $attacher, $authorizationChecker);
         $this->verificationManager = $verificationManager;
         $this->jwtManager = $jwtManager;
     }
