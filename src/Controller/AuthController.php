@@ -3,19 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\User\Login;
-use App\Entity\User\User;
 use App\Entity\User\Verify\EmailVerify;
 use App\Entity\User\Verify\VerifyInterface;
 use App\Utils\User\VerificationManagerInterface;
 use GeoSocio\EntityAttacher\EntityAttacherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
@@ -62,15 +60,14 @@ class AuthController extends Controller
      *
      * @Route("/login")
      * @Method("POST")
-     * @Security("!has_role('authenticated')")
-     * @Groups("anonymous")
+     * @Security("!has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Request $request
+     * @param Login $login
+     *
+     * @return VerifyInterface
      */
-    public function loginAction(array $input) : VerifyInterface
+    public function loginAction(Login $login) : VerifyInterface
     {
-        $login = $this->denormalizer->denormalize($input, Login::class);
-
         $verification = $this->verificationManager->getVerification($login->getType());
 
         $verify = $verification->create($login);
@@ -85,13 +82,14 @@ class AuthController extends Controller
      *
      * @Route("/login/email")
      * @Method("POST")
-     * @Security("!has_role('authenticated')")
+     * @Security("!has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Request $request
+     * @param EmailVerify $input
+     *
+     * @return array
      */
-    public function loginEmailAction(array $input) : array
+    public function loginEmailAction(EmailVerify $input) : array
     {
-        $input = $this->denormalizer->denormalize($input, EmailVerify::class);
         $em = $this->doctrine->getEntityManager();
         $repository = $this->doctrine->getRepository(EmailVerify::class);
 
@@ -126,14 +124,16 @@ class AuthController extends Controller
      *
      * @Route("/token")
      * @Method("GET")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Request $request
+     * @param UserInterface $user
+     *
+     * @return array
      */
-    public function tokenAction(User $authenticated) : array
+    public function tokenAction(UserInterface $user) : array
     {
         return [
-            'token' => $this->jwtManager->create($authenticated),
+            'token' => $this->jwtManager->create($user),
         ];
     }
 }

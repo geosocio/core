@@ -43,12 +43,29 @@ services:
         parent: app.controller
         class: App\Controller\SiteController
 
+    app.group_resolver:
+      class: App\GroupResolver\GroupResolver
+      arguments:
+        - '@security.token_storage'
+
+    app.request_group_resolver:
+      parent: app.group_resolver
+      class: App\GroupResolver\RequestGroupResolver
+      tags:
+          - { name: geosocio_http_serializer.request_group_resolver }
+
+    app.response_group_resolver:
+      parent: app.group_resolver
+      class: App\GroupResolver\ResponseGroupResolver
+      tags:
+          - { name: geosocio_http_serializer.response_group_resolver }
+
     app.denormalizer:
         class: App\Serializer\Denormalizer
         arguments:
             - '@serializer'
             - '@validator'
-            - '@security.token_storage'
+            - '@app.group_resolver'
 
     app.tree_maker:
         class: App\EventListener\TreeMaker

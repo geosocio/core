@@ -2,11 +2,8 @@
 
 namespace App\Serializer;
 
-use App\Entity\SiteAwareInterface;
-use App\Entity\User\User;
-use App\Entity\User\UserAwareInterface;
+use App\GroupResolver\GroupResolverInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -27,42 +24,25 @@ class Denormalizer implements DenormalizerInterface
     protected $validator;
 
     /**
-     * @var TokenStorageInterface
+     * @var GroupResolverInterface
      */
-    protected $tokenStorage;
+    protected $groupResolver;
 
     /**
      * Creates the Controller.
      *
+     * @param DenormalizerInterface $denormalizer
      * @param ValidatorInterface $validator
-     * @param TokenStorageInterface $tokenStorage
+     * @param GroupResolverInterface $groupResolver
      */
     public function __construct(
         DenormalizerInterface $denormalizer,
         ValidatorInterface $validator,
-        TokenStorageInterface $tokenStorage
+        GroupResolverInterface $groupResolver
     ) {
         $this->denormalizer = $denormalizer;
         $this->validator = $validator;
-        $this->tokenStorage = $tokenStorage;
-    }
-
-    /**
-     * Get a user from the Security Token Storage.
-     */
-    protected function getUser() :? User
-    {
-        if (null === $token = $this->tokenStorage->getToken()) {
-            return null;
-        }
-
-        $user = $token->getUser();
-
-        if (!is_object($user)) {
-            return null;
-        }
-
-        return $user;
+        $this->groupResolver = $groupResolver;
     }
 
     /**
@@ -80,28 +60,9 @@ class Denormalizer implements DenormalizerInterface
             $class = get_class($object);
         }
 
-        $user = null;
-        if ($object instanceof UserAwareInterface) {
-            $user = $object->getUser();
-        } elseif (isset($context['user'])) {
-            $user = $context['user'];
-        }
-
-        $site = null;
-        if ($object instanceof SiteAwareInterface) {
-            $site = $object->getSite();
-        } elseif (isset($context['site'])) {
-            $site = $context['site'];
-        }
-
-        $roles = $this->getUser() ? $this->getUser()->getRoles($user, $site) : [];
-        $roles = array_merge($roles, $context['roles'] ?? [
-            'anonymous'
-        ]);
-
         $context = array_merge([
             'object_to_populate' => $object,
-            'groups' => $roles,
+            'groups' => $this->groupResolver->getGroups($object),
         ], $context);
 
         $result = $this->denormalizer->denormalize(

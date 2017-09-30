@@ -11,7 +11,7 @@
         "egulias/email-validator": "^2.1",
         "geosocio/entity-attacher-bundle": "^2.0",
         "geosocio/entity-utils": "^1.2",
-        "geosocio/http-serializer-bundle": "^1.0",
+        "geosocio/http-serializer-bundle": "^2.0",
         "geosocio/slugger-bundle": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
         "ircmaxell/random-lib": "^1.2",

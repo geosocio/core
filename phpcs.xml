@@ -4,6 +4,10 @@
 
   <rule ref="PSR2"/>
 
+  <!-- Enforce Type Hints -->
+  <rule ref="Squiz.Commenting.FunctionComment.TypeHintMissing" />
+  <rule ref="Squiz.Commenting.FunctionComment.ScalarTypeHintMissing" />
+
   <exclude-pattern>var/cache/</exclude-pattern>
   <exclude-pattern>var/SymfonyRequirements.php</exclude-pattern>
   <exclude-pattern>vendor/</exclude-pattern>

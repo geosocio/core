@@ -34,58 +34,58 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     use CreatedTrait;
 
     /**
-     * User Role.
+     * User Group.
      *
      * Granted to everyone.
      *
      * @var string.
      */
-    const ROLE_ANONYMOUS = 'anonymous';
+    const GROUP_ANONYMOUS = 'anonymous';
 
     /**
-     * User Role.
+     * User Group.
      *
      * Granted to all users.
      *
      * @var string.
      */
-    const ROLE_AUTHENTICATED = 'authenticated';
+    const GROUP_AUTHENTICATED = 'authenticated';
 
     /**
-     * User Role.
+     * User Group.
      *
      * Granted to users with a confirmed email.
      *
      * @var string.
      */
-    const ROLE_STANDARD = 'standard';
+    const GROUP_STANDARD = 'standard';
 
     /**
-     * User Role.
+     * User Group.
      *
-     * Granted to users who are members of the current site.
+     * Granted to a user who is a member of the current site.
      *
      * @var string.
      */
-    const ROLE_MEMBER = 'member';
+    const GROUP_MEMBER = 'member';
 
     /**
-     * User Role.
+     * User Group.
      *
-     * Granted to users who are members of the current site.
+     * Granted to a user in the same place.
      *
      * @var string.
      */
-    const ROLE_NEIGHBOR = 'neighbor';
+    const GROUP_NEIGHBOR = 'neighbor';
 
     /**
-     * User Role.
+     * User Group.
      *
-     * Granted to one's self.
+     * Granted to the same user
      *
      * @var string.
      */
-    const ROLE_ME = 'me';
+    const GROUP_ME = 'me';
 
     /**
      * @var string
@@ -251,17 +251,38 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
 
     /**
      * @inheritDoc
-     *
-     * @TODO Roles must start with `ROLE_` and be uppercase!
+     */
+    public function getRoles() : array
+    {
+        return array_map(function ($group) {
+            return 'ROLE_' . strtoupper($group);
+        }, $this->getGroups());
+    }
+
+    /**
+     * Get Groups.
      *
      * @Groups({"me"})
      */
-    public function getRoles(User $user = null, Site $site = null) : array
+    public function getGroups()
     {
-        $roles = [
-            self::ROLE_ANONYMOUS,
-            self::ROLE_AUTHENTICATED,
+        $groups = [
+            self::GROUP_ANONYMOUS,
+            self::GROUP_AUTHENTICATED,
         ];
+
+        if ($this->isStandard()) {
+            $groups[] = self::GROUP_STANDARD;
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Is a Standard User.
+     */
+    public function isStandard()
+    {
 
         if ($this->primaryEmail
             && $this->primaryEmail->getVerified()
@@ -270,23 +291,10 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
             && $this->username
             && $this->location
         ) {
-            $roles[] = self::ROLE_STANDARD;
-
-            if ($site && $this->isMember($site)) {
-                $roles[] = self::ROLE_MEMBER;
-            }
+            return true;
         }
 
-        if ($user) {
-            if ($this->isEqualTo($user)) {
-                $roles[] = self::ROLE_ME;
-            }
-            if ($this->isNeighbor($user)) {
-                $roles[] = self::ROLE_NEIGHBOR;
-            }
-        }
-
-        return $roles;
+        return false;
     }
 
     /**

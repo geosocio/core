@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Site actions.
@@ -27,8 +26,6 @@ class SiteController extends Controller
     /**
      * @Route("/site.{_format}")
      * @Method("GET")
-     *
-     * @Groups("anonymous")
      *
      * @param Request $request
      */
@@ -59,7 +56,10 @@ class SiteController extends Controller
      * @Route("/site/{site}.{_format}")
      * @Method("GET")
      * @ParamConverter("site", converter="doctrine.orm", class="App\Entity\Site")
-     * @Groups("anonymous")
+     *
+     * @param Site $site
+     *
+     * @return Site
      */
     public function showAction(Site $site) : Site
     {

@@ -34,6 +34,10 @@ class PostController extends Controller
     /**
      * @Route("/post.{_format}")
      * @Method("GET")
+     *
+     * @param Request $request
+     *
+     * @return array
      */
     public function indexAction(Request $request) : array
     {
@@ -73,11 +77,14 @@ class PostController extends Controller
      * @Method("GET")
      * @ParamConverter("post", converter="doctrine.orm", class="App\Entity\Post\Post")
      */
-    public function showAction(Post $post, User $authenticated = null) : Post
+    public function showAction(Post $post) : Post
     {
         if ($post->isDeleted()) {
             throw new NotFoundHttpException();
         }
+
+        // @TODO Use a Symfony Security Voter to determine if this post
+        //       can be seen.
 
         return $post;
     }
@@ -85,40 +92,44 @@ class PostController extends Controller
     /**
      * @Route("/post")
      * @Method("POST")
-     * @Security("has_role('standard')")
+     * @Security("has_role('ROLE_STANDARD)")
      *
-     * @TODO Creating a post without a place should defult to user's place.
+     * @param Post $post
+     *
+     * @return Post
+     *
+     * @todo Creating a post without a place should defult to user's place.
      */
-    public function createAction(User $authenticated, array $input) : Post
+    public function createAction(Post $post) : Post
     {
-        $post = $this->denormalizer->denormalize($input, Post::class);
-
         $em = $this->doctrine->getEntityManager();
 
         $repository = $this->doctrine->getRepository(Post::class);
 
-        if (!$post->canCreate($authenticated)) {
-            throw new AccessDeniedHttpException();
-        }
+        // @TODO Use a Symfony Security Voter!
+        // if (!$post->canCreate($authenticated)) {
+        //     throw new AccessDeniedHttpException();
+        // }
 
         $post = $this->attacher->attach($post);
 
         $em->persist($post);
         $em->flush();
 
-        return $this->showAction($post);
+        return $post;
     }
 
     /**
      * @Route("/post/{post}.{_format}")
      * @Method("DELETE")
-     * @Security("has_role('standard')")
+     * @Security("has_role('ROLE_STANDARD')")
      */
     public function removeAction(User $authenticated, Post $post) : string
     {
-        if (!$post->canDelete($user)) {
-            throw new AccessDeniedHttpException();
-        }
+        // @TODO Use a Symfony Security Voter!
+        // if (!$post->canDelete($user)) {
+        //     throw new AccessDeniedHttpException();
+        // }
 
         $em = $this->doctrine->getEntityManager();
 
@@ -134,6 +145,11 @@ class PostController extends Controller
      * @Route("/post/{post}/replies.{_format}")
      * @Method("GET")
      * @ParamConverter("post", converter="doctrine.orm", class="App\Entity\Post\Post")
+     *
+     * @param Post $post
+     * @param Request $request
+     *
+     * @return array
      */
     public function showRepliesAction(Post $post, Request $request) : array
     {

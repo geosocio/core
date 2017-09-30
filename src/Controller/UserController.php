@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Site;
 use App\Entity\User\User;
 use App\Entity\User\Email;
 use App\Entity\User\Membership;
@@ -82,6 +83,8 @@ class UserController extends Controller
             throw new NotFoundHttpException("No user found");
         }
 
+        // @TODO Use a security voter!
+
         return $this->showAction($user);
     }
 
@@ -91,10 +94,10 @@ class UserController extends Controller
    * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
    *
    * @param User $user
-   * @param Request $request
    */
     public function showAction(User $user) : User
     {
+        // @TODO Use a security voter!
         if (!$user->isEnabled()) {
             throw new NotFoundHttpException("User account is disabled");
         }
@@ -108,15 +111,19 @@ class UserController extends Controller
      * @Route("/user/{user}")
      * @Method("PATCH")
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Request $request
+     * @param User $user
+     * @param array $input
+     *
+     * @return User
      */
-    public function updateAction(User $authenticated, User $user, array $input) : User
+    public function updateAction(User $user, array $input) : User
     {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
+        // @TODO Use a security voter!
+        // if (!$authenticated->isEqualTo($user)) {
+        //     throw new AccessDeniedHttpException("You may only modify your own user");
+        // }
 
         $em = $this->doctrine->getEntityManager();
 
@@ -145,11 +152,15 @@ class UserController extends Controller
 
         $em->flush();
 
-        return $this->showAction($user);
+        return $user;
     }
 
     /**
      * Update the user's location.
+     *
+     * @param User $user
+     *
+     * @return User
      *
      * @todo Get rid of this method!
      */
@@ -181,15 +192,18 @@ class UserController extends Controller
      * @Route("/user/{user}")
      * @Method("DELETE")
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Request $request
+     * @param User $user
+     *
+     * @return string
      */
-    public function deleteAction(User $authenticated, User $user) : string
+    public function deleteAction(User $user) : string
     {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only deactivate your own user");
-        }
+        // @TODO Use a Symfony Security Voter!
+        // if (!$authenticated->isEqualTo($user)) {
+        //     throw new AccessDeniedHttpException("You may only deactivate your own user");
+        // }
 
         $user->disable();
 
@@ -207,7 +221,9 @@ class UserController extends Controller
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @Security("has_role('authenticated')")
      *
-     * @param Request $request
+     * @param User $user
+     *
+     * @return Collection
      */
     public function showMembershipsAction(User $user) : Collection
     {
@@ -225,16 +241,19 @@ class UserController extends Controller
      * @Method("DELETE")
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
      * @ParamConverter("site", converter="doctrine.orm", class="App\Entity\Site")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATED')")
      *
      * @param Email $email
-     * @param Request $request
+     * @param Site $site
+     *
+     * @return string
      */
-    public function removeMembershipAction(User $authenticated, User $user, Site $site) : string
+    public function removeMembershipAction(User $user, Site $site) : string
     {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
+        // @TODO use a Symfony Security Voter!
+        // if (!$authenticated->isEqualTo($user)) {
+        //     throw new AccessDeniedHttpException("You may only modify your own user");
+        // }
 
         $memberships = $user->getMembershipsBySite($site);
 
@@ -255,22 +274,22 @@ class UserController extends Controller
      * @Route("/user/{user}/memberships.{_format}")
      * @Method("POST")
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATEDd')")
      *
-     * @param Request $request
+     * @param User $user
+     * @param Site $site
+     *
+     * @return Collection
      */
-    public function createMembershipAction(User $authenticated, User $user, array $input) : Collection
+    public function createMembershipAction(User $user, Site $site) : Collection
     {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
+        // @TODO use a Symfony Security Voter!
+        // if (!$authenticated->isEqualTo($user)) {
+        //     throw new AccessDeniedHttpException("You may only modify your own user");
+        // }
 
         $em = $this->doctrine->getEntityManager();
         $repository = $this->doctrine->getRepository(Site::class);
-
-        $site = $this->denormalizer->denormalize($input, Site::class, null, [
-            'user' => $user,
-        ]);
 
         $memberships = $user->getMembershipsBySite($site);
 
@@ -297,9 +316,11 @@ class UserController extends Controller
      * @Route("/user/{user}/emails.{_format}")
      * @Method("GET")
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Request $request
+     * @param User $user
+     *
+     * @return Collection
      */
     public function showEmailsAction(User $user) : Collection
     {
@@ -316,20 +337,21 @@ class UserController extends Controller
      * @Route("/user/{user}/emails")
      * @Method("POST")
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Request $request
+     * @param User $user
+     * @param Email $email
+     *
+     * @return EmailVerify
      */
-    public function createEmailAction(User $authenticated, User $user, array $input) : EmailVerify
+    public function createEmailAction(User $user, Email $email) : EmailVerify
     {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
+        // @TODO Use a Symfony Security Voter!
+        // if (!$authenticated->isEqualTo($user)) {
+        //     throw new AccessDeniedHttpException("You may only modify your own user");
+        // }
 
         $em = $this->doctrine->getEntityManager();
-        $email = $this->denormalizer->denormalize($input, Email::class, null, [
-            'user' => $user,
-        ]);
 
         $repository = $this->doctrine->getRepository(Email::class);
 
@@ -369,16 +391,18 @@ class UserController extends Controller
      * @Route("/user/{user}/emails/{email}")
      * @Method("DELETE")
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATED')")
      *
      * @param Email $email
-     * @param Request $request
+     *
+     * @return string
      */
-    public function removeEmailAction(User $authenticated, User $user, Email $email) : string
+    public function removeEmailAction(Email $email) : string
     {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
+        // @TODO Use a Symfony Security Voter!
+        // if (!$authenticated->isEqualTo($user)) {
+        //     throw new AccessDeniedHttpException("You may only modify your own user");
+        // }
 
         $em = $this->doctrine->getEntityManager();
 
@@ -394,19 +418,18 @@ class UserController extends Controller
      * @Route("/user/{user}/emails/verify")
      * @Method("POST")
      * @ParamConverter("user", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("has_role('authenticated')")
+     * @Security("has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Request $request
+     * @param User $user
+     * @param EmailVerify $input
+     *
+     * @return Collection
      */
-    public function verifyEmailAction(User $authenticated, User $user, array $input) : Collection
+    public function verifyEmailAction(User $user, EmailVerify $input) : Collection
     {
-        if (!$authenticated->isEqualTo($user)) {
-            throw new AccessDeniedHttpException("You may only modify your own user");
-        }
-
-        $input = $this->denormalizer->denormalize($input, EmailVerify::class, null, [
-            'user' => $user,
-        ]);
+        // if (!$authenticated->isEqualTo($user)) {
+        //     throw new AccessDeniedHttpException("You may only modify your own user");
+        // }
 
         $em = $this->doctrine->getEntityManager();
         $repository = $this->doctrine->getRepository(EmailVerify::class);

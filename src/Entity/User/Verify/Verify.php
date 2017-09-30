@@ -116,6 +116,9 @@ abstract class Verify implements VerifyInterface
 
     /**
      * Get code
+     *
+     * @TODO This gets revealed to the user because of
+     *       https://github.com/symfony/symfony/issues/23494
      */
     public function getCode() :? string
     {
