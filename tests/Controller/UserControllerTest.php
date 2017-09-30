@@ -141,19 +141,12 @@ class UserControllerTest extends ControllerTest
             ->getMock();
         $user->method('getId')
             ->willReturn($data['id']);
-        $user->expects($this->once())
-            ->method('isEqualTo')
-            ->with($user)
-            ->willReturn(true);
 
         $new = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
         $new->method('getId')
             ->willReturn($data['id']);
-        $new->expects($this->once())
-            ->method('isEnabled')
-            ->willReturn(true);
 
         $input = [];
         $denormalizer = $this->getDenormalizer();
@@ -185,7 +178,7 @@ class UserControllerTest extends ControllerTest
             $verificationManager,
             $placeFinder
         );
-        $result = $controller->updateAction($user, $user, $input);
+        $result = $controller->updateAction($user, $input);
 
         $this->assertEquals($new, $result);
     }
@@ -199,10 +192,6 @@ class UserControllerTest extends ControllerTest
         $user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $user->expects($this->once())
-            ->method('isEqualTo')
-            ->with($user)
-            ->willReturn(true);
         $user->expects($this->once())
             ->method('getEmails')
             ->willReturn($collection);
@@ -264,13 +253,7 @@ class UserControllerTest extends ControllerTest
             $placeFinder
         );
 
-        $input = [];
-        $denormalizer->expects($this->once())
-            ->method('denormalize')
-            ->with($input, EmailVerify::class)
-            ->willReturn($verify);
-
-        $response = $controller->verifyEmailAction($user, $user, $input);
+        $response = $controller->verifyEmailAction($user, $verify);
 
         $this->assertInstanceOf(Collection::class, $response);
     }

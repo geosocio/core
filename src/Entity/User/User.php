@@ -370,11 +370,11 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
             return false;
         }
 
-        if (!in_array(self::ROLE_STANDARD, $this->getRoles())) {
+        if (!$this->isStandard()) {
             return false;
         }
 
-        if (!in_array(self::ROLE_STANDARD, $user->getRoles())) {
+        if (!$user->isStandard()) {
             return false;
         }
 

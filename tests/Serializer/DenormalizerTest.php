@@ -2,10 +2,10 @@
 
 namespace App\Tests\Serializer;
 
+use App\GroupResolver\GroupResolverInterface;
 use App\Serializer\Denormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -31,8 +31,8 @@ class DenormalizerTest extends TestCase
             ->willReturn($data);
 
         $validator = $this->createMock(ValidatorInterface::class);
-        $tokenStorage = $this->createMock(TokenStorageInterface::class);
-        $denormalizer = new Denormalizer($d, $validator, $tokenStorage);
+        $groupResolver = $this->createMock(GroupResolverInterface::class);
+        $denormalizer = new Denormalizer($d, $validator, $groupResolver);
 
         $result = $denormalizer->denormalize($input, \stdClass::class);
 

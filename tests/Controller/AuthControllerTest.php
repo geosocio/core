@@ -35,13 +35,7 @@ class AuthControllerTest extends ControllerTest
             ->disableOriginalConstructor()
             ->getMock();
 
-        $input = [];
-        $denormalizer->expects($this->once())
-            ->method('denormalize')
-            ->with($input, Login::class)
-            ->willReturn($login);
-
-        $response = $controller->loginAction($input);
+        $response = $controller->loginAction($login);
 
         $this->assertInstanceOf(VerifyInterface::class, $response);
     }
@@ -112,13 +106,7 @@ class AuthControllerTest extends ControllerTest
             ->method('getEntityManager')
             ->willReturn($em);
 
-        $input = [];
-        $denormalizer->expects($this->once())
-            ->method('denormalize')
-            ->with($input, EmailVerify::class)
-            ->willReturn($verify);
-
-        $response = $controller->loginEmailAction($input);
+        $response = $controller->loginEmailAction($verify);
 
         $this->assertArrayHasKey("token", $response);
     }

@@ -69,8 +69,8 @@ class UserTest extends EntityTest
 
         $roles = $user->getRoles();
         $this->assertEquals([
-            'anonymous',
-            'authenticated',
+            'ROLE_ANONYMOUS',
+            'ROLE_AUTHENTICATED',
         ], $roles);
 
         $user = new User([
@@ -90,9 +90,9 @@ class UserTest extends EntityTest
 
         $roles = $user->getRoles();
         $this->assertEquals([
-            'anonymous',
-            'authenticated',
-            'standard',
+            'ROLE_ANONYMOUS',
+            'ROLE_AUTHENTICATED',
+            'ROLE_STANDARD',
         ], $roles);
     }
 

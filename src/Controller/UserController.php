@@ -19,7 +19,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
@@ -242,7 +241,7 @@ class UserController extends Controller
      * @ParamConverter("site", converter="doctrine.orm", class="App\Entity\Site")
      * @Security("has_role('ROLE_AUTHENTICATED')")
      *
-     * @param Email $email
+     * @param User $user
      * @param Site $site
      *
      * @return string
