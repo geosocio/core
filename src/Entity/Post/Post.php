@@ -779,6 +779,8 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @todo Replace with serialization gorups.
      */
     public function getPlaceholder() : Post
     {

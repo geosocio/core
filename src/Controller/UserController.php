@@ -301,16 +301,6 @@ class UserController extends Controller
      * @param User $account
      *
      * @return Collection
-     *
-     * @todo We can't handle collections now?
-     *       We should:
-     *       1) Determine if the response is a collection (i.e. an array_filter
-     *          should be empty).
-     *       2) Resolve the groups for each item in the collection.
-     *       3) Use the security voter to 'view' the Post and create a 'post'
-     *          group which means you have access to view only that post.
-     *       4) Remove the "placeholder" since that wont be needed any more
-     *          if you don't have access to the post, all you'll get is the id back.
      */
     public function showEmailsAction(User $account) : Collection
     {
