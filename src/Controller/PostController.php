@@ -158,8 +158,8 @@ class PostController extends Controller
      * @Method("POST")
      * @ParamConverter("post", converter="doctrine.orm", class="App\Entity\Post\Post")
      *
-     * @todo add security voter to ensure that user does not place for some
-     *       other user!
+     * @todo add security voter for Placements to ensure that user does not
+     *       place for some other user!
      *
      * @param Post $post
      * @param User $user

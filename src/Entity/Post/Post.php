@@ -780,7 +780,8 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * {@inheritdoc}
      *
-     * @todo Replace with serialization gorups.
+     * @todo Replace with serialization groups determined by grants
+     *       (i.e. if I can view the post, I should get the "post" group)
      */
     public function getPlaceholder() : Post
     {
