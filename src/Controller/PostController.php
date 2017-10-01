@@ -12,9 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Post actions.
@@ -26,7 +24,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  *       "_format" = "json"
  *    }
  * )
- * @TODO Need a route to "repost"
  */
 class PostController extends Controller
 {
@@ -76,23 +73,21 @@ class PostController extends Controller
      * @Route("/post/{post}.{_format}")
      * @Method("GET")
      * @ParamConverter("post", converter="doctrine.orm", class="App\Entity\Post\Post")
+     * @Security("is_granted('view', post)", statusCode=404)
+     *
+     * @param Post $post
+     *
+     * @return Post
      */
     public function showAction(Post $post) : Post
     {
-        if ($post->isDeleted()) {
-            throw new NotFoundHttpException();
-        }
-
-        // @TODO Use a Symfony Security Voter to determine if this post
-        //       can be seen.
-
         return $post;
     }
 
     /**
      * @Route("/post")
      * @Method("POST")
-     * @Security("has_role('ROLE_STANDARD)")
+     * @Security("is_granted('create', post)")
      *
      * @param Post $post
      *
@@ -106,11 +101,6 @@ class PostController extends Controller
 
         $repository = $this->doctrine->getRepository(Post::class);
 
-        // @TODO Use a Symfony Security Voter!
-        // if (!$post->canCreate($authenticated)) {
-        //     throw new AccessDeniedHttpException();
-        // }
-
         $post = $this->attacher->attach($post);
 
         $em->persist($post);
@@ -122,15 +112,14 @@ class PostController extends Controller
     /**
      * @Route("/post/{post}.{_format}")
      * @Method("DELETE")
-     * @Security("has_role('ROLE_STANDARD')")
+     * @Security("is_granted('delete', post)")
+     *
+     * @param Post $post
+     *
+     * @return string
      */
-    public function removeAction(User $authenticated, Post $post) : string
+    public function removeAction(Post $post) : string
     {
-        // @TODO Use a Symfony Security Voter!
-        // if (!$post->canDelete($user)) {
-        //     throw new AccessDeniedHttpException();
-        // }
-
         $em = $this->doctrine->getEntityManager();
 
         $post->delete();
@@ -145,6 +134,7 @@ class PostController extends Controller
      * @Route("/post/{post}/replies.{_format}")
      * @Method("GET")
      * @ParamConverter("post", converter="doctrine.orm", class="App\Entity\Post\Post")
+     * @Security("is_granted('view', post)")
      *
      * @param Post $post
      * @param Request $request

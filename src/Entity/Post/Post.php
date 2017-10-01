@@ -2,14 +2,12 @@
 
 namespace App\Entity\Post;
 
-use ParseError;
 use GeoSocio\EntityAttacher\Annotation\Attach;
 use GeoSocio\EntityUtils\CreatedTrait;
 use GeoSocio\EntityUtils\ParameterBag;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Entity\AccessAwareInterface;
 use App\Entity\Site;
 use App\Entity\Permission;
 use App\Entity\SiteAwareInterface;
@@ -37,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @TODO Replies and forwards should have the same site id as their parent.
  */
 // @codingStandardsIgnoreEnd
-class Post implements AccessAwareInterface, UserAwareInterface, SiteAwareInterface, TreeAwareInterface
+class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
 {
 
     use CreatedTrait;
@@ -777,85 +775,6 @@ class Post implements AccessAwareInterface, UserAwareInterface, SiteAwareInterfa
     public function isDeleted() : bool
     {
         return (bool) $this->deleted;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canView(User $user = null) : bool
-    {
-        if ($this->isDeleted()) {
-            return false;
-        }
-
-        if (!$this->permission) {
-            return false;
-        }
-
-        if ($this->permission->getId() === 'public') {
-            return true;
-        }
-
-        if (!$user) {
-            return false;
-        }
-
-        if ($this->permission->getId() === 'me' && !$this->user->isEqualTo($user)) {
-            return false;
-        }
-
-        if ($this->permission->getId() === 'site' && !$user->isMember($this->site)) {
-            return false;
-        }
-
-        if ($this->permission->getId() === 'place') {
-            if (!$this->permissionPlace || !$user->getPlaces()->contains($this->permissionPlace)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canCreate(User $user = null) : bool
-    {
-
-        if (!$this->user || !$user) {
-            return false;
-        }
-
-        if (!$this->user->isEqualTo($user)) {
-            return false;
-        }
-
-        if ($this->site && !$user->isMember($this->site)) {
-            return false;
-        }
-
-        return $this->canView($user);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canEdit(User $user = null) : bool
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function canDelete(User $user = null) : bool
-    {
-        if (!$this->user || !$user) {
-            return false;
-        }
-
-        return $this->user->isEqualTo($user);
     }
 
     /**

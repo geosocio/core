@@ -66,6 +66,11 @@ services:
         tags:
           - { name: security.voter }
 
+    app.post_voter:
+        class: App\Security\PostVoter
+        tags:
+          - { name: security.voter }
+
     app.denormalizer:
         class: App\Serializer\Denormalizer
         arguments:
