@@ -35,9 +35,6 @@ class UserControllerTest extends ControllerTest
             ->getMock();
         $user->method('getId')
             ->willReturn($data['id']);
-        $user->expects($this->once())
-            ->method('isEnabled')
-            ->willReturn(true);
 
         $denormalizer = $this->getDenormalizer();
 
@@ -48,6 +45,7 @@ class UserControllerTest extends ControllerTest
             $denormalizer,
             $this->getDoctrine(),
             $this->getEntityAttacher(),
+            $this->getAuthorizationChecker(),
             $verificationManager,
             $placeFinder
         );
@@ -55,70 +53,6 @@ class UserControllerTest extends ControllerTest
         $result = $controller->showAction($user, $request, $user);
 
         $this->assertEquals($user, $result);
-    }
-
-    /**
-     * Tests the show action no user failure.
-     */
-    public function testshowActionNoUserFailure()
-    {
-        $data = [
-            'id' => '427bb4c4-4481-41b2-88f4-ce1980598208'
-        ];
-        $user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $user->method('getId')
-            ->willReturn($data['id']);
-
-        $verificationManager = $this->createMock(VerificationManagerInterface::class);
-        $placeFinder = $this->createMock(PlaceFinderInterface::class);
-
-        $controller = new UserController(
-            $this->getDenormalizer(),
-            $this->getDoctrine(),
-            $this->getEntityAttacher(),
-            $verificationManager,
-            $placeFinder
-        );
-
-        $this->expectException(\Exception::class);
-        $result = $controller->showAction($user);
-    }
-
-    /**
-     * Tests the show action no token failure.
-     */
-    public function testshowActionNoTokenFailure()
-    {
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request->method('getRequestFormat')
-            ->willReturn(self::FORMAT);
-
-        $data = [
-            'id' => '427bb4c4-4481-41b2-88f4-ce1980598208'
-        ];
-        $user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $user->method('getId')
-            ->willReturn($data['id']);
-
-        $verificationManager = $this->createMock(VerificationManagerInterface::class);
-        $placeFinder = $this->createMock(PlaceFinderInterface::class);
-
-        $controller = new UserController(
-            $this->getDenormalizer(),
-            $this->getDoctrine(),
-            $this->getEntityAttacher(),
-            $verificationManager,
-            $placeFinder
-        );
-
-        $this->expectException(\Exception::class);
-        $result = $controller->showAction($user, $request);
     }
 
     /**
@@ -175,6 +109,7 @@ class UserControllerTest extends ControllerTest
             $denormalizer,
             $doctrine,
             $this->getEntityAttacher(),
+            $this->getAuthorizationChecker(),
             $verificationManager,
             $placeFinder
         );
@@ -195,9 +130,6 @@ class UserControllerTest extends ControllerTest
         $user->expects($this->once())
             ->method('getEmails')
             ->willReturn($collection);
-        $user->expects($this->once())
-            ->method('isEnabled')
-            ->willReturn(true);
 
         $email = $this->getMockBuilder(Email::class)
             ->disableOriginalConstructor()
@@ -249,6 +181,7 @@ class UserControllerTest extends ControllerTest
             $denormalizer,
             $doctrine,
             $this->getEntityAttacher(),
+            $this->getAuthorizationChecker(),
             $verificationManager,
             $placeFinder
         );

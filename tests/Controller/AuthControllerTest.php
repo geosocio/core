@@ -20,6 +20,7 @@ class AuthControllerTest extends ControllerTest
         $denormalizer = $this->getDenormalizer();
         $doctrine = $this->getDoctrine();
         $entityAttacher = $this->getEntityAttacher();
+        $authorizationChecker = $this->getAuthorizationChecker();
         $verificationManager = $this->createMock(VerificationManagerInterface::class);
         $jwtManager = $this->createMock(JWTManagerInterface::class);
 
@@ -27,6 +28,7 @@ class AuthControllerTest extends ControllerTest
             $denormalizer,
             $doctrine,
             $entityAttacher,
+            $authorizationChecker,
             $verificationManager,
             $jwtManager
         );
@@ -45,6 +47,7 @@ class AuthControllerTest extends ControllerTest
         $denormalizer = $this->getDenormalizer();
         $doctrine = $this->getDoctrine();
         $entityAttacher = $this->getEntityAttacher();
+        $authorizationChecker = $this->getAuthorizationChecker();
         $verificationManager = $this->createMock(VerificationManagerInterface::class);
         $jwtManager = $this->createMock(JWTManagerInterface::class);
 
@@ -52,6 +55,7 @@ class AuthControllerTest extends ControllerTest
             $denormalizer,
             $doctrine,
             $entityAttacher,
+            $authorizationChecker,
             $verificationManager,
             $jwtManager
         );

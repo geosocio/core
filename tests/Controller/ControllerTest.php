@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use GeoSocio\EntityAttacher\EntityAttacherInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -47,6 +48,14 @@ abstract class ControllerTest extends TestCase
     protected function getEntityAttacher()
     {
         return $this->createMock(EntityAttacherInterface::class);
+    }
+
+    /**
+     * Gets the mock entity attacher.
+     */
+    protected function getAuthorizationChecker()
+    {
+        return $this->createMock(AuthorizationCheckerInterface::class);
     }
 
     /**

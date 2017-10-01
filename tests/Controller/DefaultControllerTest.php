@@ -19,7 +19,8 @@ class DefaultControllerTest extends ControllerTest
         $default = new DefaultController(
             $this->getDenormalizer(),
             $this->getDoctrine(),
-            $this->getEntityAttacher()
+            $this->getEntityAttacher(),
+            $this->getAuthorizationChecker()
         );
         $result = $default->indexAction();
 

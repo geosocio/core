@@ -36,8 +36,9 @@ class PlaceControllerTest extends ControllerTest
             ->willReturn($repository);
 
         $entityAttacher = $this->getEntityAttacher();
+        $athorizationChecker = $this->getAuthorizationChecker();
 
-        $controller = new PlaceController($denormalizer, $doctrine, $entityAttacher);
+        $controller = new PlaceController($denormalizer, $doctrine, $entityAttacher, $athorizationChecker);
 
         $request = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()

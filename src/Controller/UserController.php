@@ -364,7 +364,8 @@ class UserController extends Controller
      * @Route("/user/{account}/emails/{email}")
      * @Method("DELETE")
      * @ParamConverter("account", converter="doctrine.orm", class="App\Entity\User\User")
-     * @Security("is_granted('edit', account)")
+     * @ParamConverter("email", converter="doctrine.orm", class="App\Entity\User\Email")
+     * @Security("is_granted('edit', email.user)")
      *
      * @param User $account
      * @param Email $email
@@ -375,7 +376,6 @@ class UserController extends Controller
     {
         $em = $this->doctrine->getEntityManager();
 
-        // @TODO this doesn't seem right...
         $em->remove($email);
         $em->flush();
 
