@@ -41,7 +41,7 @@ class UserVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        $user = $token->getUser();
+        $user = $token->getUser() instanceof User ? $token->getUser() : null;
 
         switch ($attribute) {
             case self::VIEW:
