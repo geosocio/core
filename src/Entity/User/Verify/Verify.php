@@ -81,7 +81,7 @@ abstract class Verify implements VerifyInterface
      *
      * @param string $token
      *
-     * @Groups({"anonymous"})
+     * @Groups({"write_anonymous"})
      */
     public function setToken(string $token) : self
     {
@@ -93,7 +93,7 @@ abstract class Verify implements VerifyInterface
     /**
      * Get token
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getToken() :? string
     {
@@ -105,7 +105,7 @@ abstract class Verify implements VerifyInterface
      *
      * @param string $code
      *
-     * @Groups({"anonymous"})
+     * @Groups({"write_anonymous"})
      */
     public function setCode(string $code) : self
     {
@@ -116,9 +116,6 @@ abstract class Verify implements VerifyInterface
 
     /**
      * Get code
-     *
-     * @TODO This gets revealed to the user because of
-     *       https://github.com/symfony/symfony/issues/23494
      */
     public function getCode() :? string
     {

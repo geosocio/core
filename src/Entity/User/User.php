@@ -202,7 +202,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get id
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getId() :? string
     {
@@ -212,7 +212,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Set Username.
      *
-     * @Groups({"me"})
+     * @Groups({"write_me"})
      *
      * @param string $username
      */
@@ -226,7 +226,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * @inheritDoc
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getUsername() :? string
     {
@@ -262,7 +262,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get Groups.
      *
-     * @Groups({"me"})
+     * @Groups({"read_me"})
      */
     public function getGroups()
     {
@@ -402,7 +402,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     }
 
     /**
-     * @Groups({"neighbor", "me"})
+     * @Groups({"read_neighbor", "read_me"})
      */
     public function getFirstName() :? string
     {
@@ -418,7 +418,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
      *
      * @param string $firstName
      *
-     * @Groups({"me"})
+     * @Groups({"write_me"})
      */
     public function setFirstName(string $firstName) : self
     {
@@ -434,7 +434,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     }
 
     /**
-     * @Groups({"neighbor", "me"})
+     * @Groups({"read_neighbor", "read_me"})
      */
     public function getLastName() :? string
     {
@@ -450,7 +450,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
      *
      * @param string $lastName
      *
-     * @Groups({"me"})
+     * @Groups({"write_me"})
      */
     public function setLastName(string $lastName) : self
     {
@@ -492,7 +492,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get emails
      *
-     * @Groups({"me"})
+     * @Groups({"read_me"})
      *
      * @return Collection
      */
@@ -528,7 +528,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get memberships
      *
-     * @Groups({"me", "standard"})
+     * @Groups({"read_me", "read_standard"})
      *
      * @return Collection
      */
@@ -580,7 +580,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
      *
      * @return User
      *
-     * @Groups({"me"})
+     * @Groups({"read_me"})
      */
     public function setPrimaryEmailAddress(string $primaryEmailAddress) : self
     {
@@ -604,7 +604,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get Primary Email.
      *
-     * @Groups({"me"})
+     * @Groups({"read_me"})
      *
      * @return string
      */
@@ -636,7 +636,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get current location id.
      *
-     * @Groups({"me"})
+     * @Groups({"read_me"})
      */
     public function getLocationId() :? string
     {
@@ -652,7 +652,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
      *
      * @param string $id
      *
-     * @Groups({"me"})
+     * @Groups({"write_me"})
      */
     public function setLocationId(string $id) : self
     {
@@ -668,7 +668,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get current place id.
      *
-     * @Groups({"me", "neighbor"})
+     * @Groups({"read_me", "read_neighbor"})
      */
     public function getPlaceId() :? int
     {
@@ -702,7 +702,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get Enabled.
      *
-     * @Groups({"me"})
+     * @Groups({"read_me"})
      */
     public function isEnabled() : bool
     {
@@ -712,7 +712,7 @@ class User implements UserInterface, \Serializable, EquatableInterface, UserAwar
     /**
      * Get Color.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getColor() :? string
     {

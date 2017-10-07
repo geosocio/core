@@ -16,7 +16,11 @@ class ResponseGroupResolver extends GroupResolver implements ResponseGroupResolv
      */
     public function resolve(Request $request, $object) : array
     {
-        return $this->getGroups($object);
+        // Prefix the groups so they don't expose something they shouldn't
+        // @see https://github.com/symfony/symfony/issues/23494
+        return array_map(function ($group) {
+            return 'read_' . $group;
+        }, $this->getGroups($object));
     }
 
     /**

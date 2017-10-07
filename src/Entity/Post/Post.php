@@ -177,7 +177,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get id
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getId() : string
     {
@@ -199,7 +199,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get Text
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getText() :? string
     {
@@ -211,7 +211,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
      *
      * @param string $text
      *
-     * @Groups({"standard"})
+     * @Groups({"write_standard"})
      */
     public function setText(string $text) : self
     {
@@ -248,7 +248,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get User id.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getUserId() :? string
     {
@@ -264,7 +264,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
      *
      * @param string $id
      *
-     * @Groups({"standard"})
+     * @Groups({"write_standard"})
      */
     public function setUserId(string $id) : self
     {
@@ -278,7 +278,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
      *
      * @param string $id
      *
-     * @Groups({"standard"})
+     * @Groups({"write_standard"})
      */
     public function setSiteId(string $id) : self
     {
@@ -292,7 +292,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * {@inheritdoc}
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getSiteId() :? string
     {
@@ -390,7 +390,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
      *
      * @param string $id
      *
-     * @Groups({"standard"})
+     * @Groups({"write_standard"})
      */
     public function setReplyId(string $id) : self
     {
@@ -404,7 +404,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get the reply id.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getReplyId() :? string
     {
@@ -440,7 +440,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
      *
      * @param string $id
      *
-     * @Groups({"standard"})
+     * @Groups({"write_standard"})
      */
     public function setForwardId(string $id) : self
     {
@@ -454,7 +454,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get the forward id.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getForwardId() :? string
     {
@@ -490,7 +490,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
      *
      * @param string $id
      *
-     * @Groups({"standard"})
+     * @Groups({"write_standard"})
      */
     public function setPermissionId(string $id) : self
     {
@@ -504,7 +504,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get the permission id.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getPermissionId() :? string
     {
@@ -540,7 +540,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
      *
      * @param string $id
      *
-     * @Groups({"standard"})
+     * @Groups({"write_standard"})
      */
     public function setPermissionPlaceId(string $id) : self
     {
@@ -554,7 +554,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get the permission place id.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getPermissionPlaceId() :? string
     {
@@ -684,7 +684,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
      *
      * @param int $id
      *
-     * @Groups({"standard"})
+     * @Groups({"write_standard"})
      */
     public function setPlaceId(int $id) : self
     {
@@ -712,7 +712,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * {@inheritdoc}
      *
-     * @Groups({"me", "neighbor"})
+     * @Groups({"read_me", "read_neighbor"})
      */
     public function getPlaceId() :? int
     {
@@ -770,7 +770,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get Enabled.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function isDeleted() : bool
     {
@@ -793,7 +793,7 @@ class Post implements UserAwareInterface, SiteAwareInterface, TreeAwareInterface
     /**
      * Get created
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getCreated() :? \DateTimeInterface
     {

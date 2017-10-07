@@ -78,7 +78,7 @@ class Email implements UserAwareInterface
     /**
      * Set email
      *
-     * @Groups({"me"})
+     * @Groups({"write_me"})
      *
      * @param string $email
      * @return Email
@@ -93,7 +93,7 @@ class Email implements UserAwareInterface
     /**
      * Get email
      *
-     * @Groups({"me"})
+     * @Groups({"read_me"})
      *
      * @return string
      */
@@ -139,7 +139,7 @@ class Email implements UserAwareInterface
     /**
      * Get verified.
      *
-     * @Groups({"me"})
+     * @Groups({"read_me"})
      */
     public function getVerified() :? \DateTimeInterface
     {

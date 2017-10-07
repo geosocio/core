@@ -43,7 +43,7 @@ class Login
      *
      * @param string $value
      *
-     * @Groups({"anonymous"})
+     * @Groups({"write_anonymous"})
      */
     public function setValue(string $value) : self
     {

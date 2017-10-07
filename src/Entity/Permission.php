@@ -46,7 +46,7 @@ class Permission
     /**
      * Get id
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getId() :? string
     {
@@ -58,7 +58,7 @@ class Permission
      *
      * @param string $id
      *
-     * @Groups({"me"})
+     * @Groups({"write_me"})
      */
     public function setId(string $id) : self
     {
@@ -70,7 +70,7 @@ class Permission
     /**
      * Get Name
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getName() :? string
     {

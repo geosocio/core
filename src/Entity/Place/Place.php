@@ -118,7 +118,7 @@ class Place implements TreeAwareInterface
     /**
      * Get id
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getId() :? int
     {
@@ -172,7 +172,7 @@ class Place implements TreeAwareInterface
     /**
      * Get slug
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getSlug() :? string
     {
@@ -310,7 +310,7 @@ class Place implements TreeAwareInterface
     /**
      * Get parent ids.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getParentId() :? int
     {

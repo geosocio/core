@@ -78,7 +78,7 @@ class Site implements SiteAwareInterface
      *
      * @param string $id
      *
-     * @Groups({"me"})
+     * @Groups({"write_me"})
      */
     public function setId(string $id) : self
     {
@@ -90,7 +90,7 @@ class Site implements SiteAwareInterface
     /**
      * Get id
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getId() : string
     {
@@ -100,7 +100,7 @@ class Site implements SiteAwareInterface
     /**
      * Get Key
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getKey() :? string
     {
@@ -122,7 +122,7 @@ class Site implements SiteAwareInterface
     /**
      * Get Name
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getName() :? string
     {
@@ -144,7 +144,7 @@ class Site implements SiteAwareInterface
     /**
      * Get Domain
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getDomain() :? string
     {

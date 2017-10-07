@@ -56,7 +56,7 @@ class Membership implements UserAwareInterface, SiteAwareInterface
 
     /**
      * Get Id.
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getId()
     {

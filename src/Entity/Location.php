@@ -91,7 +91,7 @@ class Location
     /**
      * Get the place id.
      *
-     * @Groups({"anonymous"})
+     * @Groups({"read_anonymous"})
      */
     public function getPlaceId() :? int
     {
