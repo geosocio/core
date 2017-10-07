@@ -24,11 +24,9 @@ class RequestGroupResolver extends GroupResolver implements RequestGroupResolver
             $groups = [
                 User::GROUP_ANONYMOUS
             ];
-        }
-        else {
+        } else {
             $groups = $user->getGroups();
         }
-
 
         // Prefix the groups so they don't expose something they shouldn't
         // @see https://github.com/symfony/symfony/issues/23494
