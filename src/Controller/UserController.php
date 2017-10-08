@@ -400,7 +400,7 @@ class UserController extends Controller
 
         $verify = $repository->findOneByToken($input->getToken());
         if (!$verify) {
-            throw new BadRequestHttpException("Token does not exist'");
+            throw new BadRequestHttpException('Token does not exist');
         }
 
         if (!$verify->isEqualTo($input)) {

@@ -149,6 +149,16 @@ services:
         tags:
             - { name: serializer.normalizer }
 
+    app.event.jwt_created_listener:
+      class: App\EventListener\JWTCreatedEventListener
+      arguments:
+        - '@serializer'
+      tags:
+          -
+            name: kernel.event_listener
+            event: lexik_jwt_authentication.on_jwt_created
+            method: onJWTCreated
+
     app.guzzle_client_mapzen_search:
         class: GuzzleHttp\Client
         arguments:

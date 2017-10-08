@@ -116,7 +116,7 @@ class EmailVerification implements VerificationInterface
             'subject' => 'Confirm Your Email (' . $verify->getCode()  . ')',
             'text' => [
                 'Please visit the following location to verify your email:',
-                $request->getSchemeAndHttpHost() . '/v/e/' . $verify->getToken() . '/' . $verify->getCode(),
+                $request->getSchemeAndHttpHost() . '/login/' . $verify->getToken() . '/' . $verify->getCode(),
             ],
         ]);
 
