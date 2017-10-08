@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use RandomLib\Generator;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class EmailVerificationTest extends TestCase
 {
@@ -49,7 +50,11 @@ class EmailVerificationTest extends TestCase
 
         $dispatcher = $this->createMock(DispatcherInterface::class);
 
-        $emailVerification = new EmailVerification($doctrine, $random, $dispatcher);
+        $requestStack = $this->getMockBuilder(RequestStack::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $emailVerification = new EmailVerification($doctrine, $random, $dispatcher, $requestStack);
 
         $email = 'test@example.com';
         $verify = $emailVerification->create($email);
