@@ -96,6 +96,7 @@ services:
             - '@doctrine'
             - '@app.ircmaxell_random'
             - '@app.dispatcher_email'
+            - '@request_stack'
         tags:
             - { name: app.verification, type: email }
 

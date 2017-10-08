@@ -12,6 +12,7 @@ use App\Entity\User\User;
 use App\Entity\User\Email;
 use App\Entity\User\Verify\EmailVerify;
 use App\Utils\Dispatcher\DispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Email Verification.
@@ -35,20 +36,28 @@ class EmailVerification implements VerificationInterface
     protected $dispatcher;
 
     /**
+     * @var RequestStack
+     */
+    protected $requestStack;
+
+    /**
      * Create the Email Verification.
      *
      * @param Doctrine $doctrine
      * @param RandomGenerator $random
      * @param DispatcherInterface $dispatcher
+     * @param RequestStack $requestStack
      */
     public function __construct(
         Doctrine $doctrine,
         RandomGenerator $random,
-        DispatcherInterface $dispatcher
+        DispatcherInterface $dispatcher,
+        RequestStack $requestStack
     ) {
         $this->doctrine = $doctrine;
         $this->random = $random;
         $this->dispatcher = $dispatcher;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -100,12 +109,14 @@ class EmailVerification implements VerificationInterface
      */
     public function send(VerifyInterface $verify) : bool
     {
+        $request = $this->requestStack->getCurrentRequest();
+
         $message = new EmailMessage([
             'to' => $verify->getEmail()->getEmail(),
             'subject' => 'Confirm Your Email (' . $verify->getCode()  . ')',
             'text' => [
                 'Please visit the following location to verify your email:',
-                'https://thechur.ch/v/e/' . $verify->getToken() . '/' . $verify->getCode(),
+                $request->getSchemeAndHttpHost() . '/v/e/' . $verify->getToken() . '/' . $verify->getCode(),
             ],
         ]);
 
