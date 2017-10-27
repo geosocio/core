@@ -4,6 +4,7 @@ RUN a2enmod rewrite
 
 # System Dependencies.
 RUN apt-get update && apt-get install -y \
+        git \
         libicu-dev \
 	--no-install-recommends && rm -r /var/lib/apt/lists/*
 
@@ -23,7 +24,7 @@ RUN set -ex \
 		libsqlite3-dev \
 	' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-install intl opcache pdo_mysql pdo_sqlite \
+    && docker-php-ext-install intl opcache pdo_mysql pdo_sqlite zip \
 	&& apt-get purge -y --auto-remove $buildDeps
 
 # set recommended PHP.ini settings
@@ -46,4 +47,4 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 
 COPY ./ /var/www
 
-RUN composer --working-dir=../ install
+RUN composer --no-dev --working-dir=../ install
