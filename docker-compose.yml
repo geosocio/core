@@ -2,14 +2,9 @@ version: '3'
 services:
   api:
     build: ./
-    networks:
-      - default
-      - geosocio
     env_file:
       - .env
+    ports:
+      - 8888:80
     volumes:
       - ./:/var/www:cached
-networks:
-  geosocio:
-    external:
-      name: geosocio_default

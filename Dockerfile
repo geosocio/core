@@ -1,12 +1,15 @@
-FROM php:7.1-apache
+# Builder
+FROM composer as builder
+COPY ./ /app
+RUN composer install;
 
+# Service
+FROM php:7.1-apache
 RUN a2enmod rewrite
 
 # System Dependencies.
 RUN apt-get update && apt-get install -y \
         libicu-dev \
-        git \
-        zlib1g-dev \
 	--no-install-recommends && rm -r /var/lib/apt/lists/*
 
 # install the PHP extensions we need
@@ -25,7 +28,7 @@ RUN set -ex \
 		libsqlite3-dev \
 	' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-install intl opcache pdo_mysql pdo_sqlite zip \
+    && docker-php-ext-install intl opcache pdo_mysql pdo_sqlite \
 	&& apt-get purge -y --auto-remove $buildDeps
 
 # set recommended PHP.ini settings
@@ -39,14 +42,4 @@ RUN { \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-# Install Composer.
-RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
-    && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
-    && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
-    && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer \
-    && rm -rf /tmp/composer-setup.php
-
-COPY ./ /var/www
-
-# Build the App
-RUN composer self-update && composer --no-dev --working-dir=../ install
+COPY --from=builder /app  /var/www
