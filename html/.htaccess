@@ -1,5 +1,14 @@
 RewriteEngine On
 
+# Pass Environment Variables
+PassEnv APP_ENV
+PassEnv DATABASE_URL
+PassEnv JWT_PRIVATE_KEY_PATH
+PassEnv JWT_PUBLIC_KEY_PATH
+PassEnv JWT_PASSPHRASE
+PassEnv MAPZEN_API_KEY
+PassEnv SENDGRID_API_KEY
+
 # Determine the RewriteBase automatically and set it as environment variable.
 # If you are using Apache aliases to do mass virtual hosting or installed the
 # project in a subdirectory, the base path will be prepended to allow proper

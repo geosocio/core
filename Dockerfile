@@ -1,11 +1,13 @@
 # Builder
 FROM composer as builder
+ENV APP_ENV prod
 COPY ./ /app
 RUN composer --no-dev install
 
 # Service
 FROM php:7.1-apache
-RUN a2enmod rewrite
+
+RUN a2enmod rewrite env
 
 # System Dependencies.
 RUN apt-get update && apt-get install -y \
@@ -42,4 +44,23 @@ RUN { \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+# Environment
+ENV APP_ENV prod
+ENV JWT_PASSPHRASE 87155686a4a5dd1cfd04daf3ba1f5af8
+
+# Copy the app and all the dependencies
 COPY --from=builder /app /var/www
+
+# Generate a Key for JWT
+RUN mkdir -p ../config/jwt \
+    && openssl genrsa -out ../config/jwt/private.pem -aes256 -passout "pass:${JWT_PASSPHRASE}" 4096 \
+    && openssl rsa -pubout -passin "pass:${JWT_PASSPHRASE}" -in ../config/jwt/private.pem -out ../config/jwt/public.pem
+
+# Touch the SQLite Database and set the permissions
+RUN mkdir -p ../var \
+    && touch ../var/data.db \
+    && chown www-data:www-data ../var/data.db
+
+# Create the database schema and load the fixtures
+RUN ../bin/console doctrine:schema:create \
+    && ../bin/console doctrine:fixtures:load --fixtures=../src/DataFixtures/ORM\

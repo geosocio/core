@@ -2,9 +2,12 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    locale: 'en'
-    app.mapzen_api_key: '%env(MAPZEN_API_KEY)%'
-    app.sendgrid_api_key: '%env(SENDGRID_API_KEY)%'
+    env(DATABASE_URL): 'sqlite:///%kernel.project_dir%/var/data.db'
+    env(JWT_PRIVATE_KEY_PATH): 'config/jwt/private.pem'
+    env(JWT_PUBLIC_KEY_PATH): 'config/jwt/public.pem'
+    env(JWT_PASSPHRASE): ''
+    env(MAPZEN_API_KEY): ''
+    env(SENDGRID_API_KEY): ''
 
 services:
     app.controller:
@@ -117,7 +120,7 @@ services:
     app.sendgrid:
         class: SendGrid
         arguments:
-            - '%app.sendgrid_api_key%'
+            - '%env(SENDGRID_API_KEY)%'
 
     app.ircmaxell_random_factory:
         class: RandomLib\Factory
@@ -167,7 +170,7 @@ services:
                 base_url: https://search.mapzen.com/v1/
                 defaults:
                     query:
-                        api_key: '%app.mapzen_api_key%'
+                        api_key: '%env(MAPZEN_API_KEY)%'
 
     app.guzzle_client_mapzen_whos_on_first:
         class: GuzzleHttp\Client
@@ -176,4 +179,4 @@ services:
                 base_url: https://whosonfirst-api.mapzen.com
                 defaults:
                     query:
-                        api_key: '%app.mapzen_api_key%'
+                        api_key: '%env(MAPZEN_API_KEY)%'
