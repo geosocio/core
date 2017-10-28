@@ -2,6 +2,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    locale: 'en'
     app.mapzen_api_key: '%env(MAPZEN_API_KEY)%'
     app.sendgrid_api_key: '%env(SENDGRID_API_KEY)%'
 

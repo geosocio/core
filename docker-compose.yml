@@ -9,3 +9,10 @@ services:
       - 8888:80
     volumes:
       - ./:/var/www:cached
+  build:
+    image: composer
+    env_file:
+      - .env
+    volumes:
+      - ./:/app:cached
+    command: 'composer install'
