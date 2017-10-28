@@ -4,8 +4,9 @@ RUN a2enmod rewrite
 
 # System Dependencies.
 RUN apt-get update && apt-get install -y \
-        git \
         libicu-dev \
+        git \
+        zlib1g-dev \
 	--no-install-recommends && rm -r /var/lib/apt/lists/*
 
 # install the PHP extensions we need
@@ -47,4 +48,5 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 
 COPY ./ /var/www
 
+# Build the App
 RUN composer --no-dev --working-dir=../ install
