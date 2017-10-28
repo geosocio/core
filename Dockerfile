@@ -49,4 +49,4 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 COPY ./ /var/www
 
 # Build the App
-RUN composer --no-dev --working-dir=../ install
+RUN composer self-update && composer --no-dev --working-dir=../ install
