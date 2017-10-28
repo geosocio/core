@@ -42,4 +42,4 @@ RUN { \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-COPY --from=builder /app  /var/www
+COPY --from=builder /app /var/www
