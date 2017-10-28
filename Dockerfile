@@ -1,7 +1,7 @@
 # Builder
 FROM composer as builder
 COPY ./ /app
-RUN composer install;
+RUN composer --no-dev install
 
 # Service
 FROM php:7.1-apache
