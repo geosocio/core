@@ -2,7 +2,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    env(DATABASE_URL): 'sqlite:///%kernel.project_dir%/var/data.db'
+    env(DATABASE_URL): 'sqlite:///%kernel.project_dir%/var/data/data.db'
     env(JWT_PRIVATE_KEY_PATH): 'config/jwt/private.pem'
     env(JWT_PUBLIC_KEY_PATH): 'config/jwt/public.pem'
     env(JWT_PASSPHRASE): ''

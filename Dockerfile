@@ -57,9 +57,10 @@ RUN mkdir -p ../config/jwt \
     && openssl rsa -pubout -passin "pass:${JWT_PASSPHRASE}" -in ../config/jwt/private.pem -out ../config/jwt/public.pem
 
 # Touch the SQLite Database and set the permissions
-RUN mkdir -p ../var \
-    && touch ../var/data.db \
-    && chown www-data:www-data ../var/data.db
+RUN mkdir -p ../var/data \
+    && chmod 777 ../var/data \
+    && touch ../var/data/data.db \
+    && chown www-data:www-data ../var/data/data.db
 
 # Create the database schema and load the fixtures
 RUN ../bin/console doctrine:schema:create \
