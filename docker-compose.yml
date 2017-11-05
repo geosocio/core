@@ -3,16 +3,13 @@ services:
   api:
     build: ./
     image: geosocio/core
+    links:
+      - http-cache
     env_file:
       - .env
     ports:
       - 8888:80
-    # volumes:
-    #   - ./:/var/www:cached
-  # build:
-  #   image: composer
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - ./:/app:cached
-  #   command: 'composer install'
+    volumes:
+      - ./:/var/www:cached
+  http-cache:
+    image: geosocio/trafficserver

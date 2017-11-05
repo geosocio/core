@@ -7,6 +7,8 @@ parameters:
     env(JWT_PUBLIC_KEY_PATH): 'config/jwt/public.pem'
     env(JWT_PASSPHRASE): ''
     env(MAPZEN_API_KEY): ''
+    env(MAPZEN_SEARCH_URL): 'https://search.mapzen.com/v1/'
+    env(MAPZEN_WHOS_ON_FIRST_URL): 'https://whosonfirst-api.mapzen.com'
     env(SENDGRID_API_KEY): ''
 
 services:
@@ -167,8 +169,10 @@ services:
         class: GuzzleHttp\Client
         arguments:
             -
-                base_url: https://search.mapzen.com/v1/
+                base_url: '%env(MAPZEN_API_KEY)%'
                 defaults:
+                    headers:
+                      Host: search.mapzen.com
                     query:
                         api_key: '%env(MAPZEN_API_KEY)%'
 
@@ -176,7 +180,9 @@ services:
         class: GuzzleHttp\Client
         arguments:
             -
-                base_url: https://whosonfirst-api.mapzen.com
+                base_url: '%env(MAPZEN_WHOS_ON_FIRST_URL)%'
                 defaults:
+                    headers:
+                      Host: whosonfirst-api.mapzen.com
                     query:
                         api_key: '%env(MAPZEN_API_KEY)%'
