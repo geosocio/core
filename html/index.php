@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 require __DIR__.'/../vendor/autoload.php';
 
+
 if ($_SERVER['APP_DEBUG'] ?? false) {
     // Disable OpCache
     ini_set('opcache.enable', 0);

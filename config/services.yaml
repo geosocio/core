@@ -42,6 +42,12 @@ services:
         parent: app.controller
         class: App\Controller\PlaceController
 
+    app.controller_location:
+        parent: app.controller
+        class: App\Controller\LocationController
+        arguments:
+          - "@app.client_mapzen_search"
+
     app.controller_post:
         parent: app.controller
         class: App\Controller\PostController
@@ -169,20 +175,22 @@ services:
         class: GuzzleHttp\Client
         arguments:
             -
-                base_url: '%env(MAPZEN_API_KEY)%'
-                defaults:
-                    headers:
-                      Host: search.mapzen.com
-                    query:
-                        api_key: '%env(MAPZEN_API_KEY)%'
+                base_uri: '%env(MAPZEN_SEARCH_URL)%'
+                allow_redirects: false
+                headers:
+                  Host: search.mapzen.com
+                  X-Debug: X-Cache
+                query:
+                  api_key: '%env(MAPZEN_API_KEY)%'
 
     app.guzzle_client_mapzen_whos_on_first:
         class: GuzzleHttp\Client
         arguments:
             -
-                base_url: '%env(MAPZEN_WHOS_ON_FIRST_URL)%'
-                defaults:
-                    headers:
-                      Host: whosonfirst-api.mapzen.com
-                    query:
-                        api_key: '%env(MAPZEN_API_KEY)%'
+                base_uri: '%env(MAPZEN_WHOS_ON_FIRST_URL)%'
+                allow_redirects: false
+                headers:
+                  Host: whosonfirst-api.mapzen.com
+                  X-Debug: X-Cache
+                query:
+                  api_key: '%env(MAPZEN_API_KEY)%'

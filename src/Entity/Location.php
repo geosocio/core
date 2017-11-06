@@ -32,6 +32,11 @@ class Location
     private $id;
 
     /**
+     * @var string
+     */
+    private $label;
+
+    /**
      * @var Place
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Place\Place", inversedBy="locations")
@@ -62,6 +67,7 @@ class Location
     {
         $params = new ParameterBag($data);
         $this->id = $params->getString('id');
+        $this->label = $params->getString('label');
         $this->place = $params->getInstance('place', Place::class);
         $this->latitude = (float) $params->getNumber('latitude') ?: null;
         $this->longitude = (float) $params->getNumber('longitude') ?: null;
@@ -70,8 +76,10 @@ class Location
 
     /**
      * Get id
+     *
+     * @Groups({"read_anonymous"})
      */
-    public function getId() : string
+    public function getId() :? string
     {
         return $this->id;
     }
@@ -84,6 +92,28 @@ class Location
     public function setId(string $id) : self
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get label
+     *
+     * @Groups({"read_anonymous"})
+     */
+    public function getLabel() :? string
+    {
+        return $this->label;
+    }
+
+    /**
+     * Set label
+     *
+     * @param string $label
+     */
+    public function setLabel(string $label) : self
+    {
+        $this->label = $label;
 
         return $this;
     }
@@ -156,6 +186,8 @@ class Location
 
     /**
      * Get latitude
+     *
+     * @Groups({"read_anonymous"})
      */
     public function getLatitude() :? float
     {
@@ -176,6 +208,8 @@ class Location
 
     /**
      * Get longitude
+     *
+     * @Groups({"read_anonymous"})
      */
     public function getLongitude() :? float
     {

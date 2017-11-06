@@ -17,10 +17,12 @@ class SearchDenormalizer implements DenormalizerInterface
     public function denormalize($data, $class, $format = null, array $context = array())
     {
         if (empty($data['features'])) {
-            return new $class();
+            return [];
         }
 
-        return $this->createLocationFromFeature($data['features'][0]);
+        return array_map(function ($feature) {
+            return $this->createLocationFromFeature($feature);
+        }, $data['features']);
     }
 
     /**
@@ -59,6 +61,7 @@ class SearchDenormalizer implements DenormalizerInterface
 
         return new Location([
             'id' => $feature['properties']['gid'] ?? null,
+            'label' => $feature['properties']['label'] ?? null,
             'longitude' => $feature['geometry']['coordinates'][0] ?? null,
             'latitude' => $feature['geometry']['coordinates'][1] ?? null,
             'place' => $place,

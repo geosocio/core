@@ -9,6 +9,12 @@ use GuzzleHttp\Promise\PromiseInterface;
  */
 interface SearchInterface
 {
+    /**
+     * Search for a place.
+     *
+     * @param string $text
+     */
+    public function search(string $text) : PromiseInterface;
 
     /**
      * Get a place by id.

@@ -2,6 +2,7 @@ RewriteEngine On
 
 # Pass Environment Variables
 PassEnv APP_ENV
+PassEnv APP_DEBUG
 PassEnv DATABASE_URL
 PassEnv JWT_PRIVATE_KEY_PATH
 PassEnv JWT_PUBLIC_KEY_PATH
